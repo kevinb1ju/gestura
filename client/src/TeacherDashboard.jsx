@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate, Link } from "react-router-dom";
+import { LEVEL_CONFIG, getLevelName } from "./levelConfig";
 
 // ---------------- Styled Components ----------------
 const Container = styled.div`
@@ -374,7 +375,7 @@ export default function TeacherDashboard() {
                         <tr>
                           <Th>Student</Th>
                           <Th>Mental Age</Th>
-                          <Th>Current Game Level</Th>
+                          <Th>Learning Level</Th>
                           <Th>Actions</Th>
                         </tr>
                       </thead>
@@ -388,7 +389,7 @@ export default function TeacherDashboard() {
                               </div>
                             </Td>
                             <Td>{student.mentalAge || student.age}</Td>
-                            <Td>{student.level}</Td>
+                            <Td>{getLevelName(parseInt(student.level.replace('Level ', '')))}</Td>
                             <Td>
                               <ActionLink 
                                 as={Link} 
@@ -477,16 +478,26 @@ export default function TeacherDashboard() {
                 </FormGroup>
                 <FormGroup>
                   <Label>Game Level</Label>
-                  <Input 
-                    name="level" 
-                    type="number"
-                    min="1"
-                    max="10"
-                    placeholder="Enter level (1-10)"
-                    value={newStudent.level} 
-                    onChange={handleChange} 
-                    required 
-                  />
+                  <select
+                    name="level"
+                    value={newStudent.level}
+                    onChange={handleChange}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "0.5rem 0.75rem",
+                      border: "1px solid #d1d5db",
+                      borderRadius: "0.5rem",
+                      fontFamily: "'Quicksand', cursive"
+                    }}
+                  >
+                    <option value="">Select Level</option>
+                    {Object.entries(LEVEL_CONFIG).map(([levelNum, config]) => (
+                      <option key={levelNum} value={levelNum}>
+                        Level {levelNum} - {config.name}
+                      </option>
+                    ))}
+                  </select>
                 </FormGroup>
                 <SubmitButton type="submit">Add Student</SubmitButton>
               </Form>

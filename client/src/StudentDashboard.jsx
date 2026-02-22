@@ -1,6 +1,7 @@
 // Dashboard.jsx
 import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
+import { getGamesForLevel, getLevelName, launchGame } from "./levelConfig";
 
 // ---------- Animations ----------
 const wobble = keyframes`
@@ -243,33 +244,17 @@ export default function StudentDashboard() {
     };
   }, []);
 
-  const games = [
-    {
-      title: "Gesture Adventure",
-      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDgvxl4b6N-rKGSZShGEFKmQSFp_69x0eDElpIXzoHf2PCn2cT60symPYrKLch-Jrs6eNz3mrRFaIQNscsvaj86Gkc6hhnLySJEUPMbVS3Ll8cLlAZb4iB4uyWDKhe19NKbNuZFa072AgiMNPqVcNxpUQoLDFRBM5WMe6OmhW9Rb3hDJ_Eo7h6eD6HzH2h374hTJYOSWSGPWDVzTxpl9Bjy8JxucDnGJW8uYhbsX86j6gFTHHw8x1by-duHEnfKjgM6Eg82bjHVvjTc",
-      bgColor: "#ffda79",
-      buttonColor: "#3498db"
-    },
-    {
-      title: "Shape Explorers",
-      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuB0gEQX57-Dh8Q_dDlu0hW-nGJWqly_fVfyPuj6xweqOGw00zG8oj4Tdl4yaW9Mkghx6cJ5no5J6GKmS-bAcQCWQsZhKA0fJN04wdoDX61PgYX0X_-_9_66SRJ3JJw7w_UMuwxidWaBIghb2D8BIoUqj8_YE6LUACui1lR6OXu6qQjOUUxvhfopnEUNT___oQSZt5AP_gmBspIMKzsXjzo7DvVnsWFA4byUKbLr-T8eCDZOvVdbWi9mq27_S19EaaU3IMG-LlYjJJRp",
-      bgColor: "#7ed6df",
-      buttonColor: "#ff6b6b"
-    },
-    {
-      title: "Color Quest",
-      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDoTYAh1s0OUXa9u-AuQAFlTW9SG4wuy5lBKfyd5c5FKmadr6oVtbGZpfQs-V_-INgQHn-FjI6dr9-_R9VQvKb3PhoUCXyuthDut_AcI-aNQjDual1XoEnmkYAkfiKQfLQV3Ru4g7KSBjTQcL6GRFVtE2suzY-GRHiMB3uR53tXT_S02PxGgMR3XCiwvxR6bUbM-70aExB8voHUSlvfWEbw3KO65TgPfRt04KJGjK5QMv4DNe_HIrSwfACFtLL1xRDxslxDhCXJ8Dsj",
-      bgColor: "#82ccdd",
-      buttonColor: "#f9d423"
-    },
-  ];
-
   // Extract level number from "Level X" format
   const currentLevel = studentData?.level ? 
     (typeof studentData.level === 'string' ? 
       parseInt(studentData.level.replace('Level ', '')) : 
       studentData.level) : 
     3;
+
+  // Get games based on student's current level
+  const games = getGamesForLevel(currentLevel);
+  console.log('Current level:', currentLevel);
+  console.log('Games for this level:', games);
 
   return (
     <AppWrapper>
@@ -301,7 +286,7 @@ export default function StudentDashboard() {
         <WelcomeSection>
           <h2>Welcome back, {studentData?.name || 'Student'}!</h2>
           <div className="level">
-            <span>⭐</span> Current Level: {currentLevel}
+            <span>⭐</span> Current Level: {getLevelName(currentLevel)}
           </div>
         </WelcomeSection>
 
@@ -310,7 +295,20 @@ export default function StudentDashboard() {
             <GameCardWrapper key={index} bgColor={game.bgColor} buttonColor={game.buttonColor}>
               <img src={game.img} alt={game.title} />
               <h3>{game.title}</h3>
-              <button>▶ Play Now</button>
+              <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('Button clicked for game:', game);
+                  try {
+                    launchGame(game);
+                  } catch (error) {
+                    console.error('Error launching game:', error);
+                    alert('Error launching game. Please check console for details.');
+                  }
+                }}
+              >
+                ▶ Play Now
+              </button>
             </GameCardWrapper>
           ))}
         </GameGrid>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ColorQuest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #fdfbfb, #ebedee);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 48px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .start-btn {
+            font-size: 26px;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 15px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .start-btn:hover {
+            background-color: #43a047;
+            transform: scale(1.05);
+        }
+
+        .speaker {
+            margin-top: 25px;
+            font-size: 22px;
+            cursor: pointer;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🎨 ColorQuest</h1>
+    <p>Let’s learn colors together!</p>
+
+    <button class="start-btn" onclick="startGame()">
+        Start Learning
+    </button>
+
+    <div class="speaker" onclick="speakIntro()">
+        🔊 Hear Instructions
+    </div>
+</div>
+
+<script>
+    function speakIntro() {
+        const message = new SpeechSynthesisUtterance(
+            "Welcome to ColorQuest. Press start to learn colors."
+        );
+        message.rate = 0.9;
+        message.pitch = 1;
+        speechSynthesis.speak(message);
+    }
+
+    function startGame() {
+        window.location.href = "colors.html";
+    }
+
+    // Auto speak when page loads
+    window.onload = () => {
+        speakIntro();
+    };
+</script>
+
+</body>
+</html>

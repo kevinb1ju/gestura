@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Launch Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .game-card {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Launch Test</h1>
+    <p>Click the buttons below to test game launching:</p>
+    
+    <div class="game-card">
+        <h3>Egg Hunt (HTML Game)</h3>
+        <button onclick="testHTMLGame()">Test Egg Hunt</button>
+    </div>
+    
+    <div class="game-card">
+        <h3>Shape Explorers (HTML Game)</h3>
+        <button onclick="testShapeGame()">Test Shape Explorers</button>
+    </div>
+    
+    <div class="game-card">
+        <h3>Number Adventures (React Game)</h3>
+        <button onclick="testReactGame()">Test Number Adventures</button>
+    </div>
+
+    <script>
+        function testHTMLGame() {
+            const path = "../../GesturaGames/Egg_Hunt_Gestura/client/index.html";
+            alert(`To play Egg Hunt:\n\nPlease open this file in your browser:\n${path}\n\nOr navigate to the GesturaGames folder and double-click the HTML file.`);
+        }
+        
+        function testShapeGame() {
+            const path = "../../GesturaGames/shape/index.html";
+            alert(`To play Shape Explorers:\n\nPlease open this file in your browser:\n${path}\n\nOr navigate to the GesturaGames folder and double-click the HTML file.`);
+        }
+        
+        function testReactGame() {
+            const instructions = `To play Number Adventures:\n\n1. Open terminal/command prompt\n2. Navigate to: ../../GesturaGames/numbers\n3. Run: npm start\n4. Game will open at http://localhost:3001\n\nThen click Play Now again.`;
+            alert(instructions);
+        }
+    </script>
+</body>
+</html>

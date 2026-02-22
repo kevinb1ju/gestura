@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Level 2 – Scene Color Hunt</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ✅ CORRECT MEDIAPIPE IMPORTS -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+
+/* Hide camera feed */
+video { display: none; }
+
+/* ---------- SCENE ---------- */
+.scene {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+}
+
+/* SKY */
+.sky {
+    flex: 3;
+    background: #87ceeb;
+}
+
+/* SUN AREA */
+.sun-area {
+    flex: 2;
+    background: linear-gradient(#87ceeb, #fff176);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sun {
+    width: 140px;
+    height: 140px;
+    background: #ffd700;
+    border-radius: 50%;
+    box-shadow: 0 0 25px rgba(255,215,0,0.7);
+}
+
+/* GRASS */
+.grass {
+    flex: 3;
+    background: #4caf50;
+}
+
+/* ---------- TOP BAR ---------- */
+.top-bar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 14px;
+    text-align: center;
+    background: rgba(255,255,255,0.95);
+    z-index: 10;
+}
+
+.prompt {
+    font-size: 28px;
+    font-weight: bold;
+    color: #8b1c1c;
+}
+
+.score {
+    font-size: 20px;
+}
+
+/* ---------- FEEDBACK ---------- */
+.feedback {
+    position: fixed;
+    bottom: 25px;
+    width: 100%;
+    text-align: center;
+    font-size: 26px;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.win-text {
+    font-size: 42px;
+    color: #ff5722;
+}
+
+/* ---------- HAND CURSOR ---------- */
+.hand-cursor {
+    position: fixed;
+    width: 36px;
+    height: 36px;
+    background: rgba(0,140,255,0.75);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    display: none;
+    z-index: 100;
+}
+</style>
+</head>
+
+<body>
+
+<!-- CAMERA -->
+<video id="video" autoplay playsinline></video>
+
+<!-- HAND CURSOR -->
+<div class="hand-cursor" id="cursor"></div>
+
+<!-- SCENE -->
+<div class="scene">
+    <div class="sky"></div>
+    <div class="sun-area">
+        <div class="sun"></div>
+    </div>
+    <div class="grass"></div>
+</div>
+
+<!-- UI -->
+<div class="top-bar">
+    <div class="prompt" id="prompt"></div>
+    <div class="score">Score: <span id="score">0</span></div>
+</div>
+
+<div class="feedback" id="feedback"></div>
+
+<script>
+/* ---------- ELEMENTS ---------- */
+const video = document.getElementById("video");
+const cursor = document.getElementById("cursor");
+const promptEl = document.getElementById("prompt");
+const scoreEl = document.getElementById("score");
+const feedback = document.getElementById("feedback");
+
+/* ---------- GAME DATA ---------- */
+const targets = [
+    { color: "Blue", zone: "top" },
+    { color: "Yellow", zone: "center" },
+    { color: "Green", zone: "bottom" }
+];
+
+let score = 0;
+let currentTarget;
+let hoverStart = null;
+let lastZone = null;
+let gameOver = false;
+
+/* ---------- GAME ---------- */
+function newRound() {
+    if (gameOver) return;
+    feedback.textContent = "";
+    currentTarget = targets[Math.floor(Math.random() * targets.length)];
+    promptEl.textContent = "Find something " + currentTarget.color;
+}
+
+function getZone(y) {
+    const h = window.innerHeight;
+    if (y < h * 0.35) return "top";
+    if (y > h * 0.65) return "bottom";
+    return "center";
+}
+
+function evaluate(zone) {
+    if (zone === currentTarget.zone) {
+        score += 10;
+        feedback.textContent = "Correct!";
+    } else {
+        score = Math.max(0, score - 5);
+        feedback.textContent = "Oops!";
+    }
+
+    scoreEl.textContent = score;
+
+    if (score >= 100) {
+        gameOver = true;
+        feedback.innerHTML = "<div class='win-text'>🎉 You won Level 2!</div>";
+        promptEl.textContent = "Great job!";
+        return;
+    }
+
+    setTimeout(newRound, 1500);
+}
+
+/* ---------- MEDIAPIPE HANDS ---------- */
+const hands = new Hands({
+    locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
+});
+
+hands.setOptions({
+    maxNumHands: 1,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.7,
+    minTrackingConfidence: 0.7
+});
+
+hands.onResults(results => {
+    if (!results.multiHandLandmarks || gameOver) {
+        cursor.style.display = "none";
+        hoverStart = null;
+        return;
+    }
+
+    const tip = results.multiHandLandmarks[0][8];
+    const x = tip.x * window.innerWidth;
+    const y = tip.y * window.innerHeight;
+
+    cursor.style.display = "block";
+    cursor.style.left = x + "px";
+    cursor.style.top = y + "px";
+
+    const zone = getZone(y);
+
+    if (zone !== lastZone) {
+        lastZone = zone;
+        hoverStart = Date.now();
+    }
+
+    if (hoverStart && Date.now() - hoverStart > 1500) {
+        hoverStart = null;
+        evaluate(zone);
+    }
+});
+
+/* ---------- CAMERA ---------- */
+const camera = new Camera(video, {
+    onFrame: async () => {
+        await hands.send({ image: video });
+    },
+    width: 640,
+    height: 480
+});
+
+camera.start();
+newRound();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Learn Colors – ColorQuest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f3f7ff;
+            transition: background-color 0.8s ease;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            width: 95%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            height: 110px;
+            border-radius: 18px;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            backface-visibility: hidden;
+        }
+
+        .card-front {
+            background: white;
+            border: 3px solid #e0e0e0;
+            color: #333;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            color: white;
+        }
+
+        .yellow {
+            color: #000;
+        }
+
+        .start-btn {
+            font-size: 22px;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 18px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Tap a card to see and hear the color</h2>
+
+    <div class="card-grid">
+
+        <div class="card" onpointerdown="handleCard(this, 'Red', '#f44336')">
+            <div class="card-inner">
+                <div class="card-face card-front">Red</div>
+                <div class="card-face card-back" style="background:#f44336;">Red</div>
+            </div>
+        </div>
+
+        <div class="card" onpointerdown="handleCard(this, 'Blue', '#2196F3')">
+            <div class="card-inner">
+                <div class="card-face card-front">Blue</div>
+                <div class="card-face card-back" style="background:#2196F3;">Blue</div>
+            </div>
+        </div>
+
+        <div class="card" onpointerdown="handleCard(this, 'Green', '#4CAF50')">
+            <div class="card-inner">
+                <div class="card-face card-front">Green</div>
+                <div class="card-face card-back" style="background:#4CAF50;">Green</div>
+            </div>
+        </div>
+
+        <div class="card" onpointerdown="handleCard(this, 'Yellow', '#FFEB3B')">
+            <div class="card-inner">
+                <div class="card-face card-front">Yellow</div>
+                <div class="card-face card-back yellow" style="background:#FFEB3B;">Yellow</div>
+            </div>
+        </div>
+
+        <div class="card" onpointerdown="handleCard(this, 'Orange', '#FF9800')">
+            <div class="card-inner">
+                <div class="card-face card-front">Orange</div>
+                <div class="card-face card-back" style="background:#FF9800;">Orange</div>
+            </div>
+        </div>
+
+        <div class="card" onpointerdown="handleCard(this, 'Purple', '#9C27B0')">
+            <div class="card-inner">
+                <div class="card-face card-front">Purple</div>
+                <div class="card-face card-back" style="background:#9C27B0;">Purple</div>
+            </div>
+        </div>
+
+        <div class="card" onpointerdown="handleCard(this, 'Pink', '#E91E63')">
+            <div class="card-inner">
+                <div class="card-face card-front">Pink</div>
+                <div class="card-face card-back" style="background:#E91E63;">Pink</div>
+            </div>
+        </div>
+
+        <div class="card" onpointerdown="handleCard(this, 'Brown', '#795548')">
+            <div class="card-inner">
+                <div class="card-face card-front">Brown</div>
+                <div class="card-face card-back" style="background:#795548;">Brown</div>
+            </div>
+        </div>
+
+    </div>
+
+    <button class="start-btn" onclick="startGame()">Start Game</button>
+</div>
+
+<script>
+    let activeCard = null;
+
+    function handleCard(card, name, color) {
+
+        if (card === activeCard) {
+            card.classList.remove("flipped");
+            activeCard = null;
+            return;
+        }
+
+        if (activeCard) {
+            activeCard.classList.remove("flipped");
+        }
+
+        card.classList.add("flipped");
+        activeCard = card;
+
+        document.body.style.backgroundColor = color;
+
+        speak(name);
+    }
+
+    function speak(text) {
+        speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.rate = 0.9;
+        speechSynthesis.speak(msg);
+    }
+
+    function startGame() {
+        window.location.href = "level1.html";
+    }
+
+    window.onload = () => {
+        speak("Tap a card to see and hear the color");
+    };
+</script>
+
+</body>
+</html>
