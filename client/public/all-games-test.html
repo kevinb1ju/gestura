@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Games Test - Instant Loading</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .game-card {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .level-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            margin-right: 10px;
+        }
+        .level-1 { background: #ffda79; color: #333; }
+        .level-2 { background: #7ed6df; color: #333; }
+        .level-3 { background: #ffd3b6; color: #333; }
+        .level-4 { background: #dcedc8; color: #333; }
+        .level-5 { background: #f8bbd0; color: #333; }
+    </style>
+</head>
+<body>
+    <h1>🎮 All Games Test - Instant Loading</h1>
+    <p>All games now load instantly like HTML files - no servers needed!</p>
+    
+    <div class="game-card">
+        <h3><span class="level-badge level-1">Level 1</span>Egg Hunt Gestura</h3>
+        <p>Path: /games/egg-hunt/index.html</p>
+        <button onclick="testGame('/games/egg-hunt/index.html', 'Egg Hunt')">▶ Play Now</button>
+        <div id="egg-hunt-result"></div>
+    </div>
+    
+    <div class="game-card">
+        <h3><span class="level-badge level-2">Level 2</span>Shape Explorers</h3>
+        <p>Path: /games/shape/index.html</p>
+        <button onclick="testGame('/games/shape/index.html', 'Shape Explorers')">▶ Play Now</button>
+        <div id="shape-result"></div>
+    </div>
+    
+    <div class="game-card">
+        <h3><span class="level-badge level-2">Level 2</span>Color Quest</h3>
+        <p>Path: /games/colors/index.html</p>
+        <button onclick="testGame('/games/colors/index.html', 'Color Quest')">▶ Play Now</button>
+        <div id="color-result"></div>
+    </div>
+
+    <div class="game-card">
+        <h3><span class="level-badge level-2">Level 2</span>Number Adventures</h3>
+        <p>Path: /games/numbers/index.html (Built React App)</p>
+        <button onclick="testGame('/games/numbers/index.html', 'Number Adventures')">▶ Play Now</button>
+        <div id="numbers-result"></div>
+    </div>
+
+    <div class="game-card">
+        <h3><span class="level-badge level-3">Level 3</span>Bridge Game</h3>
+        <p>Path: /games/bridge/index.html (Built React App)</p>
+        <button onclick="testGame('/games/bridge/index.html', 'Bridge Game')">▶ Play Now</button>
+        <div id="bridge-result"></div>
+    </div>
+
+    <div class="game-card">
+        <h3><span class="level-badge level-4">Level 4</span>Rupee Buddy</h3>
+        <p>Path: /games/rupee-buddy/index.html (Built React App)</p>
+        <button onclick="testGame('/games/rupee-buddy/index.html', 'Rupee Buddy')">▶ Play Now</button>
+        <div id="rupee-buddy-result"></div>
+    </div>
+
+    <div class="game-card">
+        <h3><span class="level-badge level-5">Level 5</span>Rupee Buddy Vocational</h3>
+        <p>Path: /games/rupee-buddy-voc/index.html (Built React App)</p>
+        <button onclick="testGame('/games/rupee-buddy-voc/index.html', 'Rupee Buddy Vocational')">▶ Play Now</button>
+        <div id="rupee-buddy-voc-result"></div>
+    </div>
+
+    <script>
+        function testGame(path, gameName) {
+            const resultDiv = event.target.nextElementSibling;
+            resultDiv.innerHTML = '<span style="color: blue;">Testing...</span>';
+            
+            // Test if the file exists by trying to fetch it
+            fetch(path)
+                .then(response => {
+                    if (response.ok) {
+                        resultDiv.innerHTML = '<span class="success">✓ Game found! Opening instantly...</span>';
+                        window.open(path, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+                    } else {
+                        resultDiv.innerHTML = '<span class="error">✗ Game not found</span>';
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = '<span class="error">✗ Error accessing game: ' + error.message + '</span>';
+                });
+        }
+    </script>
+</body>
+</html>

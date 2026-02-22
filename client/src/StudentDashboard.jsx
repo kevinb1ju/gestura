@@ -306,6 +306,12 @@ export default function StudentDashboard() {
                     alert('Error launching game. Please check console for details.');
                   }
                 }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  // Right-click alternative: open directly
+                  const gameUrl = window.location.origin + game.path;
+                  window.open(gameUrl, '_blank');
+                }}
               >
                 ▶ Play Now
               </button>

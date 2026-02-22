@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Launch Test - Updated</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .game-card {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Launch Test - Updated Paths</h1>
+    <p>Testing the new game locations after moving to client folder:</p>
+    
+    <div class="game-card">
+        <h3>Egg Hunt (HTML Game)</h3>
+        <p>Path: /games/egg-hunt/index.html</p>
+        <button onclick="testHTMLGame('/games/egg-hunt/index.html')">Test Egg Hunt</button>
+        <div id="egg-hunt-result"></div>
+    </div>
+    
+    <div class="game-card">
+        <h3>Shape Explorers (HTML Game)</h3>
+        <p>Path: /games/shape/index.html</p>
+        <button onclick="testHTMLGame('/games/shape/index.html')">Test Shape Explorers</button>
+        <div id="shape-result"></div>
+    </div>
+    
+    <div class="game-card">
+        <h3>Color Quest (HTML Game)</h3>
+        <p>Path: /games/colors/index.html</p>
+        <button onclick="testHTMLGame('/games/colors/index.html')">Test Color Quest</button>
+        <div id="color-result"></div>
+    </div>
+
+    <script>
+        function testHTMLGame(path) {
+            const resultDiv = event.target.nextElementSibling;
+            resultDiv.innerHTML = 'Testing...';
+            
+            // Test if the file exists by trying to fetch it
+            fetch(path)
+                .then(response => {
+                    if (response.ok) {
+                        resultDiv.innerHTML = '<span class="success">✓ File found! Opening in new tab...</span>';
+                        window.open(path, '_blank');
+                    } else {
+                        resultDiv.innerHTML = '<span class="error">✗ File not found</span>';
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = '<span class="error">✗ Error accessing file: ' + error.message + '</span>';
+                });
+        }
+    </script>
+</body>
+</html>
