@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/static/css/main.03512786.css",
-    "main.js": "/static/js/main.5cdac7a3.js",
-    "static/js/453.86c7c76e.chunk.js": "/static/js/453.86c7c76e.chunk.js",
-    "index.html": "/index.html",
-    "main.03512786.css.map": "/static/css/main.03512786.css.map",
-    "main.5cdac7a3.js.map": "/static/js/main.5cdac7a3.js.map",
-    "453.86c7c76e.chunk.js.map": "/static/js/453.86c7c76e.chunk.js.map"
+    "main.css": "/games/numbers/static/css/main.03512786.css",
+    "main.js": "/games/numbers/static/js/main.08812a37.js",
+    "static/js/453.86c7c76e.chunk.js": "/games/numbers/static/js/453.86c7c76e.chunk.js",
+    "index.html": "/games/numbers/index.html",
+    "main.03512786.css.map": "/games/numbers/static/css/main.03512786.css.map",
+    "main.08812a37.js.map": "/games/numbers/static/js/main.08812a37.js.map",
+    "453.86c7c76e.chunk.js.map": "/games/numbers/static/js/453.86c7c76e.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.03512786.css",
-    "static/js/main.5cdac7a3.js"
+    "static/js/main.08812a37.js"
   ]
 }

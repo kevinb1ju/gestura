@@ -168,32 +168,42 @@ const GameCardWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: ${({ bgColor }) => bgColor || "#fff"};
-  padding: 0.75rem;
-  border-radius: 1rem;
-  border: 3px solid black;
-  box-shadow: 6px 6px 0px 0px black;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  border: 4px solid ${({ buttonColor }) => buttonColor || "#007bff"};
+  box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
   transform: rotate(-1deg);
   transition: all 0.3s ease-in-out;
+  min-height: 320px;
 
   &:hover {
     transform: rotate(1deg) scale(1.05);
-    box-shadow: 9px 9px 0px 0px black;
+    box-shadow: 12px 12px 0px rgba(0,0,0,0.3);
   }
 
   img {
-    width: 100%;
+    width: 200px;
+    height: 200px;
     aspect-ratio: 1/1;
     border-radius: 1rem;
-    border: 2px solid black;
-    margin-bottom: 0.5rem;
+    border: 3px solid ${({ buttonColor }) => buttonColor || "#007bff"};
+    margin-bottom: 1rem;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.1);
   }
 
   h3 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+    color: #333;
+    text-align: center;
     font-family: 'Fredoka One', cursive;
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
     text-shadow: 1px 1px 0 #000;
-    color: #fff;
   }
 
   button {
@@ -202,31 +212,71 @@ const GameCardWrapper = styled.div`
     justify-content: center;
     gap: 0.5rem;
     width: 100%;
-    padding: 0.625rem;
-    font-size: 1.25rem;
+    padding: 0.75rem;
+    font-size: 1.1rem;
     font-weight: bold;
-    background-color: ${({ buttonColor }) => buttonColor || "#3498db"};
-    color: #fff;
-    border-radius: 0.75rem;
-    border: 3px solid black;
+    background-color: ${({ buttonColor }) => buttonColor || "#007bff"};
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
 
-    &:hover { opacity: 0.9; }
-    &:active { transform: translateY(0.5px); }
+    &:hover {
+      background-color: ${({ buttonColor }) => buttonColor || "#0056b3"};
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
   }
 `;
 
 // ---------- React Component ----------
 export default function StudentDashboard() {
   const [studentData, setStudentData] = useState(null);
+  const [levelUpdateNotification, setLevelUpdateNotification] = useState(null);
 
   useEffect(() => {
     // Get logged-in student data from localStorage
     const loadStudentData = () => {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       if (user.role === 'student') {
-        setStudentData(user);
+        // Also check if there's updated data from teacher
+        const teacherStudents = JSON.parse(localStorage.getItem('teacherStudents') || '[]');
+        const updatedStudent = teacherStudents.find(s => s.studentId === user.studentId);
+        
+        if (updatedStudent) {
+          // Check if level changed
+          if (updatedStudent.level !== user.level) {
+            // Update the user data with the new level from teacher
+            const updatedUser = { ...user, level: updatedStudent.level };
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            setStudentData(updatedUser);
+            console.log('Student level updated from teacher:', updatedStudent.level);
+            
+            // Show notification instead of auto-refresh
+            setLevelUpdateNotification(`Level updated to ${getLevelName(parseInt(updatedStudent.level.replace('Level ', '')))}! New games loaded.`);
+            setTimeout(() => {
+              setLevelUpdateNotification(null);
+            }, 3000);
+            return;
+          }
+          // Also update other fields that might have changed
+          const updatedUser = { 
+            ...user, 
+            ...updatedStudent,
+            role: 'student' // Ensure role stays student
+          };
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          setStudentData(updatedUser);
+        } else {
+          setStudentData(user);
+        }
       }
     };
     
@@ -236,7 +286,7 @@ export default function StudentDashboard() {
     window.addEventListener('storage', loadStudentData);
     
     // Also check periodically for updates (in case same tab)
-    const interval = setInterval(loadStudentData, 1000);
+    const interval = setInterval(loadStudentData, 500); // Check more frequently
     
     return () => {
       window.removeEventListener('storage', loadStudentData);
@@ -284,6 +334,21 @@ export default function StudentDashboard() {
 
       <MainContainer>
         <WelcomeSection>
+          {levelUpdateNotification && (
+            <div style={{
+              background: '#10b981',
+              color: 'white',
+              padding: '1rem',
+              borderRadius: '0.5rem',
+              marginBottom: '1rem',
+              textAlign: 'center',
+              fontSize: '1.1rem',
+              fontWeight: 'bold',
+              animation: 'fadeIn 0.5s ease-in-out'
+            }}>
+              🎉 {levelUpdateNotification}
+            </div>
+          )}
           <h2>Welcome back, {studentData?.name || 'Student'}!</h2>
           <div className="level">
             <span>⭐</span> Current Level: {getLevelName(currentLevel)}
@@ -292,9 +357,65 @@ export default function StudentDashboard() {
 
         <GameGrid>
           {games.map((game, index) => (
-            <GameCardWrapper key={index} bgColor={game.bgColor} buttonColor={game.buttonColor}>
-              <img src={game.img} alt={game.title} />
-              <h3>{game.title}</h3>
+            <div 
+              key={index} 
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                backgroundColor: game.bgColor || '#fff',
+                padding: '1.5rem',
+                borderRadius: '1.5rem',
+                border: '4px solid black',
+                boxShadow: '6px 6px 0px 0px 0px',
+                transform: 'rotate(-1deg)',
+                transition: 'all 0.3s ease-in-out'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'rotate(1deg) scale(1.05)';
+                e.currentTarget.style.boxShadow = '9px 9px 0px 0px 0px';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'rotate(-1deg)';
+                e.currentTarget.style.boxShadow = '6px 6px 0px 0px 0px';
+                e.currentTarget.style.boxShadow = '8px 8px 0px rgba(0,0,0,0.2)';
+              }}
+            >
+              <div 
+                style={{
+                  width: '200px',
+                  height: '200px',
+                  aspectRatio: '1/1',
+                  borderRadius: '1rem',
+                  border: `3px solid ${game.buttonColor || '#007bff'}`,
+                  marginBottom: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '6rem',
+                  backgroundColor: '#f8f9fa',
+                  transition: 'transform 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                {game.img}
+              </div>
+              <h3 style={{
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                margin: '0.5rem 0',
+                color: '#333',
+                textAlign: 'center',
+                fontFamily: 'Fredoka One, cursive',
+                textShadow: '1px 1px 0 #000'
+              }}>
+                {game.title}
+              </h3>
               <button 
                 onClick={(e) => {
                   e.preventDefault();
@@ -312,10 +433,45 @@ export default function StudentDashboard() {
                   const gameUrl = window.location.origin + game.path;
                   window.open(gameUrl, '_blank');
                 }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  width: '100%',
+                  padding: '0.75rem',
+                  fontSize: '1.1rem',
+                  fontWeight: 'bold',
+                  backgroundColor: game.buttonColor || '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  marginTop: '0.5rem'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = game.buttonColor || '#0056b3';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = game.buttonColor || '#007bff';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                }}
               >
                 ▶ Play Now
               </button>
-            </GameCardWrapper>
+            </div>
           ))}
         </GameGrid>
       </MainContainer>

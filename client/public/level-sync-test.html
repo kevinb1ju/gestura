@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Synchronization Test</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #ff6b6b;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .test-section h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        .data-display {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Level Synchronization Test</h1>
+        
+        <div class="test-section">
+            <h3>📝 Test Instructions</h3>
+            <ol>
+                <li><strong>Teacher Actions:</strong> Use the Teacher Dashboard to change a student's level</li>
+                <li><strong>Student Actions:</strong> The Student Dashboard should automatically detect the change</li>
+                <li><strong>Manual Check:</strong> Use the buttons below to test the synchronization manually</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h3>👨‍🏫 Teacher: Simulate Level Change</h3>
+            <button onclick="simulateTeacherLevelChange()">Simulate Teacher Changing Level to 4</button>
+            <button onclick="simulateTeacherLevelChange2()">Simulate Teacher Changing Level to 2</button>
+            <div id="teacher-status" class="status info">Click to simulate teacher action...</div>
+        </div>
+
+        <div class="test-section">
+            <h3>👨‍🎓 Student: Check Current Data</h3>
+            <button onclick="checkStudentData()">Check Student Data</button>
+            <button onclick="checkTeacherData()">Check Teacher Students Data</button>
+            <div id="student-status" class="status info">Click to check student data...</div>
+            <div id="data-display" class="data-display" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔄 Synchronization Status</h3>
+            <button onclick="checkSyncStatus()">Check Synchronization</button>
+            <div id="sync-status" class="status info">Click to check sync status...</div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Test Real Student Login</h3>
+            <button onclick="testStudentLogin()">Test Student Login (Student ID: TEST001)</button>
+            <button onclick="testStudentLogin2()">Test Student Login (Student ID: TEST002)</button>
+            <div id="login-status" class="status info">Click to test student login...</div>
+        </div>
+    </div>
+
+    <script>
+        // Test student data
+        const testStudents = [
+            {
+                name: "Test Student 1",
+                studentId: "TEST001",
+                level: "Level 3",
+                password: "pass123",
+                role: "student"
+            },
+            {
+                name: "Test Student 2", 
+                studentId: "TEST002",
+                level: "Level 1",
+                password: "pass456",
+                role: "student"
+            }
+        ];
+
+        function simulateTeacherLevelChange() {
+            // Simulate teacher updating student level
+            const teacherStudents = JSON.parse(localStorage.getItem('teacherStudents') || '[]');
+            
+            // Find or create test student
+            let student = teacherStudents.find(s => s.studentId === 'TEST001');
+            if (!student) {
+                student = { ...testStudents[0] };
+                teacherStudents.push(student);
+            }
+            
+            // Update level
+            student.level = 'Level 4';
+            localStorage.setItem('teacherStudents', JSON.stringify(teacherStudents));
+            
+            // Also update user if logged in
+            const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+            if (currentUser.role === 'student' && currentUser.studentId === 'TEST001') {
+                currentUser.level = 'Level 4';
+                localStorage.setItem('user', JSON.stringify(currentUser));
+            }
+            
+            document.getElementById('teacher-status').className = 'status success';
+            document.getElementById('teacher-status').textContent = '✅ Teacher updated TEST001 to Level 4';
+        }
+
+        function simulateTeacherLevelChange2() {
+            // Simulate teacher updating student level
+            const teacherStudents = JSON.parse(localStorage.getItem('teacherStudents') || '[]');
+            
+            // Find or create test student
+            let student = teacherStudents.find(s => s.studentId === 'TEST001');
+            if (!student) {
+                student = { ...testStudents[0] };
+                teacherStudents.push(student);
+            }
+            
+            // Update level
+            student.level = 'Level 2';
+            localStorage.setItem('teacherStudents', JSON.stringify(teacherStudents));
+            
+            // Also update user if logged in
+            const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+            if (currentUser.role === 'student' && currentUser.studentId === 'TEST001') {
+                currentUser.level = 'Level 2';
+                localStorage.setItem('user', JSON.stringify(currentUser));
+            }
+            
+            document.getElementById('teacher-status').className = 'status success';
+            document.getElementById('teacher-status').textContent = '✅ Teacher updated TEST001 to Level 2';
+        }
+
+        function checkStudentData() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const display = document.getElementById('data-display');
+            
+            display.style.display = 'block';
+            display.textContent = JSON.stringify(user, null, 2);
+            
+            if (user.role === 'student') {
+                document.getElementById('student-status').className = 'status success';
+                document.getElementById('student-status').textContent = `✅ Student logged in: ${user.name}, Level: ${user.level}`;
+            } else {
+                document.getElementById('student-status').className = 'status error';
+                document.getElementById('student-status').textContent = '❌ No student logged in';
+            }
+        }
+
+        function checkTeacherData() {
+            const teacherStudents = JSON.parse(localStorage.getItem('teacherStudents') || '[]');
+            const display = document.getElementById('data-display');
+            
+            display.style.display = 'block';
+            display.textContent = JSON.stringify(teacherStudents, null, 2);
+            
+            document.getElementById('student-status').className = 'status info';
+            document.getElementById('student-status').textContent = `📋 Found ${teacherStudents.length} students in teacher data`;
+        }
+
+        function checkSyncStatus() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const teacherStudents = JSON.parse(localStorage.getItem('teacherStudents') || '[]');
+            
+            if (user.role === 'student') {
+                const teacherStudent = teacherStudents.find(s => s.studentId === user.studentId);
+                
+                if (teacherStudent) {
+                    if (teacherStudent.level === user.level) {
+                        document.getElementById('sync-status').className = 'status success';
+                        document.getElementById('sync-status').textContent = `✅ Synchronized! Both show Level ${user.level}`;
+                    } else {
+                        document.getElementById('sync-status').className = 'status error';
+                        document.getElementById('sync-status').textContent = `❌ Not synchronized! User: ${user.level}, Teacher: ${teacherStudent.level}`;
+                    }
+                } else {
+                    document.getElementById('sync-status').className = 'status error';
+                    document.getElementById('sync-status').textContent = '❌ Student not found in teacher data';
+                }
+            } else {
+                document.getElementById('sync-status').className = 'status error';
+                document.getElementById('sync-status').textContent = '❌ No student logged in to check sync';
+            }
+        }
+
+        function testStudentLogin() {
+            // Simulate student login
+            const student = testStudents[0];
+            localStorage.setItem('user', JSON.stringify(student));
+            
+            document.getElementById('login-status').className = 'status success';
+            document.getElementById('login-status').textContent = `✅ Logged in as ${student.name} (${student.studentId})`;
+        }
+
+        function testStudentLogin2() {
+            // Simulate student login
+            const student = testStudents[1];
+            localStorage.setItem('user', JSON.stringify(student));
+            
+            document.getElementById('login-status').className = 'status success';
+            document.getElementById('login-status').textContent = `✅ Logged in as ${student.name} (${student.studentId})`;
+        }
+
+        // Auto-check sync status every 2 seconds
+        setInterval(() => {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.role === 'student') {
+                checkSyncStatus();
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

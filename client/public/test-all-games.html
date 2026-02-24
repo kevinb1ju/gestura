@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test All Games - Gestura</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #ff6b6b;
+            font-size: 3rem;
+            text-shadow: 2px 2px 0 #000;
+            margin-bottom: 30px;
+        }
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid black;
+            box-shadow: 6px 6px 0px 0px 0px;
+            transform: rotate(-1deg);
+            transition: all 0.3s ease;
+        }
+        .game-card:hover {
+            transform: rotate(1deg) scale(1.05);
+            box-shadow: 9px 9px 0px 0px 0px;
+        }
+        .game-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .game-link {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .game-link:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .status {
+            margin-top: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Gestura Games Test</h1>
+        <p style="text-align: center; font-size: 1.2rem; margin-bottom: 30px;">
+            Click on any game to test if it loads instantly without requiring a server!
+        </p>
+        
+        <div class="game-grid">
+            <div class="game-card">
+                <div class="game-title">🥚 Egg Hunt</div>
+                <a href="/games/egg-hunt/index.html" target="_blank" class="game-link" onclick="testGame(this, 'egg-hunt')">▶ Play Now</a>
+                <div id="status-egg-hunt" class="status">Click to test...</div>
+            </div>
+            
+            <div class="game-card">
+                <div class="game-title">🔷 Shape Explorers</div>
+                <a href="/games/shape/index.html" target="_blank" class="game-link" onclick="testGame(this, 'shape')">▶ Play Now</a>
+                <div id="status-shape" class="status">Click to test...</div>
+            </div>
+            
+            <div class="game-card">
+                <div class="game-title">🎨 Color Quest</div>
+                <a href="/games/colors/index.html" target="_blank" class="game-link" onclick="testGame(this, 'colors')">▶ Play Now</a>
+                <div id="status-colors" class="status">Click to test...</div>
+            </div>
+            
+            <div class="game-card">
+                <div class="game-title">🔢 Number Adventures</div>
+                <a href="/games/numbers/index.html" target="_blank" class="game-link" onclick="testGame(this, 'numbers')">▶ Play Now</a>
+                <div id="status-numbers" class="status">Click to test...</div>
+            </div>
+            
+            <div class="game-card">
+                <div class="game-title">🌉 Bridge Game</div>
+                <a href="/games/bridge/index.html" target="_blank" class="game-link" onclick="testGame(this, 'bridge')">▶ Play Now</a>
+                <div id="status-bridge" class="status">Click to test...</div>
+            </div>
+            
+            <div class="game-card">
+                <div class="game-title">💰 Rupee Buddy</div>
+                <a href="/games/rupee-buddy/index.html" target="_blank" class="game-link" onclick="testGame(this, 'rupee-buddy')">▶ Play Now</a>
+                <div id="status-rupee-buddy" class="status">Click to test...</div>
+            </div>
+            
+            <div class="game-card">
+                <div class="game-title">💼 Rupee Buddy Vocational</div>
+                <a href="/games/rupee-buddy-voc/index.html" target="_blank" class="game-link" onclick="testGame(this, 'rupee-buddy-voc')">▶ Play Now</a>
+                <div id="status-rupee-buddy-voc" class="status">Click to test...</div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 40px; text-align: center; padding: 20px; background: white; border-radius: 15px; border: 3px solid black;">
+            <h2>📋 Instructions</h2>
+            <ol style="text-align: left; max-width: 600px; margin: 0 auto;">
+                <li>Click on any "Play Now" button to test the game</li>
+                <li>The game should open instantly in a new tab</li>
+                <li>No server startup should be required</li>
+                <li>All React games have been built to static HTML/JS/CSS</li>
+                <li>Check the status message below each game for loading results</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function testGame(link, gameName) {
+            const statusDiv = document.getElementById(`status-${gameName}`);
+            statusDiv.innerHTML = '⏳ Testing game...';
+            statusDiv.className = 'status';
+            
+            // Test if the game file exists
+            fetch(link.href, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        statusDiv.innerHTML = '✅ Game loaded successfully!';
+                        statusDiv.className = 'status success';
+                    } else {
+                        statusDiv.innerHTML = `❌ Error: ${response.status} ${response.statusText}`;
+                        statusDiv.className = 'status error';
+                    }
+                })
+                .catch(error => {
+                    statusDiv.innerHTML = `❌ Network error: ${error.message}`;
+                    statusDiv.className = 'status error';
+                });
+        }
+        
+        // Auto-test all games on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const games = ['egg-hunt', 'shape', 'colors', 'numbers', 'bridge', 'rupee-buddy', 'rupee-buddy-voc'];
+                games.forEach(game => {
+                    const link = document.querySelector(`a[href="/games/${game}/index.html"]`);
+                    if (link) {
+                        testGame(link, game);
+                    }
+                });
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

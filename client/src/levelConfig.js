@@ -27,13 +27,14 @@ export const LEVEL_CONFIG = {
   }
 };
 
-// Test version - simplified GAME_DETAILS
+// Test version - simplified GAME_DETAILS with simple images
 export const GAME_DETAILS = {
   "Egg Hunt": {
     title: "Egg Hunt Gestura",
     path: "/games/egg-hunt/index.html",
     type: "html",
     port: null,
+    img: "🥚",
     bgColor: "#ffda79",
     buttonColor: "#3498db"
   },
@@ -42,6 +43,7 @@ export const GAME_DETAILS = {
     path: "/games/shape/index.html", 
     type: "html",
     port: null,
+    img: "🔷",
     bgColor: "#7ed6df",
     buttonColor: "#ff6b6b"
   },
@@ -50,6 +52,7 @@ export const GAME_DETAILS = {
     path: "/games/colors/index.html",
     type: "html",
     port: null,
+    img: "🎨",
     bgColor: "#82ccdd", 
     buttonColor: "#f9d423"
   },
@@ -58,6 +61,7 @@ export const GAME_DETAILS = {
     path: "/games/numbers/index.html",
     type: "html",
     port: null,
+    img: "🔢",
     bgColor: "#a8e6cf",
     buttonColor: "#ff8b94"
   },
@@ -66,6 +70,7 @@ export const GAME_DETAILS = {
     path: "/games/bridge/index.html",
     type: "html",
     port: null,
+    img: "🌉",
     bgColor: "#ffd3b6",
     buttonColor: "#ffaaa5"
   },
@@ -74,6 +79,7 @@ export const GAME_DETAILS = {
     path: "/games/rupee-buddy/index.html",
     type: "html",
     port: null,
+    img: "💰",
     bgColor: "#dcedc8",
     buttonColor: "#81c784"
   },
@@ -82,8 +88,9 @@ export const GAME_DETAILS = {
     path: "/games/rupee-buddy-voc/index.html",
     type: "html",
     port: null,
-    bgColor: "#f8bbd0",
-    buttonColor: "#e91e63"
+    img: "💼",
+    bgColor: "#e1bee7",
+    buttonColor: "#ba68c8"
   }
 };
 
