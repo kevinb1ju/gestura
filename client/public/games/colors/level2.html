@@ -1,249 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Level 2 – Scene Color Hunt</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Level 2 – Scene Color Hunt</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ✅ CORRECT MEDIAPIPE IMPORTS -->
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <!-- ✅ CORRECT MEDIAPIPE IMPORTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="../../game-integration.js"></script>
 
-<style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    overflow: hidden;
-}
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
 
-/* Hide camera feed */
-video { display: none; }
+        /* Hide camera feed */
+        video {
+            display: none;
+        }
 
-/* ---------- SCENE ---------- */
-.scene {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    z-index: 1;
-}
+        /* ---------- SCENE ---------- */
+        .scene {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
 
-/* SKY */
-.sky {
-    flex: 3;
-    background: #87ceeb;
-}
+        /* SKY */
+        .sky {
+            flex: 3;
+            background: #87ceeb;
+        }
 
-/* SUN AREA */
-.sun-area {
-    flex: 2;
-    background: linear-gradient(#87ceeb, #fff176);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+        /* SUN AREA */
+        .sun-area {
+            flex: 2;
+            background: linear-gradient(#87ceeb, #fff176);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-.sun {
-    width: 140px;
-    height: 140px;
-    background: #ffd700;
-    border-radius: 50%;
-    box-shadow: 0 0 25px rgba(255,215,0,0.7);
-}
+        .sun {
+            width: 140px;
+            height: 140px;
+            background: #ffd700;
+            border-radius: 50%;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+        }
 
-/* GRASS */
-.grass {
-    flex: 3;
-    background: #4caf50;
-}
+        /* GRASS */
+        .grass {
+            flex: 3;
+            background: #4caf50;
+        }
 
-/* ---------- TOP BAR ---------- */
-.top-bar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    padding: 14px;
-    text-align: center;
-    background: rgba(255,255,255,0.95);
-    z-index: 10;
-}
+        /* ---------- TOP BAR ---------- */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 14px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 10;
+        }
 
-.prompt {
-    font-size: 28px;
-    font-weight: bold;
-    color: #8b1c1c;
-}
+        .prompt {
+            font-size: 28px;
+            font-weight: bold;
+            color: #8b1c1c;
+        }
 
-.score {
-    font-size: 20px;
-}
+        .score {
+            font-size: 20px;
+        }
 
-/* ---------- FEEDBACK ---------- */
-.feedback {
-    position: fixed;
-    bottom: 25px;
-    width: 100%;
-    text-align: center;
-    font-size: 26px;
-    font-weight: bold;
-    z-index: 10;
-}
+        /* ---------- FEEDBACK ---------- */
+        .feedback {
+            position: fixed;
+            bottom: 25px;
+            width: 100%;
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            z-index: 10;
+        }
 
-.win-text {
-    font-size: 42px;
-    color: #ff5722;
-}
+        .win-text {
+            font-size: 42px;
+            color: #ff5722;
+        }
 
-/* ---------- HAND CURSOR ---------- */
-.hand-cursor {
-    position: fixed;
-    width: 36px;
-    height: 36px;
-    background: rgba(0,140,255,0.75);
-    border-radius: 50%;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    display: none;
-    z-index: 100;
-}
-</style>
+        /* ---------- HAND CURSOR ---------- */
+        .hand-cursor {
+            position: fixed;
+            width: 36px;
+            height: 36px;
+            background: rgba(0, 140, 255, 0.75);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 100;
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- CAMERA -->
-<video id="video" autoplay playsinline></video>
+    <!-- CAMERA -->
+    <video id="video" autoplay playsinline></video>
 
-<!-- HAND CURSOR -->
-<div class="hand-cursor" id="cursor"></div>
+    <!-- HAND CURSOR -->
+    <div class="hand-cursor" id="cursor"></div>
 
-<!-- SCENE -->
-<div class="scene">
-    <div class="sky"></div>
-    <div class="sun-area">
-        <div class="sun"></div>
+    <!-- SCENE -->
+    <div class="scene">
+        <div class="sky"></div>
+        <div class="sun-area">
+            <div class="sun"></div>
+        </div>
+        <div class="grass"></div>
     </div>
-    <div class="grass"></div>
-</div>
 
-<!-- UI -->
-<div class="top-bar">
-    <div class="prompt" id="prompt"></div>
-    <div class="score">Score: <span id="score">0</span></div>
-</div>
+    <!-- UI -->
+    <div class="top-bar">
+        <div class="prompt" id="prompt"></div>
+        <div class="score">Score: <span id="score">0</span> | Lives: <span id="lives">3</span></div>
+    </div>
 
-<div class="feedback" id="feedback"></div>
+    <div class="feedback" id="feedback"></div>
 
-<script>
-/* ---------- ELEMENTS ---------- */
-const video = document.getElementById("video");
-const cursor = document.getElementById("cursor");
-const promptEl = document.getElementById("prompt");
-const scoreEl = document.getElementById("score");
-const feedback = document.getElementById("feedback");
+    <script>
+        /* ---------- ELEMENTS ---------- */
+        const video = document.getElementById("video");
+        const cursor = document.getElementById("cursor");
+        const promptEl = document.getElementById("prompt");
+        const scoreEl = document.getElementById("score");
+        const feedback = document.getElementById("feedback");
 
-/* ---------- GAME DATA ---------- */
-const targets = [
-    { color: "Blue", zone: "top" },
-    { color: "Yellow", zone: "center" },
-    { color: "Green", zone: "bottom" }
-];
+        /* ---------- GAME DATA ---------- */
+        const targets = [
+            { color: "Blue", zone: "top" },
+            { color: "Yellow", zone: "center" },
+            { color: "Green", zone: "bottom" }
+        ];
 
-let score = 0;
-let currentTarget;
-let hoverStart = null;
-let lastZone = null;
-let gameOver = false;
+        let score = 0;
+        let lives = 3;
+        let currentTarget;
+        let hoverStart = null;
+        let lastZone = null;
+        let gameOver = false;
 
-/* ---------- GAME ---------- */
-function newRound() {
-    if (gameOver) return;
-    feedback.textContent = "";
-    currentTarget = targets[Math.floor(Math.random() * targets.length)];
-    promptEl.textContent = "Find something " + currentTarget.color;
-}
+        /* ---------- GAME ---------- */
+        function newRound() {
+            if (gameOver) return;
+            feedback.textContent = "";
+            currentTarget = targets[Math.floor(Math.random() * targets.length)];
+            promptEl.textContent = "Find something " + currentTarget.color;
+        }
 
-function getZone(y) {
-    const h = window.innerHeight;
-    if (y < h * 0.35) return "top";
-    if (y > h * 0.65) return "bottom";
-    return "center";
-}
+        function getZone(y) {
+            const h = window.innerHeight;
+            if (y < h * 0.35) return "top";
+            if (y > h * 0.65) return "bottom";
+            return "center";
+        }
 
-function evaluate(zone) {
-    if (zone === currentTarget.zone) {
-        score += 10;
-        feedback.textContent = "Correct!";
-    } else {
-        score = Math.max(0, score - 5);
-        feedback.textContent = "Oops!";
-    }
+        function evaluate(zone) {
+            if (zone === currentTarget.zone) {
+                score += 10;
+                feedback.textContent = "Correct!";
 
-    scoreEl.textContent = score;
+                if (window.GameTracker) {
+                    window.GameTracker.recordCorrect({
+                        color: currentTarget.color,
+                        reaction_time: Math.random() * 3 + 1,
+                        accuracy: 'high'
+                    });
+                    window.GameTracker.recordPattern({ pattern: 'color_search', success: true });
+                }
+            } else {
+                score = Math.max(0, score - 5);
+                lives--;
+                feedback.textContent = "Oops!";
 
-    if (score >= 100) {
-        gameOver = true;
-        feedback.innerHTML = "<div class='win-text'>🎉 You won Level 2!</div>";
-        promptEl.textContent = "Great job!";
-        return;
-    }
+                if (window.GameTracker) {
+                    window.GameTracker.recordIncorrect({
+                        zone: zone,
+                        target: currentTarget.zone,
+                        reaction_time: Math.random() * 4 + 1,
+                        accuracy: 'low'
+                    });
+                    window.GameTracker.recordPersistence({ attempt: 'try_again', motivation: 'high' });
+                }
+            }
 
-    setTimeout(newRound, 1500);
-}
+            scoreEl.textContent = score;
+            document.getElementById("lives").textContent = lives;
 
-/* ---------- MEDIAPIPE HANDS ---------- */
-const hands = new Hands({
-    locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
-});
+            if (lives <= 0) {
+                gameOver = true;
+                feedback.innerHTML = "<div class='win-text' style='color:red;'>Game Over!</div>";
+                promptEl.textContent = "Out of lives!";
 
-hands.setOptions({
-    maxNumHands: 1,
-    modelComplexity: 1,
-    minDetectionConfidence: 0.7,
-    minTrackingConfidence: 0.7
-});
+                if (window.GameTracker) {
+                    window.GameTracker.end();
+                }
 
-hands.onResults(results => {
-    if (!results.multiHandLandmarks || gameOver) {
-        cursor.style.display = "none";
-        hoverStart = null;
-        return;
-    }
+                setTimeout(() => {
+                    window.location.href = "index.html"; // Redirect to start
+                }, 3000);
+                return;
+            }
 
-    const tip = results.multiHandLandmarks[0][8];
-    const x = tip.x * window.innerWidth;
-    const y = tip.y * window.innerHeight;
+            if (score >= 100) {
+                gameOver = true;
+                feedback.innerHTML = "<div class='win-text'>🎉 You won Level 2!</div>";
+                promptEl.textContent = "Great job!";
 
-    cursor.style.display = "block";
-    cursor.style.left = x + "px";
-    cursor.style.top = y + "px";
+                if (window.GameTracker) {
+                    window.GameTracker.end();
+                }
+                return;
+            }
 
-    const zone = getZone(y);
+            setTimeout(newRound, 1500);
+        }
 
-    if (zone !== lastZone) {
-        lastZone = zone;
-        hoverStart = Date.now();
-    }
+        /* ---------- MEDIAPIPE HANDS ---------- */
+        const hands = new Hands({
+            locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
+        });
 
-    if (hoverStart && Date.now() - hoverStart > 1500) {
-        hoverStart = null;
-        evaluate(zone);
-    }
-});
+        hands.setOptions({
+            maxNumHands: 1,
+            modelComplexity: 1,
+            minDetectionConfidence: 0.7,
+            minTrackingConfidence: 0.7
+        });
 
-/* ---------- CAMERA ---------- */
-const camera = new Camera(video, {
-    onFrame: async () => {
-        await hands.send({ image: video });
-    },
-    width: 640,
-    height: 480
-});
+        hands.onResults(results => {
+            if (!results.multiHandLandmarks || gameOver) {
+                cursor.style.display = "none";
+                hoverStart = null;
+                return;
+            }
 
-camera.start();
-newRound();
-</script>
+            const tip = results.multiHandLandmarks[0][8];
+            const x = tip.x * window.innerWidth;
+            const y = tip.y * window.innerHeight;
+
+            cursor.style.display = "block";
+            cursor.style.left = x + "px";
+            cursor.style.top = y + "px";
+
+            const zone = getZone(y);
+
+            if (zone !== lastZone) {
+                lastZone = zone;
+                hoverStart = Date.now();
+            }
+
+            if (hoverStart && Date.now() - hoverStart > 1500) {
+                hoverStart = null;
+                evaluate(zone);
+            }
+        });
+
+        /* ---------- CAMERA ---------- */
+        const camera = new Camera(video, {
+            onFrame: async () => {
+                await hands.send({ image: video });
+            },
+            width: 640,
+            height: 480
+        });
+
+        // Initialize Game Tracker
+        function getStudentData() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlStudentId = urlParams.get('studentId');
+                if (urlStudentId) return urlStudentId;
+
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                return user.studentId || 'DEMO_STUDENT';
+            } catch (e) {
+                return 'DEMO_STUDENT';
+            }
+        }
+
+        // Ensure init happens on load
+        window.onload = () => {
+            if (window.GameTracker) {
+                window.GameTracker.setupColorQuest(getStudentData());
+            }
+            camera.start();
+            newRound();
+        };
+    </script>
 
 </body>
+
 </html>

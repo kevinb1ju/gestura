@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { 
-  analyzeGamePerformance, 
-  generateRecommendations, 
+import {
+  analyzeGamePerformance,
+  generateRecommendations,
   calculateLevelProgression,
   PERFORMANCE_CATEGORIES,
-  PERFORMANCE_LEVELS 
+  PERFORMANCE_LEVELS
 } from './gamePerformanceAnalysis';
 
 // Styled Components
@@ -195,9 +195,9 @@ const PriorityBadge = styled.span`
   font-size: 0.8rem;
   font-weight: bold;
   margin-left: 0.5rem;
-  background: ${props => 
-    props.priority === 'high' ? '#ef4444' : 
-    props.priority === 'medium' ? '#f59e0b' : '#10b981'
+  background: ${props =>
+    props.priority === 'high' ? '#ef4444' :
+      props.priority === 'medium' ? '#f59e0b' : '#10b981'
   };
   color: white;
 `;
@@ -355,104 +355,91 @@ export default function StudentPerformanceTracker({ student, onBack }) {
   }, [student]);
 
   const loadStudentPerformance = () => {
-    // Get stored performance data
-    const storedData = localStorage.getItem(`student_performance_${student.studentId}`);
-    if (storedData) {
-      const data = JSON.parse(storedData);
-      setPerformanceData(data);
-      analyzePerformance(data);
+    // Check if student has played any games (this function aggregates all game_sessions to create the single performance entry)
+    const gameData = checkForGameData(student.studentId);
+    if (gameData) {
+      setPerformanceData(gameData);
+      analyzePerformance(gameData);
     } else {
-      // Check if student has played any games
-      const gameData = checkForGameData(student.studentId);
-      if (gameData) {
-        setPerformanceData(gameData);
-        analyzePerformance(gameData);
-      } else {
-        // Show message that no game data is available
-        setPerformanceData(null);
-        setAnalysis(null);
-      }
+      // Show message that no game data is available
+      setPerformanceData(null);
+      setAnalysis(null);
     }
   };
 
   const checkForGameData = (studentId) => {
     console.log('🔍 Checking for game data for student:', studentId);
-    
+
     // First check for aggregated performance data
-    const keys = Object.keys(localStorage).filter(key => 
-        key.startsWith('student_performance_')
+    const keys = Object.keys(localStorage).filter(key =>
+      key.startsWith('student_performance_')
     );
-    
+
     // Try to find exact match first
     const exactMatch = keys.find(key => key === `student_performance_${studentId}`);
     if (exactMatch) {
-        const data = JSON.parse(localStorage.getItem(exactMatch));
-        console.log('✅ Found exact performance match:', data);
-        return data;
+      const data = JSON.parse(localStorage.getItem(exactMatch));
+      console.log('✅ Found exact performance match:', data);
+      return data;
     }
-    
+
     // Try partial match
     const partialMatch = keys.find(key => key.includes(studentId));
     if (partialMatch) {
-        const data = JSON.parse(localStorage.getItem(partialMatch));
-        console.log('✅ Found partial performance match:', data);
-        return data;
+      const data = JSON.parse(localStorage.getItem(partialMatch));
+      console.log('✅ Found partial performance match:', data);
+      return data;
     }
-    
+
     // Check for individual game sessions and aggregate them
-    const gameKeys = Object.keys(localStorage).filter(key => 
-        key.includes('game_session') && key.includes(studentId)
+    const gameKeys = Object.keys(localStorage).filter(key =>
+      key.includes('game_session') && key.includes(studentId)
     );
     console.log('🎮 Found game session keys:', gameKeys);
-    
+
     if (gameKeys.length > 0) {
-        const aggregatedData = {};
-        let sessionCount = 0;
-        
-        gameKeys.forEach(key => {
-            try {
-                const gameSession = JSON.parse(localStorage.getItem(key));
-                console.log('📊 Processing game session:', gameSession);
-                
-                if (gameSession.gameName && gameSession.performance) {
-                    aggregatedData[gameSession.gameName] = gameSession.performance;
-                    sessionCount++;
-                } else if (gameSession.gameName && gameSession.score !== undefined) {
-                    // Create performance data from score if not available
-                    aggregatedData[gameSession.gameName] = {
-                        cognitive: { score: Math.min(100, gameSession.score + 10), attempts: 10, successes: Math.floor(gameSession.score / 10) },
-                        motor: { score: Math.min(100, gameSession.score + 5), attempts: 15, successes: Math.floor(gameSession.score / 10) },
-                        social: { score: Math.min(100, gameSession.score), attempts: 5, successes: Math.floor(gameSession.score / 20) },
-                        emotional: { score: Math.min(100, gameSession.score + 8), attempts: 8, successes: Math.floor(gameSession.score / 15) }
-                    };
-                    sessionCount++;
-                }
-            } catch (e) {
-                console.error('❌ Error parsing game session:', key, e);
-            }
-        });
-        
-        console.log('📈 Aggregated data from sessions:', aggregatedData);
-        console.log(`🎮 Processed ${sessionCount} game sessions`);
-        
-        if (Object.keys(aggregatedData).length > 0) {
-            // Save the aggregated data for future use
-            localStorage.setItem(`student_performance_${studentId}`, JSON.stringify(aggregatedData));
-            return aggregatedData;
+      const aggregatedData = {};
+      let sessionCount = 0;
+
+      gameKeys.forEach(key => {
+        try {
+          const gameSession = JSON.parse(localStorage.getItem(key));
+          console.log('📊 Processing game session:', gameSession);
+
+          if (gameSession.gameName && gameSession.performance) {
+            // gameSession.performance already contains the detailed { cognitive: {...}, motor: {...}, etc } objects
+            // Use this structured object directly so analyzeGamePerformance can read the specific metrics.
+            aggregatedData[gameSession.gameName] = gameSession.performance;
+            sessionCount++;
+          } else if (gameSession.gameName && gameSession.score !== undefined) {
+            console.log(`Fallback score used for ${gameSession.gameName}`);
+          }
+        } catch (e) {
+          console.error('❌ Error parsing game session:', key, e);
         }
+      });
+
+      console.log('📈 Aggregated data from sessions:', aggregatedData);
+      console.log(`🎮 Processed ${sessionCount} game sessions`);
+
+      if (Object.keys(aggregatedData).length > 0) {
+        // Save the aggregated data for future use
+        localStorage.setItem(`student_performance_${studentId}`, JSON.stringify(aggregatedData));
+        return aggregatedData;
+      }
     }
-    
+
     // Check for common test student IDs
     const testIds = ['TEST_STUDENT_001', 'DEMO_STUDENT', 'student123', 'TEST_STUDENT_MULTI'];
     for (const testId of testIds) {
-        const testKey = `student_performance_${testId}`;
-        const testData = localStorage.getItem(testKey);
-        if (testData) {
-            console.log(`🧪 Found test data for ${testId}, using it for ${studentId}`);
-            return JSON.parse(testData);
-        }
+      const testKey = `student_performance_${testId}`;
+      const testData = localStorage.getItem(testKey);
+      if (testData) {
+        console.log(`🧪 Found test data for ${testId}, using it for ${studentId}`);
+        return JSON.parse(testData);
+      }
     }
-    
+
     console.log('❌ No game data found for student:', studentId);
     return null;
   };
@@ -518,29 +505,24 @@ export default function StudentPerformanceTracker({ student, onBack }) {
     let overallEmotional = 0;
     let gameCount = 0;
 
-    // Analyze each game with simple averaging
+    // Analyze each game using the comprehensive analyzer
     Object.keys(data).forEach(gameName => {
-      const gameData = data[gameName];
-      
-      // Calculate simple averages for each category
-      const cognitiveScore = calculateSimpleAverage(gameData.cognitive);
-      const motorScore = calculateSimpleAverage(gameData.motor);
-      const socialScore = calculateSimpleAverage(gameData.social);
-      const emotionalScore = calculateSimpleAverage(gameData.emotional);
-      
-      analyses[gameName] = {
-        cognitive: { score: cognitiveScore, level: getPerformanceLevel(cognitiveScore) },
-        motor: { score: motorScore, level: getPerformanceLevel(motorScore) },
-        social: { score: socialScore, level: getPerformanceLevel(socialScore) },
-        emotional: { score: emotionalScore, level: getPerformanceLevel(emotionalScore) },
-        overall: (cognitiveScore * 0.3 + motorScore * 0.25 + socialScore * 0.25 + emotionalScore * 0.2)
-      };
-      
-      overallCognitive += cognitiveScore;
-      overallMotor += motorScore;
-      overallSocial += socialScore;
-      overallEmotional += emotionalScore;
-      gameCount++;
+      try {
+        const gameData = data[gameName];
+
+        // Ensure game performance metrics exist for this game name
+        const gameAnalysis = analyzeGamePerformance(gameName, gameData);
+
+        analyses[gameName] = gameAnalysis;
+
+        overallCognitive += gameAnalysis.cognitive.score;
+        overallMotor += gameAnalysis.motor.score;
+        overallSocial += gameAnalysis.social.score;
+        overallEmotional += gameAnalysis.emotional.score;
+        gameCount++;
+      } catch (e) {
+        console.warn(`Could not analyze game performance for ${gameName}:`, e);
+      }
     });
 
     // Calculate overall averages
@@ -564,9 +546,9 @@ export default function StudentPerformanceTracker({ student, onBack }) {
         },
         overall: Math.round(
           ((overallCognitive / gameCount) * 0.3 +
-           (overallMotor / gameCount) * 0.25 +
-           (overallSocial / gameCount) * 0.25 +
-           (overallEmotional / gameCount) * 0.2) * 100
+            (overallMotor / gameCount) * 0.25 +
+            (overallSocial / gameCount) * 0.25 +
+            (overallEmotional / gameCount) * 0.2) * 100
         ) / 100
       };
 
@@ -578,7 +560,7 @@ export default function StudentPerformanceTracker({ student, onBack }) {
       setRecommendations(recs);
 
       // Calculate level progression
-      const currentLevel = parseInt(student.level.replace('Level ', '')) || 1;
+      const currentLevel = student.level ? parseInt(student.level.toString().replace('Level ', '')) || 1 : 1;
       const progression = calculateLevelProgression(overallAnalysis.overall, currentLevel);
       setLevelProgression(progression);
     }
@@ -588,7 +570,7 @@ export default function StudentPerformanceTracker({ student, onBack }) {
 
   const calculateSimpleAverage = (categoryData) => {
     if (!categoryData || typeof categoryData !== 'object') return 0;
-    
+
     const values = Object.values(categoryData).filter(val => typeof val === 'number');
     return values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
   };
@@ -611,6 +593,20 @@ export default function StudentPerformanceTracker({ student, onBack }) {
       localStorage.setItem(`student_performance_${student.studentId}`, JSON.stringify(performanceData));
       alert('Performance data saved successfully!');
     }
+  };
+
+  const sendReportToParent = () => {
+    const reportData = {
+      timestamp: new Date().toISOString(),
+      analysis: analysis,
+      recommendations: recommendations,
+      levelProgression: levelProgression
+    };
+
+    // Save report to localStorage for Parent Dashboard to read
+    const key = `parent_report_${student.studentId}`;
+    localStorage.setItem(key, JSON.stringify(reportData));
+    alert('Report sent to parent successfully!');
   };
 
   if (!analysis) {
@@ -679,8 +675,8 @@ export default function StudentPerformanceTracker({ student, onBack }) {
             </ScoreLabel>
           </ScoreDisplay>
           <ProgressBar>
-            <ProgressFill 
-              color={analysis.cognitive.level.color} 
+            <ProgressFill
+              color={analysis.cognitive.level.color}
               style={{ width: `${analysis.cognitive.score}%` }}
             />
           </ProgressBar>
@@ -699,8 +695,8 @@ export default function StudentPerformanceTracker({ student, onBack }) {
             </ScoreLabel>
           </ScoreDisplay>
           <ProgressBar>
-            <ProgressFill 
-              color={analysis.motor.level.color} 
+            <ProgressFill
+              color={analysis.motor.level.color}
               style={{ width: `${analysis.motor.score}%` }}
             />
           </ProgressBar>
@@ -719,8 +715,8 @@ export default function StudentPerformanceTracker({ student, onBack }) {
             </ScoreLabel>
           </ScoreDisplay>
           <ProgressBar>
-            <ProgressFill 
-              color={analysis.social.level.color} 
+            <ProgressFill
+              color={analysis.social.level.color}
               style={{ width: `${analysis.social.score}%` }}
             />
           </ProgressBar>
@@ -739,8 +735,8 @@ export default function StudentPerformanceTracker({ student, onBack }) {
             </ScoreLabel>
           </ScoreDisplay>
           <ProgressBar>
-            <ProgressFill 
-              color={analysis.emotional.level.color} 
+            <ProgressFill
+              color={analysis.emotional.level.color}
               style={{ width: `${analysis.emotional.score}%` }}
             />
           </ProgressBar>
@@ -759,8 +755,8 @@ export default function StudentPerformanceTracker({ student, onBack }) {
             </ScoreLabel>
           </ScoreDisplay>
           <ProgressBar>
-            <ProgressFill 
-              color={analysis.overallLevel.color} 
+            <ProgressFill
+              color={analysis.overallLevel.color}
               style={{ width: `${analysis.overall}%` }}
             />
           </ProgressBar>
@@ -771,7 +767,7 @@ export default function StudentPerformanceTracker({ student, onBack }) {
         <GameTitle>🎮 Game Performance Details</GameTitle>
         <GameGrid>
           {Object.keys(performanceData).map(gameName => (
-            <GameCard 
+            <GameCard
               key={gameName}
               onClick={() => showGameDetails(gameName)}
             >
@@ -814,6 +810,9 @@ export default function StudentPerformanceTracker({ student, onBack }) {
         <ActionButton primary onClick={savePerformanceData}>
           💾 Save Performance Data
         </ActionButton>
+        <ActionButton primary style={{ backgroundColor: '#10b981' }} onClick={sendReportToParent}>
+          📤 Send Report to Parent
+        </ActionButton>
         <ActionButton onClick={onBack}>
           ← Back to Student List
         </ActionButton>
@@ -826,7 +825,7 @@ export default function StudentPerformanceTracker({ student, onBack }) {
               <ModalTitle>{selectedGame} Performance Details</ModalTitle>
               <CloseButton onClick={() => setShowModal(false)}>×</CloseButton>
             </ModalHeader>
-            
+
             {analyses[selectedGame] && (
               <div>
                 {Object.keys(analyses[selectedGame]).map(category => {
@@ -843,7 +842,7 @@ export default function StudentPerformanceTracker({ student, onBack }) {
                           <MetricDescription>{categoryData.details[metric].description}</MetricDescription>
                           <MetricScore>
                             <MetricBar>
-                              <MetricFill 
+                              <MetricFill
                                 color={categoryData.level.color}
                                 style={{ width: `${categoryData.details[metric].score}%` }}
                               />

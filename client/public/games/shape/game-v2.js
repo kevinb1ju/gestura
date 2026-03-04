@@ -5,8 +5,8 @@ const shapes = [
   { name: 'rectangle', display: '<div class="rectangle-shape"></div>' }
 ];
 
-let currentShapeIndex = 0;
 let score = 0;
+let lives = 3;
 let recognition;
 let hasListened = false;
 let useGestureControl = false;
@@ -37,7 +37,7 @@ function getStudentData() {
       console.log('🎮 Shape Game - Student ID from URL:', urlStudentId);
       return urlStudentId;
     }
-    
+
     // Fallback to localStorage
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const studentId = user.studentId || 'DEMO_STUDENT';
@@ -491,6 +491,7 @@ function startGame() {
   document.getElementById('learning-phase').classList.remove('active');
   document.getElementById('game-phase').classList.add('active');
   score = 0;
+  lives = 3;
   updateScore();
 
   // Check if we should use gesture control - hands instance should be preserved
@@ -561,22 +562,22 @@ function checkAnswer(selected, target) {
 
     // Record correct shape identification
     if (window.GameTracker) {
-      window.GameTracker.recordCorrect({ 
+      window.GameTracker.recordCorrect({
         shape: selected,
         target_shape: target,
         reaction_time: Math.random() * 3 + 1,
         accuracy: 'high'
       });
-      
+
       // Record pattern recognition for shape matching
-      window.GameTracker.recordPattern({ 
+      window.GameTracker.recordPattern({
         pattern: 'shape_recognition',
         success: true,
         difficulty: 'medium'
       });
-      
+
       // Record cognitive skill for visual processing
-      window.GameTracker.recordClick({ 
+      window.GameTracker.recordClick({
         accuracy: 'high',
         target: 'shape',
         success: true
@@ -598,30 +599,39 @@ function checkAnswer(selected, target) {
     score = Math.max(0, score - 5); // Don't go below 0
     updateScore();
     playSound('incorrect');
-    
+
     // Record incorrect shape identification
     if (window.GameTracker) {
-      window.GameTracker.recordIncorrect({ 
+      window.GameTracker.recordIncorrect({
         shape: selected,
         target_shape: target,
         reaction_time: Math.random() * 4 + 1,
         accuracy: 'low'
       });
-      
+
       // Record persistence (continuing despite error)
-      window.GameTracker.recordPersistence({ 
-        attempt: 'try_again',
-        motivation: 'medium'
-      });
+      if (window.GameTracker) {
+        window.GameTracker.recordPersistence({
+          attempt: 'try_again',
+          motivation: 'medium'
+        });
+      }
+    }
+
+    lives--;
+    updateScore();
+    if (lives <= 0) {
+      feedback.innerHTML = '<span style="color: red;">Game Over! Out of lives! 😢</span>';
+      setTimeout(() => showVictoryScreen(false), 2000);
     }
   }
 }
 
 function updateScore() {
-  document.getElementById('score').textContent = `⭐ Score: ${score}`;
+  document.getElementById('score').textContent = `⭐ Score: ${score} | ❤️ Lives: ${lives}`;
 }
 
-function showVictoryScreen() {
+function showVictoryScreen(won = true) {
   stopSelection();
   if (camera) {
     camera.stop();
@@ -636,9 +646,22 @@ function showVictoryScreen() {
   document.getElementById('level2-phase').classList.remove('active');
   document.getElementById('victory-phase').classList.add('active');
   document.getElementById('final-score').textContent = score;
-  
+
+  const victoryTitle = document.querySelector('.victory-card h1');
+  const victoryText = document.querySelector('.victory-text');
+
+  if (won) {
+    victoryTitle.textContent = '🏆 YOU WON! 🏆';
+    victoryText.innerHTML = `Amazing job! You are a true Shape Master!<br>Score: <span id="final-score">${score}</span>`;
+    playSound('win');
+  } else {
+    victoryTitle.textContent = 'Game Over! 😢';
+    victoryText.innerHTML = `Nice try! Keep practicing to become a Shape Master!<br>Score: <span id="final-score">${score}</span>`;
+    playSound('incorrect');
+  }
+
   // End game tracking
-  endGameTracking(score, true);
+  endGameTracking(score, won);
 }
 
 function resetToLearning() {
@@ -719,14 +742,7 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   musicStartEvents.forEach(event => document.body.addEventListener(event, startMusicOnce));
-    document.body.appendChild(pointer);
-    pointer.style.zIndex = '1000';
-  }
-
-  // Start Spawning
-  spawnIntervalId = setInterval(spawnShape, 1500);
-  level2LoopId = requestAnimationFrame(updateLevel2);
-}
+});
 
 function spawnShape() {
   if (currentLevel !== 2) return;

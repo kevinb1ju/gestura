@@ -18,14 +18,17 @@ function App() {
       )}
 
       {level === 1 && (
-        <Level1 onComplete={() => {
-          console.log("App.js: onComplete received from Level1. Setting level to 2.");
-          setLevel(2);
-        }} />
+        <Level1
+          onComplete={() => setLevel(2)}
+          onFail={() => setLevel(0)}
+        />
       )}
 
       {level === 2 && (
-        <Level2 />
+        <Level2
+          onComplete={() => setLevel(0)}
+          onFail={() => setLevel(0)}
+        />
       )}
 
     </div>

@@ -1464,6 +1464,12 @@
       showFbk('😢', '#FF4444');
       speak(['Try again!', 'You can do it!', 'Go go go!'][Math.floor(Math.random() * 3)]);
       updateHUD();
+
+      if (window.GameTracker) {
+        window.GameTracker.recordIncorrect({ balloon: 'missed', lives_remaining: lives });
+        window.GameTracker.recordPersistence({ attempt: 'continue_playing', lives: lives });
+      }
+
       if (lives <= 0) endGame(false);
     }
 
@@ -1476,6 +1482,13 @@
       score += 10 * level + (combo > 1 ? combo * 5 : 0); pops++;
       if (combo > 1) { Snd.combo(); showCombo(combo); speak('Combo!') }
       else { showFbk('🎉 Pop!', '#FF6B6B'); speak(['Pop!', 'Great!', 'Yes!', 'Wow!'][Math.floor(Math.random() * 4)]) }
+
+      if (window.GameTracker) {
+        window.GameTracker.recordCorrect({ balloon: 'popped', cbx: cx, cby: cy });
+        window.GameTracker.recordPattern({ pattern: 'balloon_pop', success: true });
+        window.GameTracker.recordClick({ accuracy: 'high', target: 'balloon' });
+      }
+
       if (pops >= POPS_LVL * level) {
         level++;
         Snd.levelUp();
@@ -1493,6 +1506,12 @@
       if (bombTmr) { clearInterval(bombTmr); bombTmr = null; }
       clearBalloons();
       document.querySelectorAll('.fbk,.lvlup,.cmb,.confetti,.burst,.popring,.speed-banner,.bomb-alert').forEach(e => e.remove());
+
+      const urlParams = new URLSearchParams(window.location.search);
+      let sid = urlParams.get('studentId');
+      if (!sid) { try { sid = JSON.parse(localStorage.getItem('user')).studentId; } catch (e) { } }
+      if (window.GameTracker) window.GameTracker.setupPopGame(sid || 'DEMO_STUDENT');
+
       showScreen('sg'); updateHUD(); Snd.startBg(); speak('Go! Pop the balloons!');
       setTimeout(() => spawnBalloon(), 400); restartSpawner();
       if (countTmr) clearInterval(countTmr);
@@ -1579,6 +1598,9 @@
       Snd.bombHit();
       speak('Oh no! Bomb! Going back to Level 2!');
       showBombAlert();
+
+      if (window.GameTracker) window.GameTracker.recordFrustration({ type: 'bomb_hit' });
+
       // Demote back to level 2, keep score & lives
       level = 2;
       pops = 0; // reset progress within level
@@ -1617,6 +1639,9 @@
       if (bombTmr) { clearInterval(bombTmr); bombTmr = null }
       Snd.stopBg(); clearBalloons();
       if (score > highScore) { highScore = score; localStorage.setItem('popHS', highScore); $('hsbadge').textContent = `🏆 Best: ${highScore}` }
+
+      if (window.GameTracker) window.GameTracker.end();
+
       setTimeout(() => {
         showScreen('so');
         const so = $('so'); so.className = `screen ${won ? 'win' : 'lose'}`;

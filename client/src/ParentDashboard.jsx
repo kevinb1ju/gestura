@@ -179,25 +179,33 @@ const FeedbackText = styled.p`
 export default function ParentDashboard() {
   const [parentData, setParentData] = useState(null);
   const [studentData, setStudentData] = useState(null);
+  const [reportData, setReportData] = useState(null);
 
   useEffect(() => {
     // Get logged-in parent data from localStorage
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user.role === 'parent') {
       setParentData(user);
-      
+
       // Find the student data from teacherStudents
       const students = JSON.parse(localStorage.getItem('teacherStudents') || '[]');
       const child = students.find(s => s.studentId === user.studentId);
       setStudentData(child);
+
+      // Fetch the parent report sent by the teacher
+      const reportKey = `parent_report_${user.studentId}`;
+      const savedReport = localStorage.getItem(reportKey);
+      if (savedReport) {
+        setReportData(JSON.parse(savedReport));
+      }
     }
   }, []);
 
   // Extract level number
-  const currentLevel = studentData?.level ? 
-    (typeof studentData.level === 'string' ? 
-      parseInt(studentData.level.replace('Level ', '')) : 
-      studentData.level) : 
+  const currentLevel = studentData?.level ?
+    (typeof studentData.level === 'string' ?
+      parseInt(studentData.level.replace('Level ', '')) :
+      studentData.level) :
     3;
 
   return (
@@ -237,8 +245,8 @@ export default function ParentDashboard() {
             <ChildText>
               <ChildName>{studentData?.name || 'Your Child'}</ChildName>
               <ChildDetails>
-                Age: {studentData?.age?.replace(' years', '') || 'N/A'}, 
-                Grade: {studentData?.grade || 'N/A'}, 
+                Age: {studentData?.age?.replace(' years', '') || 'N/A'},
+                Grade: {studentData?.grade || 'N/A'},
                 Level: {currentLevel}
               </ChildDetails>
             </ChildText>
@@ -250,22 +258,42 @@ export default function ParentDashboard() {
             <h3 style={{ fontSize: "20px", fontWeight: "700", marginBottom: "16px" }}>
               Progress Overview
             </h3>
-            <ProgressHeader>
-              <div>
-                <p
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    color: "#64748b",
-                    marginBottom: "4px",
-                  }}
-                >
-                  Cognitive Skills Development
-                </p>
-                <ProgressValue>82%</ProgressValue>
-              </div>
-              <div style={{ fontSize: "14px", color: "#22c55e" }}>+12% (last 3 months)</div>
-            </ProgressHeader>
+            {reportData ? (
+              <ProgressHeader>
+                <div>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "500",
+                      color: "#64748b",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    Overall Skills Development
+                  </p>
+                  <ProgressValue>{reportData.analysis?.overall ?? 0}%</ProgressValue>
+                </div>
+                <div style={{ fontSize: "14px", color: reportData.analysis?.overall > 50 ? "#22c55e" : "#ef4444" }}>
+                  {reportData.analysis?.overallLevel?.level || ''}
+                </div>
+              </ProgressHeader>
+            ) : (
+              <ProgressHeader>
+                <div>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "500",
+                      color: "#64748b",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    No Report Available
+                  </p>
+                  <ProgressValue>N/A</ProgressValue>
+                </div>
+              </ProgressHeader>
+            )}
 
             <ChartWrapper>
               <svg
@@ -314,13 +342,41 @@ export default function ParentDashboard() {
             </h3>
             <div>
               <h4 style={{ fontSize: "16px", fontWeight: "700" }}>
-                Feedback from Mrs. Davis
+                {reportData ? "Latest Report Received" : "No Report Yet"}
               </h4>
-              <FeedbackText>
-                Alex has shown great enthusiasm in our recent sessions. He is particularly engaged
-                with pattern recognition games and has improved in problem-solving. Continued
-                encouragement at home will be beneficial.
-              </FeedbackText>
+              {reportData ? (
+                <div>
+                  <FeedbackText style={{ fontSize: "12px", color: "#94a3b8", marginBottom: "8px" }}>
+                    Sent on: {new Date(reportData.timestamp).toLocaleDateString()}
+                  </FeedbackText>
+                  <FeedbackText>
+                    <strong>Category Feedback:</strong>
+                  </FeedbackText>
+                  <ul style={{ paddingLeft: "20px", marginTop: "8px", fontSize: "14px", color: "#475569", lineHeight: "1.5" }}>
+                    <li><strong>Cognitive:</strong> {reportData.analysis?.cognitive?.level?.description || "N/A"} ({reportData.analysis?.cognitive?.score}%)</li>
+                    <li><strong>Motor:</strong> {reportData.analysis?.motor?.level?.description || "N/A"} ({reportData.analysis?.motor?.score}%)</li>
+                    <li><strong>Social:</strong> {reportData.analysis?.social?.level?.description || "N/A"} ({reportData.analysis?.social?.score}%)</li>
+                    <li><strong>Emotional:</strong> {reportData.analysis?.emotional?.level?.description || "N/A"} ({reportData.analysis?.emotional?.score}%)</li>
+                  </ul>
+
+                  {reportData.recommendations && reportData.recommendations.length > 0 && (
+                    <>
+                      <FeedbackText style={{ marginTop: "16px" }}>
+                        <strong>Recommendations for Home:</strong>
+                      </FeedbackText>
+                      <ul style={{ paddingLeft: "20px", marginTop: "8px", fontSize: "14px", color: "#475569", lineHeight: "1.5" }}>
+                        {reportData.recommendations.map((rec, idx) => (
+                          <li key={idx}><strong>{rec.category}:</strong> {rec.suggestion}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <FeedbackText>
+                  There are no recent feedback reports from your child's teacher. Please check back later.
+                </FeedbackText>
+              )}
             </div>
           </FeedbackSection>
         </Grid>

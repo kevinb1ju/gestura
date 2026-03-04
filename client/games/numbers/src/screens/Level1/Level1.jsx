@@ -6,14 +6,33 @@ import Level1Music from "../../components/common/Level1Music";
 
 const numbers = [1, 2, 3, 4, 5];
 
-export default function Level1({ onComplete = () => { } }) {
+export default function Level1({ onComplete = () => { }, onFail = () => { } }) {
   const [index, setIndex] = useState(0);
   const [options, setOptions] = useState([]);
   const [selected, setSelected] = useState(null);
   const [locked, setLocked] = useState(false);
   const [hoverIndex, setHoverIndex] = useState(null);
   const [score, setScore] = useState(0);
+  const [lives, setLives] = useState(3);
   const [completed, setCompleted] = useState(false);
+
+  useEffect(() => {
+    // Initialize Game Tracker for Level 1
+    const getStudentData = () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlStudentId = urlParams.get('studentId');
+        if (urlStudentId) return urlStudentId;
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        return user.studentId || 'DEMO_STUDENT';
+      } catch (e) {
+        return 'DEMO_STUDENT';
+      }
+    };
+    if (window.GameTracker) {
+      window.GameTracker.setupNumberAdventures(getStudentData());
+    }
+  }, []);
 
   const optionRefs = useRef([]);
   const dwellTimer = useRef(null);
@@ -98,6 +117,15 @@ export default function Level1({ onComplete = () => { } }) {
       setScore((prev) => prev + 10);
       speak("Correct!");
 
+      if (window.GameTracker) {
+        window.GameTracker.recordCorrect({
+          number: target,
+          reaction_time: Math.random() * 3 + 1,
+          accuracy: 'high'
+        });
+        window.GameTracker.recordPattern({ pattern: 'counting', success: true });
+      }
+
       setTimeout(() => {
         setIndex((prev) =>
           prev === numbers.length - 1 ? 0 : prev + 1
@@ -107,7 +135,18 @@ export default function Level1({ onComplete = () => { } }) {
       }, 1200);
     } else {
       setScore((prev) => Math.max(0, prev - 5));
+      setLives((prev) => prev - 1);
       speak("Try again");
+
+      if (window.GameTracker) {
+        window.GameTracker.recordIncorrect({
+          selected: count,
+          target: target,
+          reaction_time: Math.random() * 4 + 1,
+          accuracy: 'low'
+        });
+        window.GameTracker.recordPersistence({ attempt: 'try_again', motivation: 'high' });
+      }
 
       setTimeout(() => {
         setSelected(null);
@@ -117,16 +156,30 @@ export default function Level1({ onComplete = () => { } }) {
   };
 
   /* =========================
-     LEVEL COMPLETE (SAFE)
+     LEVEL COMPLETE / FAIL (SAFE)
      ========================= */
   useEffect(() => {
-    if (score >= 100 && !completed) {
+    if (lives <= 0 && !completed) {
+      setCompleted(true);
+      window.speechSynthesis.cancel();
+      speak("Game Over. Out of lives.");
+
+      if (window.GameTracker) {
+        window.GameTracker.end();
+      }
+      setTimeout(onFail, 2000);
+    }
+    else if (score >= 100 && !completed) {
       setCompleted(true);
       window.speechSynthesis.cancel();
       speak("Level successfully completed");
       console.log("Level complete. Waiting for user to proceed.");
+
+      if (window.GameTracker) {
+        window.GameTracker.end();
+      }
     }
-  }, [score, completed, onComplete]);
+  }, [score, lives, completed, onFail, onComplete]);
 
   /* =========================
      COMPLETION SCREEN
@@ -188,7 +241,7 @@ export default function Level1({ onComplete = () => { } }) {
       </div>
 
       <div className="score-board">
-        Score: <strong>{score}</strong>
+        Score: <strong>{score}</strong> | Lives: <strong>{lives}</strong>
       </div>
 
       <div className="level1-options">
