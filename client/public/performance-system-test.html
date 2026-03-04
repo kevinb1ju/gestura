@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Tracking System Test</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .test-section h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .performance-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        .score {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .level {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .data-display {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Performance Tracking System Test</h1>
+        
+        <div class="test-section">
+            <h3>🧪 Test Complete System</h3>
+            <button onclick="testCompleteSystem()">Test Complete Performance System</button>
+            <button onclick="clearTestData()">Clear Test Data</button>
+            <div id="system-status" class="status info">Click to test the complete system...</div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Performance Analysis Results</h3>
+            <div id="performance-results" style="display: none;">
+                <div class="performance-grid">
+                    <div class="performance-card">
+                        <div>🧠 Cognitive</div>
+                        <div class="score" id="cognitive-score">-</div>
+                        <div class="level" id="cognitive-level">-</div>
+                    </div>
+                    <div class="performance-card">
+                        <div>💪 Motor Skills</div>
+                        <div class="score" id="motor-score">-</div>
+                        <div class="level" id="motor-level">-</div>
+                    </div>
+                    <div class="performance-card">
+                        <div>👥 Social</div>
+                        <div class="score" id="social-score">-</div>
+                        <div class="level" id="social-level">-</div>
+                    </div>
+                    <div class="performance-card">
+                        <div>❤️ Emotional</div>
+                        <div class="score" id="emotional-score">-</div>
+                        <div class="level" id="emotional-level">-</div>
+                    </div>
+                    <div class="performance-card">
+                        <div>📊 Overall Progress</div>
+                        <div class="score" id="overall-score">-</div>
+                        <div class="level" id="overall-level">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 Recommendations</h3>
+            <div id="recommendations" style="display: none;">
+                <ul id="recommendations-list"></ul>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 Level Progression</h3>
+            <div id="level-progression" style="display: none;">
+                <div id="progression-content"></div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>💾 Raw Data</h3>
+            <div id="raw-data" class="data-display" style="display: none;">
+                Click "Test Complete System" to see raw performance data...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔗 Quick Links</h3>
+            <button onclick="window.open('/student-performance', '_blank')">Open Performance Tracker</button>
+            <button onclick="window.open('/game-tracking-example.html', '_blank')">Game Tracking Example</button>
+            <button onclick="window.open('/debug-games-new.html', '_blank')">Debug Games</button>
+        </div>
+    </div>
+
+    <script>
+        // Simulate the performance analysis system
+        function testCompleteSystem() {
+            updateStatus('system-status', '🔄 Testing complete performance system...', 'info');
+
+            // Simulate student performance data
+            const testStudent = {
+                studentId: 'TEST_STUDENT_001',
+                name: 'Test Student',
+                level: 'Level 1'
+            };
+
+            const testPerformanceData = {
+                'Egg Hunt': {
+                    cognitive: {
+                        pattern_recognition: 85,
+                        attention_span: 78,
+                        problem_solving: 82,
+                        memory: 75
+                    },
+                    motor: {
+                        hand_eye_coordination: 88,
+                        fine_motor_control: 76,
+                        reaction_time: 80
+                    },
+                    social: {
+                        cooperation: 90,
+                        communication: 85,
+                        sharing: 88
+                    },
+                    emotional: {
+                        frustration_tolerance: 82,
+                        persistence: 87,
+                        confidence: 79,
+                        emotional_regulation: 84
+                    }
+                },
+                'Pop Game': {
+                    cognitive: {
+                        visual_processing: 92,
+                        attention_to_detail: 88,
+                        concentration: 85,
+                        decision_making: 90
+                    },
+                    motor: {
+                        reaction_speed: 95,
+                        accuracy: 87,
+                        timing: 89
+                    },
+                    social: {
+                        turn_taking: 93,
+                        peer_interaction: 88,
+                        sportsmanship: 91
+                    },
+                    emotional: {
+                        impulse_control: 86,
+                        patience: 89,
+                        excitement_management: 87,
+                        resilience: 90
+                    }
+                }
+            };
+
+            // Analyze performance
+            const analysis = analyzePerformance(testPerformanceData);
+            displayResults(analysis, testStudent);
+            
+            // Save test data
+            localStorage.setItem('student_performance_TEST_STUDENT_001', JSON.stringify(testPerformanceData));
+            
+            updateStatus('system-status', '✅ Performance system test completed!', 'success');
+        }
+
+        function analyzePerformance(data) {
+            const analyses = {};
+            let overallCognitive = 0;
+            let overallMotor = 0;
+            let overallSocial = 0;
+            let overallEmotional = 0;
+            let gameCount = 0;
+
+            // Analyze each game
+            Object.keys(data).forEach(gameName => {
+                const gameData = data[gameName];
+                const gameAnalysis = {
+                    cognitive: calculateCategoryScore(gameData.cognitive),
+                    motor: calculateCategoryScore(gameData.motor),
+                    social: calculateCategoryScore(gameData.social),
+                    emotional: calculateCategoryScore(gameData.emotional)
+                };
+
+                // Calculate overall for this game
+                gameAnalysis.overall = (
+                    gameAnalysis.cognitive.score * 0.3 +
+                    gameAnalysis.motor.score * 0.25 +
+                    gameAnalysis.social.score * 0.25 +
+                    gameAnalysis.emotional.score * 0.2
+                );
+
+                analyses[gameName] = gameAnalysis;
+
+                overallCognitive += gameAnalysis.cognitive.score;
+                overallMotor += gameAnalysis.motor.score;
+                overallSocial += gameAnalysis.social.score;
+                overallEmotional += gameAnalysis.emotional.score;
+                gameCount++;
+            });
+
+            // Calculate overall averages
+            const overallAnalysis = {
+                cognitive: calculateCategoryScore({ score: overallCognitive / gameCount }),
+                motor: calculateCategoryScore({ score: overallMotor / gameCount }),
+                social: calculateCategoryScore({ score: overallSocial / gameCount }),
+                emotional: calculateCategoryScore({ score: overallEmotional / gameCount })
+            };
+
+            overallAnalysis.overall = (
+                overallAnalysis.cognitive.score * 0.3 +
+                overallAnalysis.motor.score * 0.25 +
+                overallAnalysis.social.score * 0.25 +
+                overallAnalysis.emotional.score * 0.2
+            );
+
+            return {
+                overall: overallAnalysis,
+                games: analyses,
+                recommendations: generateRecommendations(overallAnalysis),
+                levelProgression: calculateLevelProgression(overallAnalysis.overall, 1)
+            };
+        }
+
+        function calculateCategoryScore(categoryData) {
+            let totalScore = 0;
+            let count = 0;
+
+            Object.keys(categoryData).forEach(metric => {
+                if (typeof categoryData[metric] === 'number') {
+                    totalScore += categoryData[metric];
+                    count++;
+                }
+            });
+
+            const score = count > 0 ? totalScore / count : 0;
+            return {
+                score: Math.round(score * 100) / 100,
+                level: getPerformanceLevel(score)
+            };
+        }
+
+        function getPerformanceLevel(score) {
+            if (score >= 90) return { level: 'Excellent', color: '#10b981' };
+            if (score >= 75) return { level: 'Good', color: '#3b82f6' };
+            if (score >= 60) return { level: 'Average', color: '#f59e0b' };
+            if (score >= 40) return { level: 'Below Average', color: '#f97316' };
+            return { level: 'Needs Improvement', color: '#ef4444' };
+        }
+
+        function generateRecommendations(analysis) {
+            const recommendations = [];
+
+            if (analysis.cognitive.score < 60) {
+                recommendations.push({
+                    category: 'Cognitive',
+                    priority: 'high',
+                    suggestion: 'Focus on pattern recognition and memory exercises. Consider simpler games with clear objectives.'
+                });
+            }
+
+            if (analysis.motor.score < 60) {
+                recommendations.push({
+                    category: 'Motor Skills',
+                    priority: 'high',
+                    suggestion: 'Practice fine motor activities like drawing, cutting, and manipulation exercises.'
+                });
+            }
+
+            if (analysis.social.score < 60) {
+                recommendations.push({
+                    category: 'Social',
+                    priority: 'high',
+                    suggestion: 'Encourage group activities and peer interaction. Practice turn-taking and sharing.'
+                });
+            }
+
+            if (analysis.emotional.score < 60) {
+                recommendations.push({
+                    category: 'Emotional',
+                    priority: 'high',
+                    suggestion: 'Focus on emotional regulation activities. Provide positive reinforcement and coping strategies.'
+                });
+            }
+
+            if (analysis.overall >= 90) {
+                recommendations.push({
+                    category: 'Level Progression',
+                    priority: 'medium',
+                    suggestion: 'Student shows excellent performance and may be ready for the next level.'
+                });
+            }
+
+            return recommendations;
+        }
+
+        function calculateLevelProgression(overallScore, currentLevel) {
+            if (overallScore >= 90 && currentLevel < 5) {
+                return {
+                    ready: true,
+                    suggestion: `Student shows excellent performance and may be ready for Level ${currentLevel + 1}`,
+                    confidence: 'high'
+                };
+            } else if (overallScore >= 75) {
+                return {
+                    ready: false,
+                    suggestion: 'Student is performing well. Continue with current level to build stronger foundation.',
+                    confidence: 'medium'
+                };
+            } else {
+                return {
+                    ready: false,
+                    suggestion: 'Student needs more practice at current level before advancing.',
+                    confidence: 'low'
+                };
+            }
+        }
+
+        function displayResults(analysis, student) {
+            // Display performance scores
+            document.getElementById('performance-results').style.display = 'block';
+            
+            document.getElementById('cognitive-score').textContent = analysis.overall.cognitive.score;
+            document.getElementById('cognitive-level').textContent = analysis.overall.cognitive.level.level;
+            document.getElementById('cognitive-level').style.backgroundColor = analysis.overall.cognitive.level.color;
+            document.getElementById('cognitive-level').style.color = 'white';
+
+            document.getElementById('motor-score').textContent = analysis.overall.motor.score;
+            document.getElementById('motor-level').textContent = analysis.overall.motor.level.level;
+            document.getElementById('motor-level').style.backgroundColor = analysis.overall.motor.level.color;
+            document.getElementById('motor-level').style.color = 'white';
+
+            document.getElementById('social-score').textContent = analysis.overall.social.score;
+            document.getElementById('social-level').textContent = analysis.overall.social.level.level;
+            document.getElementById('social-level').style.backgroundColor = analysis.overall.social.level.color;
+            document.getElementById('social-level').style.color = 'white';
+
+            document.getElementById('emotional-score').textContent = analysis.overall.emotional.score;
+            document.getElementById('emotional-level').textContent = analysis.overall.emotional.level.level;
+            document.getElementById('emotional-level').style.backgroundColor = analysis.overall.emotional.level.color;
+            document.getElementById('emotional-level').style.color = 'white';
+
+            document.getElementById('overall-score').textContent = analysis.overall.overall;
+            document.getElementById('overall-level').textContent = getPerformanceLevel(analysis.overall.overall).level;
+            document.getElementById('overall-level').style.backgroundColor = getPerformanceLevel(analysis.overall.overall).color;
+            document.getElementById('overall-level').style.color = 'white';
+
+            // Display recommendations
+            document.getElementById('recommendations').style.display = 'block';
+            const recommendationsList = document.getElementById('recommendations-list');
+            recommendationsList.innerHTML = '';
+            
+            analysis.recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${rec.category}:</strong> ${rec.suggestion} <span style="background: ${rec.priority === 'high' ? '#ef4444' : '#f59e0b'}; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">${rec.priority.toUpperCase()}</span>`;
+                recommendationsList.appendChild(li);
+            });
+
+            // Display level progression
+            document.getElementById('level-progression').style.display = 'block';
+            document.getElementById('progression-content').innerHTML = `
+                <div style="padding: 15px; background: ${analysis.levelProgression.ready ? '#d1fae5' : '#dbeafe'}; border-radius: 8px; border-left: 4px solid ${analysis.levelProgression.ready ? '#10b981' : '#3b82f6'};">
+                    <strong>🎯 Recommendation:</strong> ${analysis.levelProgression.suggestion}
+                    <br><br>
+                    <strong>Confidence Level:</strong> ${analysis.levelProgression.confidence}
+                </div>
+            `;
+
+            // Display raw data
+            document.getElementById('raw-data').style.display = 'block';
+            document.getElementById('raw-data').textContent = JSON.stringify(analysis, null, 2);
+        }
+
+        function clearTestData() {
+            localStorage.removeItem('student_performance_TEST_STUDENT_001');
+            
+            // Reset displays
+            document.getElementById('performance-results').style.display = 'none';
+            document.getElementById('recommendations').style.display = 'none';
+            document.getElementById('level-progression').style.display = 'none';
+            document.getElementById('raw-data').style.display = 'none';
+            
+            updateStatus('system-status', '🗑️ Test data cleared!', 'info');
+        }
+
+        function updateStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                updateStatus('system-status', '👋 Ready to test performance tracking system!', 'info');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

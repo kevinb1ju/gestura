@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Test Game Data Collection</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .game-area {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .game-tile {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        .game-tile:hover {
+            transform: scale(1.1);
+            background: #dbeafe;
+        }
+        .game-tile.found {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        .game-tile.wrong {
+            background: #fee2e2;
+            border-color: #ef4444;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Test Game Data Collection</h1>
+        
+        <div class="info">
+            <p><strong>📊 This test game demonstrates real performance data collection</strong></p>
+            <p>Click the tiles to play and generate real performance metrics for the performance tracker!</p>
+        </div>
+
+        <div class="game-area">
+            <h3>🥚 Egg Hunt Test Game</h3>
+            <p>Find the hidden eggs! Click tiles to reveal them.</p>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="correct-count">0</div>
+                    <div class="stat-label">Correct</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="incorrect-count">0</div>
+                    <div class="stat-label">Wrong</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-count">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="accuracy">0%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+            </div>
+
+            <div class="game-board" id="game-board">
+                <!-- Game tiles will be generated here -->
+            </div>
+
+            <div style="margin: 20px 0;">
+                <button onclick="startGame()">🎮 Start New Game</button>
+                <button onclick="endGame()">✅ End Game & Save Data</button>
+                <button onclick="viewPerformance()">📊 View Performance</button>
+                <button onclick="clearData()">🗑️ Clear Data</button>
+            </div>
+
+            <div id="game-status" class="info">Click "Start New Game" to begin!</div>
+        </div>
+
+        <div class="info">
+            <h4>📈 How This Works:</h4>
+            <ul style="text-align: left; margin: 0; padding-left: 20px;">
+                <li>Click "Start New Game" to initialize tracking</li>
+                <li>Click tiles to find hidden eggs (🥚)</li>
+                <li>Each click records performance data (correct/incorrect)</li>
+                <li>Click "End Game" to save real performance data</li>
+                <li>View performance in the Teacher Dashboard!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="game-integration.js"></script>
+    <script>
+        let gameState = {
+            tiles: [],
+            eggPositions: [],
+            revealed: [],
+            correct: 0,
+            incorrect: 0,
+            total: 0,
+            gameActive: false,
+            studentId: 'TEST_STUDENT_001'
+        };
+
+        // Initialize game
+        function initGame() {
+            const gameBoard = document.getElementById('game-board');
+            gameBoard.innerHTML = '';
+            
+            // Create 16 tiles
+            gameState.tiles = [];
+            gameState.eggPositions = [];
+            gameState.revealed = [];
+            gameState.correct = 0;
+            gameState.incorrect = 0;
+            gameState.total = 0;
+            
+            // Randomly place 4 eggs
+            while (gameState.eggPositions.length < 4) {
+                const pos = Math.floor(Math.random() * 16);
+                if (!gameState.eggPositions.includes(pos)) {
+                    gameState.eggPositions.push(pos);
+                }
+            }
+            
+            // Create tiles
+            for (let i = 0; i < 16; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'game-tile';
+                tile.dataset.position = i;
+                tile.textContent = '?';
+                tile.onclick = () => clickTile(i);
+                gameBoard.appendChild(tile);
+                gameState.tiles.push(tile);
+            }
+            
+            updateStats();
+        }
+
+        function startGame() {
+            // Initialize game tracking
+            GameTracker.setupEggHunt(gameState.studentId);
+            gameState.gameActive = true;
+            
+            initGame();
+            updateStatus('🎮 Game started! Find the eggs! 🥚', 'success');
+        }
+
+        function clickTile(position) {
+            if (!gameState.gameActive) {
+                updateStatus('⚠️ Please start a new game first!', 'warning');
+                return;
+            }
+            
+            if (gameState.revealed.includes(position)) {
+                return; // Already revealed
+            }
+            
+            const tile = gameState.tiles[position];
+            gameState.revealed.push(position);
+            gameState.total++;
+            
+            if (gameState.eggPositions.includes(position)) {
+                // Found an egg!
+                tile.textContent = '🥚';
+                tile.className = 'game-tile found';
+                gameState.correct++;
+                
+                // Record correct event
+                GameTracker.recordCorrect({ 
+                    position: position, 
+                    egg: true, 
+                    time: Date.now() 
+                });
+                
+                // Record pattern recognition
+                GameTracker.recordPattern({ 
+                    pattern: 'egg_found', 
+                    position: position 
+                });
+                
+                updateStatus(`🎉 Found an egg! (${gameState.correct}/4)`, 'success');
+                
+                // Check if all eggs found
+                if (gameState.correct === 4) {
+                    endGame();
+                }
+            } else {
+                // Wrong tile
+                tile.textContent = '❌';
+                tile.className = 'game-tile wrong';
+                gameState.incorrect++;
+                
+                // Record incorrect event
+                GameTracker.recordIncorrect({ 
+                    position: position, 
+                    egg: false, 
+                    time: Date.now() 
+                });
+                
+                // Record persistence (trying again)
+                GameTracker.recordPersistence({ 
+                    attempt: gameState.total,
+                    position: position 
+                });
+                
+                updateStatus(`❌ No egg here. Keep trying! (${gameState.correct}/4)`, 'info');
+            }
+            
+            updateStats();
+        }
+
+        function endGame() {
+            if (!gameState.gameActive) {
+                updateStatus('⚠️ No active game to end!', 'warning');
+                return;
+            }
+            
+            // End game session and save data
+            const result = GameTracker.end();
+            
+            if (result) {
+                gameState.gameActive = false;
+                
+                const accuracy = gameState.total > 0 ? Math.round((gameState.correct / gameState.total) * 100) : 0;
+                
+                updateStatus(`✅ Game ended! Performance data saved. Accuracy: ${accuracy}%`, 'success');
+                
+                // Show performance summary
+                console.log('📊 Game Performance Data:', result.performance);
+                
+                // Reveal all tiles
+                gameState.tiles.forEach((tile, index) => {
+                    if (gameState.eggPositions.includes(index)) {
+                        tile.textContent = '🥚';
+                        tile.className = 'game-tile found';
+                    } else {
+                        tile.textContent = '❌';
+                        tile.className = 'game-tile wrong';
+                    }
+                });
+                
+                // Show completion message
+                setTimeout(() => {
+                    if (gameState.correct === 4) {
+                        updateStatus('🎉 Congratulations! All eggs found! Performance data saved to system.', 'success');
+                    } else {
+                        updateStatus(`📊 Game completed! Found ${gameState.correct}/4 eggs. Performance data saved.`, 'info');
+                    }
+                }, 1000);
+            }
+        }
+
+        function viewPerformance() {
+            // Open performance tracker in new window
+            const studentData = {
+                studentId: gameState.studentId,
+                name: 'Test Student',
+                age: '7 years',
+                level: 'Level 1'
+            };
+            
+            // Store student data for the performance tracker
+            localStorage.setItem('user', JSON.stringify({
+                ...studentData,
+                role: 'student'
+            }));
+            
+            // Open performance tracker
+            window.open('/student-performance', '_blank');
+        }
+
+        function clearData() {
+            // Clear all performance data for test student
+            const keys = Object.keys(localStorage).filter(key => 
+                key.includes('student_performance_') || 
+                key.includes('game_session_') ||
+                key.includes(gameState.studentId)
+            );
+            
+            keys.forEach(key => {
+                localStorage.removeItem(key);
+            });
+            
+            updateStatus('🗑️ All test data cleared!', 'info');
+            
+            // Reset game
+            gameState.gameActive = false;
+            initGame();
+        }
+
+        function updateStats() {
+            document.getElementById('correct-count').textContent = gameState.correct;
+            document.getElementById('incorrect-count').textContent = gameState.incorrect;
+            document.getElementById('total-count').textContent = gameState.total;
+            
+            const accuracy = gameState.total > 0 ? Math.round((gameState.correct / gameState.total) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        function updateStatus(message, type) {
+            const status = document.getElementById('game-status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initGame();
+            console.log('🎮 Test Game Data Collection loaded');
+            console.log('📊 Ready to generate real performance data!');
+        });
+    </script>
+</body>
+</html>

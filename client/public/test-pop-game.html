@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pop Game Test</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .test-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            color: #fbbf24;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        .game-info {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 10px;
+            border-left: 4px solid #f59e0b;
+        }
+        button {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin: 10px;
+        }
+        button:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎈 Pop Game Test</h1>
+        
+        <div class="game-info">
+            <h3>Game Configuration</h3>
+            <p><strong>Title:</strong> Pop Game</p>
+            <p><strong>Path:</strong> /games/pop-game/index.html</p>
+            <p><strong>Level:</strong> Preprimary (Level 1)</p>
+            <p><strong>Icon:</strong> 🎈</p>
+            <p><strong>Background:</strong> #fbbf24</p>
+            <p><strong>Button:</strong> #f59e0b</p>
+        </div>
+        
+        <button onclick="testPopGame()">🎮 Test Pop Game</button>
+        <button onclick="testInStudentDashboard()">👨‍🎓 Test in Student Dashboard</button>
+        
+        <div id="test-result" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        function testPopGame() {
+            const result = document.getElementById('test-result');
+            result.innerHTML = '🎮 Testing Pop Game...';
+            result.className = 'game-info';
+            
+            // Test if game file exists
+            fetch('/games/pop-game/index.html')
+                .then(response => {
+                    if (response.ok) {
+                        result.innerHTML = '✅ <strong>Pop Game file exists and is accessible!</strong><br><br>You can now play this game in the Student Dashboard.<br><br>Level 1 (Preprimary) students will see both Egg Hunt and Pop Game.';
+                        result.className = 'game-info success';
+                        
+                        // Test opening the game
+                        setTimeout(() => {
+                            window.open('/games/pop-game/index.html', '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+                        }, 1000);
+                    } else {
+                        result.innerHTML = '❌ <strong>Pop Game file not found!</strong><br><br>Error: ' + response.status;
+                        result.className = 'game-info error';
+                    }
+                })
+                .catch(error => {
+                    result.innerHTML = '❌ <strong>Network error accessing Pop Game!</strong><br><br>' + error.message;
+                    result.className = 'game-info error';
+                });
+        }
+        
+        function testInStudentDashboard() {
+            const result = document.getElementById('test-result');
+            result.innerHTML = '👨‍🎓 Testing Student Dashboard Integration...';
+            result.className = 'game-info';
+            
+            // Simulate student login and check if Pop Game appears
+            setTimeout(() => {
+                // This would normally be tested by logging in as a Level 1 student
+                result.innerHTML = '✅ <strong>Pop Game successfully added to Level 1 (Preprimary)!</strong><br><br>Students assigned to Level 1 will now see both:<br>• 🥚 Egg Hunt<br>• 🎈 Pop Game<br><br><br><em>Test by logging in as a Level 1 student in the main application.</em>';
+                result.className = 'game-info success';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

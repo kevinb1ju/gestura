@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Fix Game Data Issue</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .problem {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        .solution {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .info {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #2563eb;
+        }
+        .success {
+            background: #10b981;
+        }
+        .success:hover {
+            background: #059669;
+        }
+        .danger {
+            background: #ef4444;
+        }
+        .danger:hover {
+            background: #dc2626;
+        }
+        .warning {
+            background: #f59e0b;
+        }
+        .warning:hover {
+            background: #d97706;
+        }
+        .code {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: white;
+            border: 1px solid #e5e7eb;
+        }
+        .pass {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+        .fail {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Fix Game Data Issue</h1>
+        
+        <div class="section problem">
+            <h3>❌ Problem Identified:</h3>
+            <p><strong>Student played 2 games but only Egg Hunt score shows in assessment</strong></p>
+            <ul>
+                <li>Pop Game score not appearing</li>
+                <li>Egg Hunt score not updating</li>
+                <li>Assessment showing incomplete data</li>
+            </ul>
+        </div>
+
+        <div class="section solution">
+            <h3>✅ Root Cause & Solution:</h3>
+            <p><strong>Issue:</strong> Games might not be saving data consistently or student ID mismatch</p>
+            
+            <h4>🔍 Step 1: Check Current Data</h4>
+            <button class="button" onclick="checkCurrentData()">🔍 Check Current Data</button>
+            <div id="current-data"></div>
+            
+            <h4>🧪 Step 2: Generate Consistent Test Data</h4>
+            <button class="button success" onclick="generateConsistentData()">🎮 Generate Test Data</button>
+            <p>Creates data for SAME student ID across multiple games</p>
+            
+            <h4>🔧 Step 3: Fix Student ID</h4>
+            <button class="button" onclick="fixStudentId()">👤 Fix Student ID</button>
+            <p>Ensures consistent student ID across all games</p>
+            
+            <h4>🧹 Step 4: Clear & Reset</h4>
+            <button class="button danger" onclick="clearAndReset()">🗑️ Clear All Data</button>
+            <p>Start fresh with clean data</p>
+        </div>
+
+        <div class="section info">
+            <h3>🎮 Test the Games</h3>
+            <p>Play these games to test the fix:</p>
+            <div>
+                <button class="button" onclick="openGame('egg-hunt')">🥚 Egg Hunt</button>
+                <button class="button" onclick="openGame('pop-game')">🎈 Pop Game</button>
+                <button class="button" onclick="openGame('shape/')">🔷 Shape Explorers</button>
+                <button class="button" onclick="openGame('colors/')">🌈 Color Quest</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📊 Verify Assessment</h3>
+            <p>After playing games, check the assessment:</p>
+            <button class="button success" onclick="openAssessment()">📊 Open Assessment</button>
+        </div>
+
+        <div id="test-results">
+            <h3>🧪 Test Results</h3>
+            <div id="results-content">Click "Check Current Data" to see results...</div>
+        </div>
+    </div>
+
+    <script>
+        function checkCurrentData() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const studentId = user.studentId;
+            
+            let results = '<h4>🔍 Current Data Analysis:</h4>';
+            
+            if (!studentId) {
+                results += '<div class="test-result fail">❌ No student ID found</div>';
+            } else {
+                results += `<div class="test-result pass">✅ Student ID: ${studentId}</div>`;
+            }
+            
+            // Check for performance data
+            const perfKey = `student_performance_${studentId}`;
+            const perfData = localStorage.getItem(perfKey);
+            
+            if (perfData) {
+                try {
+                    const data = JSON.parse(perfData);
+                    const games = Object.keys(data);
+                    results += `<div class="test-result pass">✅ Performance data found for ${games.length} games: ${games.join(', ')}</div>`;
+                    
+                    // Show each game's data
+                    games.forEach(game => {
+                        const gameData = data[game];
+                        if (gameData && gameData.cognitive) {
+                            const cognitiveScore = gameData.cognitive.score || 0;
+                            results += `<div class="test-result pass">📊 ${game}: Cognitive ${cognitiveScore}%</div>`;
+                        } else {
+                            results += `<div class="test-result fail">❌ ${game}: No cognitive data</div>`;
+                        }
+                    });
+                } catch (e) {
+                    results += '<div class="test-result fail">❌ Error parsing performance data</div>';
+                }
+            } else {
+                results += '<div class="test-result fail">❌ No performance data found</div>';
+            }
+            
+            // Check for game sessions
+            const gameKeys = Object.keys(localStorage).filter(key => 
+                key.includes('game_session') && key.includes(studentId)
+            );
+            
+            if (gameKeys.length > 0) {
+                results += `<div class="test-result pass">✅ Found ${gameKeys.length} game session keys</div>`;
+                
+                // Show recent sessions
+                gameKeys.slice(0, 3).forEach(key => {
+                    try {
+                        const session = JSON.parse(localStorage.getItem(key));
+                        results += `<div class="test-result pass">🎮 ${session.gameName}: Score ${session.score || 'N/A'}</div>`;
+                    } catch (e) {
+                        results += `<div class="test-result fail">❌ Error reading session: ${key}</div>`;
+                    }
+                });
+            } else {
+                results += '<div class="test-result fail">❌ No game sessions found</div>';
+            }
+            
+            document.getElementById('current-data').innerHTML = results;
+            document.getElementById('results-content').innerHTML = results;
+        }
+
+        function generateConsistentData() {
+            const studentId = 'CONSISTENT_STUDENT_001';
+            const timestamp = Date.now();
+            
+            // Set consistent user data
+            localStorage.setItem('user', JSON.stringify({
+                studentId: studentId,
+                name: 'Consistent Test Student',
+                class: 'Pre-Primary',
+                grade: 'KG'
+            }));
+            
+            // Generate consistent data for multiple games
+            const games = [
+                {
+                    gameName: 'Egg Hunt',
+                    score: 85,
+                    timestamp: timestamp - 3600000,
+                    performance: {
+                        cognitive: { score: 85, attempts: 10, successes: 8 },
+                        motor: { score: 90, attempts: 15, successes: 13 },
+                        social: { score: 75, attempts: 5, successes: 4 },
+                        emotional: { score: 80, attempts: 8, successes: 6 }
+                    }
+                },
+                {
+                    gameName: 'Pop Game',
+                    score: 72,
+                    timestamp: timestamp - 1800000,
+                    performance: {
+                        cognitive: { score: 70, attempts: 12, successes: 8 },
+                        motor: { score: 75, attempts: 18, successes: 13 },
+                        social: { score: 70, attempts: 6, successes: 4 },
+                        emotional: { score: 72, attempts: 10, successes: 7 }
+                    }
+                },
+                {
+                    gameName: 'Shape Explorers',
+                    score: 88,
+                    timestamp: timestamp - 900000,
+                    performance: {
+                        cognitive: { score: 90, attempts: 8, successes: 7 },
+                        motor: { score: 85, attempts: 10, successes: 8 },
+                        social: { score: 88, attempts: 4, successes: 4 },
+                        emotional: { score: 89, attempts: 6, successes: 5 }
+                    }
+                }
+            ];
+            
+            // Clear existing data for this student
+            const keysToDelete = Object.keys(localStorage).filter(key => 
+                key.includes(studentId) || (key.includes('CONSISTENT_STUDENT'))
+            );
+            keysToDelete.forEach(key => localStorage.removeItem(key));
+            
+            // Store game sessions
+            games.forEach(game => {
+                const sessionKey = `game_session_${studentId}_${game.gameName}_${game.timestamp}`;
+                localStorage.setItem(sessionKey, JSON.stringify({
+                    studentId: studentId,
+                    gameName: game.gameName,
+                    score: game.score,
+                    timestamp: game.timestamp,
+                    performance: game.performance
+                }));
+                console.log(`🎮 Stored session: ${sessionKey}`);
+            });
+            
+            // Create aggregated performance data
+            const aggregatedData = {};
+            games.forEach(game => {
+                aggregatedData[game.gameName] = game.performance;
+            });
+            
+            localStorage.setItem(`student_performance_${studentId}`, JSON.stringify(aggregatedData));
+            console.log(`📊 Stored performance: student_performance_${studentId}`);
+            
+            alert('✅ Consistent multi-game data generated!');
+            checkCurrentData();
+        }
+
+        function fixStudentId() {
+            const currentStudent = prompt('Enter student ID to fix:', 'CONSISTENT_STUDENT_001');
+            if (!currentStudent) return;
+            
+            localStorage.setItem('user', JSON.stringify({
+                studentId: currentStudent,
+                name: 'Fixed Student',
+                class: 'Pre-Primary',
+                grade: 'KG'
+            }));
+            
+            alert(`✅ Student ID set to: ${currentStudent}`);
+            checkCurrentData();
+        }
+
+        function clearAndReset() {
+            if (confirm('⚠️ This will delete ALL game data. Are you sure?')) {
+                const keys = Object.keys(localStorage);
+                keys.forEach(key => {
+                    if (key.includes('game_session') || key.includes('student_performance') || key.includes('highScore')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                
+                // Reset to basic user
+                localStorage.setItem('user', JSON.stringify({
+                    studentId: 'RESET_STUDENT',
+                    name: 'Reset Student',
+                    class: 'Pre-Primary',
+                    grade: 'KG'
+                }));
+                
+                alert('🗑️ All data cleared and reset!');
+                checkCurrentData();
+            }
+        }
+
+        function openGame(gamePath) {
+            window.open(`/games/${gamePath}index.html?studentId=CONSISTENT_STUDENT_001`, '_blank');
+        }
+
+        function openAssessment() {
+            window.open('/student-performance-tracker', '_blank');
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            console.log('🔧 Game Data Fix Tool loaded');
+            checkCurrentData();
+        });
+    </script>
+</body>
+</html>

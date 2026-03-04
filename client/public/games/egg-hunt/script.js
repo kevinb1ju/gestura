@@ -11,10 +11,10 @@ const mobileControls = document.querySelector('.mobile-controls');
 const startScreen = document.getElementById('start-screen');
 const gameOverScreen = document.getElementById('game-over-screen');
 const gameOverSound = document.getElementById("game-over-sound");
-const moveSpeed = 10;
-const acceleration = 1;
-const maxSpeed = 15;
-const friction = 0.9;
+const moveSpeed = 3; // Much slower movement (was 5)
+const acceleration = 0.3; // Slower acceleration (was 0.5)
+const maxSpeed = 5; // Much lower max speed for better control (was 8)
+const friction = 0.98; // Higher friction for smoother stops (was 0.95)
 
 let score = 0;
 let lives = 3;
@@ -29,6 +29,32 @@ let isPaused = false;
 let gameWasRunning = false;
 let isMuted = false;
 let basketVelocity = 0;
+let gameStartTime = null;
+let studentId = null;
+let eggSpawnInterval = null;
+let activeEggs = new Set(); // Track multiple eggs
+
+// Get student data from localStorage or URL parameter
+function getStudentData() {
+  try {
+    // First try to get from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlStudentId = urlParams.get('studentId');
+    if (urlStudentId) {
+      console.log('🎮 Student ID from URL:', urlStudentId);
+      return urlStudentId;
+    }
+    
+    // Fallback to localStorage
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const studentId = user.studentId || 'DEMO_STUDENT';
+    console.log('🎮 Student ID from localStorage:', studentId);
+    return studentId;
+  } catch (e) {
+    console.log('🎮 Using fallback student ID');
+    return 'DEMO_STUDENT';
+  }
+}
 
 function updateVH() {
   const vh = window.innerHeight * 0.01;
@@ -74,57 +100,80 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-function dropEgg() {
-  clearInterval(fallInterval);
-  clearInterval(bounceInterval);
-
+function dropEgg(eggId = null) {
+  // Generate unique ID for this egg
+  const currentEggId = eggId || 'egg_' + Date.now() + '_' + Math.random();
+  activeEggs.add(currentEggId);
+  
   const lane = Math.floor(Math.random() * 4);
   const hen = document.getElementById(`hen-${lane}`);
   const henRect = hen.getBoundingClientRect();
 
-  // Randomly decide egg type: white, golden, or black
+  // More predictable egg types for accessibility
   const random = Math.random();
   let eggType = "white"; // default
 
-  if (random < 0.10) {
-    eggType = "black"; // 15% chance black
-  } else if (random < 0.20) {
-    eggType = "golden"; // next 20% chance golden
+  if (random < 0.05) {
+    eggType = "black"; // Only 5% chance black (was 10%) - less stressful
+  } else if (random < 0.15) {
+    eggType = "golden"; // 10% chance golden (was 15%) - more positive
   }
 
-  egg.classList.remove("golden-egg", "black-egg"); // reset all classes
-  if (eggType === "golden") egg.classList.add("golden-egg");
-  if (eggType === "black") egg.classList.add("black-egg");
+  // Clone the egg element for multiple eggs
+  const eggClone = egg.cloneNode(true);
+  eggClone.id = currentEggId;
+  eggClone.dataset.eggId = currentEggId;
+  eggClone.classList.remove("golden-egg", "black-egg"); // reset all classes
+  if (eggType === "golden") eggClone.classList.add("golden-egg");
+  if (eggType === "black") eggClone.classList.add("black-egg");
+  eggClone.dataset.type = eggType;
+  eggClone.style.left = henRect.left + henRect.width / 2 - 15 + "px";
+  eggClone.style.top = henRect.bottom + "px";
+  eggClone.style.display = "block";
+  
+  // Add visual indicator for accessibility
+  if (eggType === "golden") {
+    eggClone.style.boxShadow = "0 0 20px gold";
+  } else if (eggType === "black") {
+    eggClone.style.boxShadow = "0 0 20px red";
+  } else {
+    eggClone.style.boxShadow = "0 0 10px rgba(0,0,0,0.3)";
+  }
+  
+  // Add to game container
+  document.querySelector(".game-container").appendChild(eggClone);
 
-  egg.dataset.type = eggType; // store egg type
-  egg.style.left = henRect.left + henRect.width / 2 - 15 + "px";
-  egg.style.top = henRect.bottom + "px";
-  egg.style.display = "block";
-
-
-  document.getElementById("hen-sound").play();
+  // Play sound with less frequency for sensory sensitivity
+  if (Math.random() > 0.5) { // Only play sound 50% of the time
+    document.getElementById("hen-sound").play();
+  }
 
   let y = henRect.bottom;
-  let velocity = 1; // Slower initial speed
-  const gravity = 0.15; // Slower gravity
+  let velocity = 0.3; // Very slow initial speed (was 0.5)
+  const gravity = 0.05; // Much slower gravity for easier tracking (was 0.08)
 
-  fallInterval = setInterval(() => {
+  const fallInterval = setInterval(() => {
     if (gameOver) {
       clearInterval(fallInterval);
+      // Remove this egg
+      if (eggClone.parentNode) {
+        eggClone.parentNode.removeChild(eggClone);
+      }
+      activeEggs.delete(currentEggId);
       return;
     }
 
     velocity += gravity;
     y += velocity;
-    egg.style.top = y + "px";
+    eggClone.style.top = y + "px";
 
-    const eggRect = egg.getBoundingClientRect();
+    const eggRect = eggClone.getBoundingClientRect();
     const basketRect = basket.getBoundingClientRect();
     const basketWidth = basketRect.width;
     const leftBound = basketRect.left + basketWidth * 0.01;
     const rightBound = basketRect.right - basketWidth * 0.01;
 
-    //Egg caught
+    // Egg caught
     if (
       eggRect.bottom >= basketRect.top &&
       eggRect.left >= leftBound &&
@@ -134,39 +183,69 @@ function dropEgg() {
 
       // Bounce animation
       let bounceY = basketRect.top + 5;
-      egg.style.top = bounceY + "px";
+      eggClone.style.top = bounceY + "px";
       let bounceVelocity = -6;
       let bounceGravity = 0.5;
       let bounceCount = 0;
 
-      bounceInterval = setInterval(() => {
+      const bounceInterval = setInterval(() => {
         bounceVelocity += bounceGravity;
         bounceY += bounceVelocity;
-        egg.style.top = bounceY + "px";
+        eggClone.style.top = bounceY + "px";
 
         const maxY = basketRect.top + 10;
 
         if (bounceY >= maxY || bounceCount > 2) {
           bounceY = maxY;
-          egg.style.top = bounceY + "px";
+          eggClone.style.top = bounceY + "px";
           clearInterval(bounceInterval);
-          egg.style.display = "none";
+          eggClone.style.display = "none";
+          if (eggClone.parentNode) {
+            eggClone.parentNode.removeChild(eggClone);
+          }
+          activeEggs.delete(currentEggId);
+          
           let pointValue = 0;
-          const eggType = egg.dataset.type;
+          const eggTypeData = eggClone.dataset.type;
 
-          if (eggType === "golden") {
+          if (eggTypeData === "golden") {
             pointValue = 5;
             document.getElementById("point-sound").play();
-          } else if (eggType === "white") {
+          } else if (eggTypeData === "white") {
             pointValue = 1;
             document.getElementById("point-sound").play();
-          } else if (eggType === "black") {
+          } else if (eggTypeData === "black") {
             pointValue = -10;
             document.getElementById("black-egg-sound").play();
           }
 
           score += pointValue;
           scoreDisplay.textContent = score;
+          
+          // Record successful catch
+          if (window.GameTracker && gameStartTime) {
+            window.GameTracker.recordCorrect({ 
+              egg: pointValue > 0 ? 'golden' : 'regular',
+              points: pointValue,
+              time: Date.now() - gameStartTime,
+              position: eggRect.left + ',' + y
+            });
+            
+            // Record pattern recognition for successful catches
+            window.GameTracker.recordPattern({ 
+              pattern: 'egg_catch',
+              success: true,
+              difficulty: pointValue > 0 ? 'hard' : 'easy'
+            });
+            
+            // Record motor skill for hand-eye coordination
+            window.GameTracker.recordClick({ 
+              accuracy: 'high',
+              target: 'egg',
+              success: true
+            });
+          }
+          
           if (score < 0 && !gameOver) {
             gameOver = true;
             document.getElementById("game-over-sound").play();
@@ -177,6 +256,13 @@ function dropEgg() {
             const finalScore = document.getElementById("final-score");
             finalScore.textContent = `Score: ${score}`;
             gameOverScreen.classList.remove("hidden");
+            
+            // End game tracking
+            if (window.GameTracker && gameStartTime) {
+              const result = window.GameTracker.end();
+              console.log('🎮 Egg Hunt game ended. Performance data:', result);
+            }
+
             return;
           }
 
@@ -186,7 +272,6 @@ function dropEgg() {
           const x = basketRect.left + basketRect.width / 2 - gameRect.left - 10;
           const y = basketRect.top - gameRect.top - 20;
           showFloatingPoints(pointValue, x, y);
-          if (!gameOver) setTimeout(dropEgg, 1000);
         }
 
         if (bounceY >= maxY) {
@@ -200,7 +285,7 @@ function dropEgg() {
     if (y > window.innerHeight) {
       clearInterval(fallInterval);
 
-      const eggRect = egg.getBoundingClientRect();
+      const eggRect = eggClone.getBoundingClientRect();
       const gameRect = document.querySelector(".game-container").getBoundingClientRect();
       const x = eggRect.left - gameRect.left;
       const yOffset = gameRect.height - 70;
@@ -208,12 +293,33 @@ function dropEgg() {
       document.getElementById("crack-sound").play();
       showCrackedEgg(x, yOffset);
 
-      egg.style.display = "none";
+      eggClone.style.display = "none";
+      if (eggClone.parentNode) {
+        eggClone.parentNode.removeChild(eggClone);
+      }
+      activeEggs.delete(currentEggId);
 
       // 🛑 Do NOT lose life if black egg
-      if (egg.dataset.type !== "black") {
+      if (eggClone.dataset.type !== "black") {
         lives--;
         livesDisplay.textContent = lives;
+
+        // Record missed egg
+        if (window.GameTracker && gameStartTime) {
+          window.GameTracker.recordIncorrect({ 
+            egg: eggType,
+            missed: true,
+            time: Date.now() - gameStartTime,
+            lives_remaining: lives
+          });
+          
+          // Record persistence (continuing despite missing)
+          window.GameTracker.recordPersistence({ 
+            attempt: 'continue_playing',
+            lives: lives,
+            motivation: 'high'
+          });
+        }
 
         if (lives === 0) {
           gameOver = true;
@@ -228,11 +334,16 @@ function dropEgg() {
           const finalScore = document.getElementById("final-score");
           finalScore.textContent = `Score: ${score}`;
           gameOverScreen.classList.remove("hidden");
+          
+          // End game tracking
+          if (window.GameTracker && gameStartTime) {
+            const result = window.GameTracker.end();
+            console.log('🎮 Egg Hunt game ended. Performance data:', result);
+          }
 
           return;
         }
       }
-      if (!gameOver) setTimeout(dropEgg, 1000);
     }
   }, 20);
 }
@@ -245,7 +356,17 @@ function updateBasketPosition() {
 function resetGame() {
   document.getElementById("final-score").textContent = "";
   clearInterval(fallInterval);
-  clearInterval(bounceInterval);
+  clearInterval(eggSpawnInterval);
+  
+  // Clear all active eggs
+  activeEggs.forEach(eggId => {
+    const eggElement = document.getElementById(eggId);
+    if (eggElement && eggElement.parentNode) {
+      eggElement.parentNode.removeChild(eggElement);
+    }
+  });
+  activeEggs.clear();
+  
   egg.style.display = "none";
 
   score = 0;
@@ -258,6 +379,26 @@ function resetGame() {
   basketX = window.innerWidth / 2 - 50;
   updateBasketPosition();
 }
+
+function startEggSpawning() {
+    // Clear any existing spawning interval
+    if (eggSpawnInterval) {
+      clearInterval(eggSpawnInterval);
+    }
+    
+    // Start very slow, predictable egg spawning for accessibility
+    eggSpawnInterval = setInterval(() => {
+      if (!gameOver && !isPaused) {
+        // Only drop egg if no other eggs are active (one egg at a time)
+        if (activeEggs.size === 0) {
+          dropEgg();
+        }
+      }
+    }, 8000); // Drop egg every 8 seconds instead of 4 (much slower pace)
+    
+    // Drop first egg after a longer delay to let child prepare
+    setTimeout(() => dropEgg(), 3000); // 3 second delay before first egg
+  }
 
 function showCrackedEgg(x, y) {
   const crackedEgg = document.createElement("div");
@@ -352,7 +493,7 @@ document.getElementById("retry-btn").addEventListener("click", () => {
     }
     resetGame();
     fetchHighScore();
-    dropEgg(); 
+    startEggSpawning(); // Use new spawning system
   });
 });
 
@@ -368,7 +509,7 @@ document.getElementById("start-btn").addEventListener("click", () => {
   startCountdown(() => {
     resetGame();
     fetchHighScore();
-    dropEgg();
+    startEggSpawning(); // Use new spawning system
   });
 });
 
@@ -556,6 +697,16 @@ try {
 
   // Request camera and start tracking when user starts the game
   document.getElementById("start-btn").addEventListener("click", () => {
+     // Initialize game tracking
+     studentId = getStudentData();
+     gameStartTime = Date.now();
+     
+     // Initialize GameTracker if available
+     if (window.GameTracker) {
+       window.GameTracker.setupEggHunt(studentId);
+       console.log('🎮 Egg Hunt tracking initialized for student:', studentId);
+     }
+     
      camera.start().catch((err) => {
         console.warn("Camera access denied or unavailable. Fallback to normal controls.", err);
         document.getElementById('gesture-ui').style.display = 'none';

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tracking Integration Example</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        .tracking-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .tracking-section h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        .metrics-display {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Game Tracking Integration</h1>
+        
+        <div class="tracking-section">
+            <h3>📊 Initialize Game Session</h3>
+            <button onclick="initializeGame()">Start Game Session</button>
+            <button onclick="endGame()">End Game Session</button>
+            <div id="session-status" class="status info">Click to start tracking...</div>
+        </div>
+
+        <div class="tracking-section">
+            <h3>🧠 Cognitive Events</h3>
+            <button onclick="recordCorrectAnswer()">Record Correct Answer</button>
+            <button onclick="recordWrongAnswer()">Record Wrong Answer</button>
+            <button onclick="recordPatternRecognition()">Record Pattern Recognition</button>
+        </div>
+
+        <div class="tracking-section">
+            <h3>💪 Motor Skills Events</h3>
+            <button onclick="recordSuccessfulInteraction()">Record Success</button>
+            <button onclick="recordFailedInteraction()">Record Failure</button>
+            <button onclick="recordQuickReaction()">Record Quick Reaction</button>
+            <button onclick="recordAccurateAction()">Record Accurate Action</button>
+        </div>
+
+        <div class="tracking-section">
+            <h3>❤️ Emotional Events</h3>
+            <button onclick="recordHelpRequest()">Record Help Request</button>
+            <button onclick="recordTaskCompletion()">Record Task Completion</button>
+            <button onclick="recordTimeSpent()">Record Time Spent</button>
+        </div>
+
+        <div class="tracking-section">
+            <h3>👥 Social Events</h3>
+            <button onclick="recordSocialInteraction()">Record Social Interaction</button>
+        </div>
+
+        <div class="tracking-section">
+            <h3>📈 Current Metrics</h3>
+            <div id="metrics-display" class="metrics-display">No active session...</div>
+            <button onclick="refreshMetrics()">Refresh Metrics</button>
+        </div>
+
+        <div class="tracking-section">
+            <h3>💾 Save & Load</h3>
+            <button onclick="saveSession()">Save Session Data</button>
+            <button onclick="loadStoredData()">Load Stored Data</button>
+            <div id="save-status" class="status info">Click to save or load data...</div>
+        </div>
+    </div>
+
+    <script>
+        // Import the game tracking system
+        let currentSession = null;
+        let gameMetrics = {
+            cognitive: {},
+            motor: {},
+            social: {},
+            emotional: {}
+        };
+
+        // Initialize game session
+        function initializeGame() {
+            const studentId = 'TEST_STUDENT_001';
+            const gameName = 'Egg Hunt';
+            
+            currentSession = {
+                gameName,
+                studentId,
+                startTime: Date.now(),
+                events: [],
+                interactions: {
+                    clicks: 0,
+                    keyPresses: 0,
+                    mouseMovements: 0,
+                    timeSpent: 0
+                }
+            };
+
+            // Initialize metrics for Egg Hunt
+            gameMetrics = {
+                cognitive: {
+                    pattern_recognition: 0,
+                    attention_span: 0,
+                    problem_solving: 0,
+                    memory: 0
+                },
+                motor: {
+                    hand_eye_coordination: 0,
+                    fine_motor_control: 0,
+                    reaction_time: 0
+                },
+                social: {
+                    cooperation: 0,
+                    communication: 0,
+                    sharing: 0
+                },
+                emotional: {
+                    frustration_tolerance: 0,
+                    persistence: 0,
+                    confidence: 0,
+                    emotional_regulation: 0
+                }
+            };
+
+            updateStatus('session-status', '✅ Game session started!', 'success');
+            refreshMetrics();
+        }
+
+        // End game session
+        function endGame() {
+            if (!currentSession) {
+                updateStatus('session-status', '❌ No active session to end', 'error');
+                return;
+            }
+
+            currentSession.endTime = Date.now();
+            currentSession.duration = currentSession.endTime - currentSession.startTime;
+            currentSession.metrics = gameMetrics;
+            currentSession.performanceScore = calculatePerformanceScore();
+
+            // Save to localStorage
+            saveToLocalStorage(currentSession);
+
+            updateStatus('session-status', '✅ Game session ended and saved!', 'success');
+            currentSession = null;
+            refreshMetrics();
+        }
+
+        // Record events
+        function recordCorrectAnswer() {
+            if (!currentSession) return;
+            
+            gameMetrics.cognitive.pattern_recognition = Math.min(100, gameMetrics.cognitive.pattern_recognition + 5);
+            gameMetrics.cognitive.problem_solving = Math.min(100, gameMetrics.cognitive.problem_solving + 3);
+            gameMetrics.emotional.confidence = Math.min(100, gameMetrics.emotional.confidence + 2);
+            
+            currentSession.events.push({
+                type: 'correct_answer',
+                timestamp: Date.now(),
+                data: { value: 5 }
+            });
+            
+            refreshMetrics();
+        }
+
+        function recordWrongAnswer() {
+            if (!currentSession) return;
+            
+            gameMetrics.cognitive.pattern_recognition = Math.max(0, gameMetrics.cognitive.pattern_recognition - 2);
+            gameMetrics.emotional.frustration_tolerance = Math.max(0, gameMetrics.emotional.frustration_tolerance - 1);
+            gameMetrics.emotional.persistence = Math.min(100, gameMetrics.emotional.persistence + 2);
+            
+            currentSession.events.push({
+                type: 'wrong_answer',
+                timestamp: Date.now(),
+                data: { value: 2 }
+            });
+            
+            refreshMetrics();
+        }
+
+        function recordPatternRecognition() {
+            if (!currentSession) return;
+            
+            gameMetrics.cognitive.pattern_recognition = Math.min(100, gameMetrics.cognitive.pattern_recognition + 8);
+            gameMetrics.cognitive.attention_span = Math.min(100, gameMetrics.cognitive.attention_span + 3);
+            
+            refreshMetrics();
+        }
+
+        function recordSuccessfulInteraction() {
+            if (!currentSession) return;
+            
+            gameMetrics.motor.hand_eye_coordination = Math.min(100, gameMetrics.motor.hand_eye_coordination + 5);
+            gameMetrics.motor.fine_motor_control = Math.min(100, gameMetrics.motor.fine_motor_control + 3);
+            gameMetrics.emotional.confidence = Math.min(100, gameMetrics.emotional.confidence + 2);
+            
+            currentSession.events.push({
+                type: 'successful_interaction',
+                timestamp: Date.now(),
+                data: { value: 5 }
+            });
+            
+            refreshMetrics();
+        }
+
+        function recordFailedInteraction() {
+            if (!currentSession) return;
+            
+            gameMetrics.motor.hand_eye_coordination = Math.max(0, gameMetrics.motor.hand_eye_coordination - 1);
+            gameMetrics.emotional.persistence = Math.min(100, gameMetrics.emotional.persistence + 3);
+            
+            currentSession.events.push({
+                type: 'failed_interaction',
+                timestamp: Date.now(),
+                data: { value: 2 }
+            });
+            
+            refreshMetrics();
+        }
+
+        function recordQuickReaction() {
+            if (!currentSession) return;
+            
+            gameMetrics.motor.reaction_time = Math.min(100, gameMetrics.motor.reaction_time + 8);
+            
+            refreshMetrics();
+        }
+
+        function recordAccurateAction() {
+            if (!currentSession) return;
+            
+            gameMetrics.motor.fine_motor_control = Math.min(100, gameMetrics.motor.fine_motor_control + 7);
+            
+            refreshMetrics();
+        }
+
+        function recordHelpRequest() {
+            if (!currentSession) return;
+            
+            gameMetrics.emotional.frustration_tolerance = Math.max(0, gameMetrics.emotional.frustration_tolerance - 2);
+            
+            currentSession.events.push({
+                type: 'help_requested',
+                timestamp: Date.now()
+            });
+            
+            refreshMetrics();
+        }
+
+        function recordTaskCompletion() {
+            if (!currentSession) return;
+            
+            gameMetrics.emotional.sense_of_accomplishment = Math.min(100, gameMetrics.emotional.sense_of_accomplishment + 10);
+            gameMetrics.emotional.task_completion = Math.min(100, gameMetrics.emotional.task_completion + 8);
+            
+            currentSession.events.push({
+                type: 'task_completed',
+                timestamp: Date.now()
+            });
+            
+            refreshMetrics();
+        }
+
+        function recordTimeSpent() {
+            if (!currentSession) return;
+            
+            const timeSpent = Math.floor((Date.now() - currentSession.startTime) / 1000);
+            currentSession.interactions.timeSpent = timeSpent;
+            
+            if (timeSpent > 300) { // 5 minutes
+                gameMetrics.cognitive.attention_span = Math.min(100, gameMetrics.cognitive.attention_span + 10);
+            }
+            
+            if (timeSpent > 600) { // 10 minutes
+                gameMetrics.emotional.patience = Math.min(100, gameMetrics.emotional.patience + 5);
+            }
+            
+            refreshMetrics();
+        }
+
+        function recordSocialInteraction() {
+            if (!currentSession) return;
+            
+            gameMetrics.social.cooperation = Math.min(100, gameMetrics.social.cooperation + 5);
+            gameMetrics.social.communication = Math.min(100, gameMetrics.social.communication + 3);
+            
+            currentSession.events.push({
+                type: 'social_interaction',
+                timestamp: Date.now(),
+                data: { value: 5 }
+            });
+            
+            refreshMetrics();
+        }
+
+        // Calculate performance score
+        function calculatePerformanceScore() {
+            let totalScore = 0;
+            let metricCount = 0;
+
+            Object.keys(gameMetrics).forEach(category => {
+                let categoryTotal = 0;
+                let categoryCount = 0;
+                
+                Object.keys(gameMetrics[category]).forEach(metric => {
+                    categoryTotal += gameMetrics[category][metric];
+                    categoryCount++;
+                });
+                
+                totalScore += categoryCount > 0 ? categoryTotal / categoryCount : 0;
+                metricCount++;
+            });
+
+            return metricCount > 0 ? Math.round(totalScore / metricCount) : 0;
+        }
+
+        // Refresh metrics display
+        function refreshMetrics() {
+            const display = document.getElementById('metrics-display');
+            
+            if (!currentSession) {
+                display.textContent = 'No active session...';
+                return;
+            }
+
+            const timeSpent = Math.floor((Date.now() - currentSession.startTime) / 1000);
+            const performanceScore = calculatePerformanceScore();
+
+            display.textContent = `
+🎮 Game: ${currentSession.gameName}
+👤 Student: ${currentSession.studentId}
+⏱️ Time Spent: ${timeSpent}s
+
+🧠 COGNITIVE:
+  Pattern Recognition: ${gameMetrics.cognitive.pattern_recognition}%
+  Attention Span: ${gameMetrics.cognitive.attention_span}%
+  Problem Solving: ${gameMetrics.cognitive.problem_solving}%
+  Memory: ${gameMetrics.cognitive.memory}%
+
+💪 MOTOR SKILLS:
+  Hand-Eye Coordination: ${gameMetrics.motor.hand_eye_coordination}%
+  Fine Motor Control: ${gameMetrics.motor.fine_motor_control}%
+  Reaction Time: ${gameMetrics.motor.reaction_time}%
+
+👥 SOCIAL:
+  Cooperation: ${gameMetrics.social.cooperation}%
+  Communication: ${gameMetrics.social.communication}%
+  Sharing: ${gameMetrics.social.sharing}%
+
+❤️ EMOTIONAL:
+  Frustration Tolerance: ${gameMetrics.emotional.frustration_tolerance}%
+  Persistence: ${gameMetrics.emotional.persistence}%
+  Confidence: ${gameMetrics.emotional.confidence}%
+  Emotional Regulation: ${gameMetrics.emotional.emotional_regulation}%
+
+📊 Overall Performance Score: ${performanceScore}%
+            `;
+        }
+
+        // Save to localStorage
+        function saveToLocalStorage(sessionData) {
+            const key = `student_performance_${sessionData.studentId}`;
+            const existingData = localStorage.getItem(key);
+            
+            let studentData = existingData ? JSON.parse(existingData) : {};
+            
+            // Update or add game performance
+            if (!studentData[sessionData.gameName]) {
+                studentData[sessionData.gameName] = {};
+            }
+            
+            // Merge with existing performance data
+            studentData[sessionData.gameName] = {
+                cognitive: sessionData.metrics.cognitive,
+                motor: sessionData.metrics.motor,
+                social: sessionData.metrics.social,
+                emotional: sessionData.metrics.emotional
+            };
+            
+            localStorage.setItem(key, JSON.stringify(studentData));
+            updateStatus('save-status', '✅ Data saved to localStorage!', 'success');
+        }
+
+        // Load stored data
+        function loadStoredData() {
+            const studentId = 'TEST_STUDENT_001';
+            const key = `student_performance_${studentId}`;
+            const data = localStorage.getItem(key);
+            
+            if (data) {
+                const studentData = JSON.parse(data);
+                updateStatus('save-status', `📊 Found performance data for ${Object.keys(studentData).length} games`, 'success');
+                console.log('Stored student data:', studentData);
+            } else {
+                updateStatus('save-status', '❌ No stored data found', 'error');
+            }
+        }
+
+        // Update status display
+        function updateStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+        }
+
+        // Auto-refresh metrics every 2 seconds if session is active
+        setInterval(() => {
+            if (currentSession) {
+                recordTimeSpent();
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

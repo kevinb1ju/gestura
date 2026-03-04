@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>🎈 Pop the Balloon!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js" crossorigin="anonymous"></script>
+  <script src="../../game-integration.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      user-select: none;
+      font-family: 'Fredoka One', cursive
+    }
+
+    /* SCREENS */
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      transition: opacity .4s
+    }
+
+    .screen.hidden {
+      opacity: 0;
+      pointer-events: none
+    }
+
+    /* ===== WELCOME ===== */
+    #sw {
+      background: linear-gradient(160deg, #FF9A9E, #FFEAA7 50%, #A8EDEA)
+    }
+
+    .wb {
+      display: flex;
+      gap: 12px;
+      animation: float 2.6s ease-in-out infinite alternate
+    }
+
+    .wb span {
+      font-size: clamp(65px, 14vw, 110px);
+      cursor: pointer;
+      display: inline-block;
+      animation: wgl 2s ease-in-out infinite;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .2));
+      transition: transform .1s
+    }
+
+    .wb span:hover {
+      transform: scale(1.3) rotate(-10deg)
+    }
+
+    .wb span:nth-child(2) {
+      animation-delay: .4s;
+      font-size: clamp(80px, 18vw, 130px)
+    }
+
+    .wb span:nth-child(3) {
+      animation-delay: .7s
+    }
+
+    .wtitle {
+      font-size: clamp(38px, 9vw, 80px);
+      color: #fff;
+      text-shadow: 4px 4px 0 #FF6B6B, 8px 8px 0 rgba(0, 0, 0, .12);
+      text-align: center;
+      animation: bIn .7s ease-out both
+    }
+
+    .whint {
+      font-size: clamp(13px, 3.2vw, 20px);
+      color: rgba(255, 255, 255, .92);
+      background: rgba(255, 255, 255, .22);
+      padding: 10px 22px;
+      border-radius: 50px;
+      border: 2px solid rgba(255, 255, 255, .4);
+      text-align: center
+    }
+
+    .btn-play {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(26px, 6vw, 50px);
+      background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+      color: #fff;
+      border: none;
+      padding: 15px 56px;
+      border-radius: 100px;
+      cursor: pointer;
+      box-shadow: 0 10px 0 #CC3B3B, 0 14px 28px rgba(255, 107, 107, .5);
+      animation: pulse 2s ease-in-out infinite, bIn .8s .3s ease-out both;
+      transition: transform .12s, box-shadow .12s
+    }
+
+    .btn-play:active {
+      transform: translateY(8px);
+      box-shadow: 0 2px 0 #CC3B3B
+    }
+
+    .hsbadge {
+      font-size: clamp(13px, 3vw, 20px);
+      color: rgba(255, 255, 255, .88);
+      background: rgba(255, 255, 255, .2);
+      border: 2px solid rgba(255, 255, 255, .4);
+      border-radius: 50px;
+      padding: 8px 22px
+    }
+
+    /* ===== GAME SCREEN ===== */
+    #sg {
+      overflow: hidden;
+      cursor: none
+    }
+
+    /* === ANIMATED SCENE BACKGROUND === */
+    .sky {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, #4FC3F7 0%, #81D4FA 40%, #B3E5FC 70%, #E1F5FE 100%);
+      z-index: 0
+    }
+
+    /* Sun */
+    .sun {
+      position: fixed;
+      top: 30px;
+      right: 100px;
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, #FFD700, #FFA500);
+      border-radius: 50%;
+      z-index: 1;
+      box-shadow: 0 0 0 16px rgba(255, 215, 0, .2), 0 0 0 30px rgba(255, 215, 0, .1);
+      animation: sunPulse 4s ease-in-out infinite
+    }
+
+    .sun::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 215, 0, .3), transparent 70%)
+    }
+
+    /* Clouds */
+    .cloud {
+      position: fixed;
+      z-index: 2;
+      pointer-events: none;
+      animation: cloudDrift linear infinite
+    }
+
+    .cloud .c {
+      background: #fff;
+      border-radius: 50px;
+      position: absolute;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .08)
+    }
+
+    /* Mountains back */
+    .mountains-back {
+      position: fixed;
+      bottom: 130px;
+      left: 0;
+      width: 100%;
+      z-index: 3;
+      pointer-events: none
+    }
+
+    /* Mountains front */
+    .mountains-front {
+      position: fixed;
+      bottom: 110px;
+      left: 0;
+      width: 100%;
+      z-index: 4;
+      pointer-events: none
+    }
+
+    /* Rolling hills */
+    .hills {
+      position: fixed;
+      bottom: 80px;
+      left: 0;
+      width: 100%;
+      height: 160px;
+      z-index: 5;
+      pointer-events: none
+    }
+
+    /* Ground */
+    .ground {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 90px;
+      background: linear-gradient(180deg, #66BB6A, #388E3C);
+      z-index: 6;
+      pointer-events: none;
+      border-radius: 60% 60% 0 0/22px 22px 0 0
+    }
+
+    .ground::before {
+      content: '🌷🌻🌷🌼🌷🌻🌼🌷🌻🌷🌼🌷🌻🌷🌼';
+      position: absolute;
+      top: -24px;
+      left: 0;
+      width: 100%;
+      font-size: clamp(14px, 2.8vw, 22px);
+      letter-spacing: clamp(10px, 2vw, 18px)
+    }
+
+    /* House */
+    .house {
+      position: fixed;
+      bottom: 88px;
+      left: clamp(20px, 6vw, 70px);
+      z-index: 7;
+      pointer-events: none
+    }
+
+    /* Tree */
+    .tree {
+      position: fixed;
+      bottom: 88px;
+      z-index: 7;
+      pointer-events: none
+    }
+
+    /* Windmill */
+    .windmill {
+      position: fixed;
+      bottom: 88px;
+      right: clamp(30px, 8vw, 110px);
+      z-index: 7;
+      pointer-events: none
+    }
+
+    /* Birds */
+    .bird {
+      position: fixed;
+      z-index: 3;
+      font-size: clamp(14px, 2vw, 20px);
+      animation: birdFly linear infinite;
+      pointer-events: none;
+      opacity: .7
+    }
+
+    /* HUD */
+    .hud {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 7px;
+      z-index: 100
+    }
+
+    .hcard {
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(6px);
+      border-radius: 22px;
+      padding: 6px 14px;
+      text-align: center;
+      box-shadow: 0 5px 0 rgba(0, 0, 0, .1);
+      min-width: 68px
+    }
+
+    .hico {
+      font-size: 1.2rem;
+      display: block
+    }
+
+    .hval {
+      font-size: 1.5rem;
+      color: #333;
+      line-height: 1.1
+    }
+
+    .hval.r {
+      color: #FF4757
+    }
+
+    .hval.g {
+      color: #FF9800
+    }
+
+    .hval.b {
+      color: #2196F3
+    }
+
+    .hval.sm {
+      font-size: .88rem;
+      letter-spacing: 3px
+    }
+
+    .hval.urg {
+      color: #FF4444;
+      animation: wgl .4s infinite
+    }
+
+    /* Timer Bar */
+    .tbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 9px;
+      background: rgba(255, 255, 255, .3);
+      z-index: 200
+    }
+
+    .tfill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF6B6B, #FFD700);
+      transition: width .85s linear;
+      border-radius: 0 5px 5px 0
+    }
+
+    /* WEBCAM & camera UI */
+    #webcam {
+      position: fixed;
+      bottom: 100px;
+      right: 12px;
+      width: 150px;
+      height: 112px;
+      border-radius: 16px;
+      border: 4px solid #fff;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .25);
+      z-index: 90;
+      object-fit: cover;
+      transform: scaleX(-1);
+      background: #111
+    }
+
+    .cam-status {
+      position: fixed;
+      bottom: 100px;
+      right: 12px;
+      width: 150px;
+      background: rgba(0, 0, 0, .7);
+      border-radius: 16px;
+      padding: 8px 10px;
+      text-align: center;
+      z-index: 91;
+      font-size: .72rem;
+      color: #fff;
+      pointer-events: none
+    }
+
+    .cam-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle
+    }
+
+    .cam-dot.green {
+      background: #4CAF50;
+      animation: pulse 1s infinite
+    }
+
+    .cam-dot.red {
+      background: #f44336
+    }
+
+    .cam-dot.yellow {
+      background: #FFC107;
+      animation: pulse 1s infinite
+    }
+
+    /* Gesture panel */
+    .gbox {
+      position: fixed;
+      bottom: 100px;
+      left: 12px;
+      background: rgba(255, 255, 255, .96);
+      border-radius: 20px;
+      padding: 10px 14px;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, .1);
+      z-index: 90;
+      text-align: center;
+      min-width: 128px;
+      border-top: 5px solid #ccc;
+      transition: border-color .3s, transform .2s
+    }
+
+    .gbox.active {
+      transform: scale(1.1)
+    }
+
+    .gico {
+      font-size: 2.4rem;
+      display: block
+    }
+
+    .gtxt {
+      font-size: .7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+
+    /* Mute */
+    .mute {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 100;
+      background: rgba(255, 255, 255, .96);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 5px 0 rgba(0, 0, 0, .1);
+      transition: transform .12s
+    }
+
+    .mute:hover {
+      transform: scale(1.12)
+    }
+
+    /* BALLOON */
+    .bwrap {
+      position: fixed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 30;
+      animation: rise linear forwards;
+      bottom: -200px
+    }
+
+    .bsway {
+      animation: sway ease-in-out infinite alternate;
+      transform-origin: bottom center;
+      display: flex;
+      flex-direction: column;
+      align-items: center
+    }
+
+    .bbody {
+      border-radius: 50% 50% 45% 45%/55% 55% 45% 45%;
+      position: relative;
+      cursor: pointer;
+      filter: drop-shadow(4px 8px 10px rgba(0, 0, 0, .25));
+      transition: transform .1s
+    }
+
+    .bbody:hover {
+      transform: scale(1.14)
+    }
+
+    .bshine {
+      position: absolute;
+      top: 13%;
+      left: 18%;
+      width: 26%;
+      height: 24%;
+      background: rgba(255, 255, 255, .62);
+      border-radius: 50%;
+      transform: rotate(-30deg);
+      pointer-events: none
+    }
+
+    .bemoji {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -46%);
+      pointer-events: none
+    }
+
+    .btie {
+      margin: 0 auto;
+      border-radius: 0 0 4px 4px
+    }
+
+    .bstr {
+      width: 2px;
+      background: rgba(0, 0, 0, .2);
+      margin: 0 auto
+    }
+
+    /* EFFECTS */
+    .flash {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 0, 0, 0);
+      z-index: 500;
+      pointer-events: none;
+      transition: background .07s
+    }
+
+    .flash.on {
+      background: rgba(255, 0, 0, .26)
+    }
+
+    .fbk {
+      position: fixed;
+      top: 38%;
+      left: 50%;
+      z-index: 300;
+      pointer-events: none;
+      font-size: clamp(2rem, 7vw, 4.5rem);
+      text-shadow: 3px 3px 0 rgba(0, 0, 0, .12);
+      animation: feedPop .85s ease-out forwards;
+      white-space: nowrap;
+      transform: translate(-50%, -50%)
+    }
+
+    .cmb {
+      position: fixed;
+      top: 26%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(1.8rem, 5vw, 3.5rem);
+      color: #9C27B0;
+      text-shadow: 3px 3px 0 rgba(0, 0, 0, .15);
+      z-index: 350;
+      pointer-events: none;
+      animation: comboA 1.1s ease-out forwards
+    }
+
+    .lvlup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #FFD700, #FF8C00);
+      border-radius: 30px;
+      padding: 18px 46px;
+      box-shadow: 0 12px 44px rgba(0, 0, 0, .28);
+      z-index: 400;
+      pointer-events: none;
+      animation: lvlA 2.4s ease-out forwards;
+      font-size: clamp(1.8rem, 5vw, 3.5rem);
+      color: #fff;
+      text-shadow: 3px 3px 0 rgba(0, 0, 0, .18)
+    }
+
+    .burst {
+      position: fixed;
+      pointer-events: none;
+      z-index: 300;
+      font-size: 1.8rem;
+      animation: burstA .55s ease-out forwards
+    }
+
+    .popring {
+      position: fixed;
+      pointer-events: none;
+      z-index: 299;
+      border: 6px solid gold;
+      border-radius: 50%;
+      animation: ringA .5s ease-out forwards
+    }
+
+    #hcursor {
+      position: fixed;
+      pointer-events: none;
+      z-index: 400;
+      transform: translate(-50%, -50%);
+      font-size: 3rem;
+      filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, .2))
+    }
+
+    /* GAME OVER */
+    #so {
+      z-index: 600
+    }
+
+    #so.win {
+      background: linear-gradient(150deg, #FFEAA7, #FD79A8, #A29BFE)
+    }
+
+    #so.lose {
+      background: linear-gradient(150deg, #74B9FF, #A29BFE, #FD79A8)
+    }
+
+    .go-em {
+      font-size: clamp(70px, 16vw, 110px);
+      animation: bIn .6s ease-out both;
+      filter: drop-shadow(0 8px 20px rgba(0, 0, 0, .2))
+    }
+
+    .go-msg {
+      font-size: clamp(28px, 7vw, 56px);
+      color: #fff;
+      text-shadow: 3px 3px 0 rgba(0, 0, 0, .15);
+      animation: bIn .6s .15s ease-out both;
+      text-align: center
+    }
+
+    .go-box {
+      background: rgba(255, 255, 255, .9);
+      border-radius: 28px;
+      padding: 14px 36px;
+      text-align: center;
+      animation: bIn .6s .3s ease-out both;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .12)
+    }
+
+    .go-lbl {
+      font-size: .8rem;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 3px
+    }
+
+    .go-sc {
+      font-size: clamp(55px, 13vw, 86px);
+      color: #FF6B6B;
+      line-height: 1
+    }
+
+    .go-stars {
+      font-size: 1.9rem;
+      letter-spacing: 6px
+    }
+
+    .go-best {
+      font-size: .88rem;
+      color: #888;
+      margin-top: 4px
+    }
+
+    .btn-again {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(20px, 5vw, 34px);
+      background: linear-gradient(135deg, #6BCF7F, #00B894);
+      color: #fff;
+      border: none;
+      padding: 14px 46px;
+      border-radius: 80px;
+      cursor: pointer;
+      box-shadow: 0 8px 0 #007A5E, 0 12px 24px rgba(0, 184, 148, .4);
+      animation: bIn .6s .5s ease-out both;
+      transition: transform .12s, box-shadow .12s
+    }
+
+    .btn-again:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #007A5E
+    }
+
+    .btn-menu {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(14px, 3.5vw, 22px);
+      background: rgba(255, 255, 255, .28);
+      color: #fff;
+      border: 2px solid rgba(255, 255, 255, .6);
+      padding: 10px 30px;
+      border-radius: 60px;
+      cursor: pointer;
+      animation: bIn .6s .65s ease-out both;
+      transition: background .2s;
+      backdrop-filter: blur(6px)
+    }
+
+    .btn-menu:hover {
+      background: rgba(255, 255, 255, .48)
+    }
+
+    .confetti {
+      position: fixed;
+      pointer-events: none;
+      z-index: 550;
+      animation: confA linear forwards;
+      font-size: 1.3rem
+    }
+
+    /* ===== BOMB ===== */
+    .bomb-body {
+      background: radial-gradient(circle at 38% 35%, #555, #111) !important;
+      border-radius: 50% !important;
+      border: 4px solid #333;
+      box-shadow: 0 0 0 6px rgba(255, 80, 0, .35), 0 6px 18px rgba(0, 0, 0, .5);
+      animation: bombPulse 0.6s ease-in-out infinite alternate;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bomb-body:hover {
+      transform: scale(1.18) !important;
+    }
+
+    .bomb-label {
+      font-size: 2.8rem;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .bomb-fuse {
+      position: absolute;
+      top: -18px;
+      right: 12px;
+      width: 5px;
+      height: 18px;
+      background: linear-gradient(#FFD700, #FF6600);
+      border-radius: 3px;
+      animation: fuseBurn 0.3s linear infinite alternate;
+      transform-origin: bottom center;
+    }
+
+    .bomb-fuse::after {
+      content: '✨';
+      position: absolute;
+      top: -14px;
+      left: -5px;
+      font-size: 1rem;
+      animation: fuseSpark 0.3s linear infinite alternate;
+    }
+
+    @keyframes bombPulse {
+      from {
+        box-shadow: 0 0 0 6px rgba(255, 80, 0, .35), 0 6px 18px rgba(0, 0, 0, .5);
+      }
+
+      to {
+        box-shadow: 0 0 0 14px rgba(255, 80, 0, .5), 0 8px 24px rgba(0, 0, 0, .6);
+      }
+    }
+
+    @keyframes fuseBurn {
+      from {
+        transform: rotate(-8deg);
+      }
+
+      to {
+        transform: rotate(8deg);
+      }
+    }
+
+    @keyframes fuseSpark {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: .4;
+      }
+    }
+
+    /* ===== SPEED BANNER ===== */
+    .speed-banner {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #FF4444, #FF8800);
+      border-radius: 28px;
+      padding: 18px 44px;
+      box-shadow: 0 12px 40px rgba(255, 68, 68, .5);
+      z-index: 410;
+      text-align: center;
+      pointer-events: none;
+      animation: speedBannerA 2.8s ease-out forwards;
+      font-size: clamp(1.6rem, 4.5vw, 3rem);
+      color: #fff;
+      text-shadow: 2px 2px 0 rgba(0, 0, 0, .2);
+      letter-spacing: 1px;
+    }
+
+    @keyframes speedBannerA {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.4);
+      }
+
+      15% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+
+      75% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -60%) scale(.95);
+      }
+    }
+
+    /* ===== BOMB ALERT ===== */
+    .bomb-alert {
+      position: fixed;
+      top: 42%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #111, #333);
+      border: 4px solid #FF4400;
+      border-radius: 28px;
+      padding: 20px 46px;
+      box-shadow: 0 0 0 8px rgba(255, 68, 0, .25), 0 12px 44px rgba(0, 0, 0, .6);
+      z-index: 420;
+      text-align: center;
+      pointer-events: none;
+      animation: bombAlertA 3s ease-out forwards;
+      font-size: clamp(1.5rem, 4vw, 2.8rem);
+      color: #FF6600;
+      text-shadow: 0 0 12px rgba(255, 100, 0, .8);
+    }
+
+    @keyframes bombAlertA {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.3);
+      }
+
+      12% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.12);
+      }
+
+      80% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -58%) scale(.95);
+      }
+    }
+
+    /* KEYFRAMES */
+    @keyframes float {
+      from {
+        transform: translateY(0)
+      }
+
+      to {
+        transform: translateY(-20px)
+      }
+    }
+
+    @keyframes wgl {
+
+      0%,
+      100% {
+        transform: rotate(-7deg)
+      }
+
+      50% {
+        transform: rotate(7deg)
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1)
+      }
+
+      50% {
+        transform: scale(1.07)
+      }
+    }
+
+    @keyframes bIn {
+      0% {
+        transform: scale(0);
+        opacity: 0
+      }
+
+      60% {
+        transform: scale(1.15);
+        opacity: 1
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1
+      }
+    }
+
+    @keyframes sunPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 16px rgba(255, 215, 0, .2), 0 0 0 30px rgba(255, 215, 0, .1)
+      }
+
+      50% {
+        box-shadow: 0 0 0 22px rgba(255, 215, 0, .25), 0 0 0 40px rgba(255, 215, 0, .12)
+      }
+    }
+
+    @keyframes cloudDrift {
+      from {
+        transform: translateX(-320px)
+      }
+
+      to {
+        transform: translateX(calc(100vw + 320px))
+      }
+    }
+
+    @keyframes birdFly {
+      from {
+        transform: translateX(-80px)
+      }
+
+      to {
+        transform: translateX(calc(100vw + 80px))
+      }
+    }
+
+    @keyframes rise {
+      from {
+        bottom: -200px
+      }
+
+      to {
+        bottom: 115vh
+      }
+    }
+
+    @keyframes sway {
+      from {
+        transform: rotate(-7deg)
+      }
+
+      to {
+        transform: rotate(7deg)
+      }
+    }
+
+    @keyframes burstA {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(.2)
+      }
+
+      55% {
+        opacity: 1;
+        transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.1)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--dx)*2), calc(-50% + var(--dy)*2)) scale(.2)
+      }
+    }
+
+    @keyframes ringA {
+      0% {
+        opacity: 1;
+        width: 20px;
+        height: 20px;
+        transform: translate(-50%, -50%)
+      }
+
+      100% {
+        opacity: 0;
+        width: 140px;
+        height: 140px;
+        transform: translate(-50%, -50%)
+      }
+    }
+
+    @keyframes feedPop {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.3)
+      }
+
+      25% {
+        opacity: 1;
+        transform: translate(-50%, -58%) scale(1.18)
+      }
+
+      70% {
+        opacity: 1;
+        transform: translate(-50%, -66%) scale(1)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -90%) scale(.85)
+      }
+    }
+
+    @keyframes comboA {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -30%) scale(.5)
+      }
+
+      25% {
+        opacity: 1;
+        transform: translate(-50%, -58%) scale(1.2)
+      }
+
+      80% {
+        opacity: 1;
+        transform: translate(-50%, -68%) scale(1)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -100%) scale(.9)
+      }
+    }
+
+    @keyframes lvlA {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.3)
+      }
+
+      18% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1)
+      }
+
+      78% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.9)
+      }
+    }
+
+    @keyframes confA {
+      0% {
+        transform: translateY(-30px) rotate(0deg);
+        opacity: 1
+      }
+
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0
+      }
+    }
+
+    @keyframes spinB {
+
+      0%,
+      100% {
+        transform: scale(1) rotate(0deg)
+      }
+
+      50% {
+        transform: scale(1.2) rotate(180deg)
+      }
+    }
+
+    @keyframes windmillSpin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    @media(max-width:480px) {
+      .hud {
+        gap: 4px;
+        top: 9px
+      }
+
+      .hcard {
+        padding: 5px 9px;
+        min-width: 54px
+      }
+
+      .hval {
+        font-size: 1.2rem
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== WELCOME ===== -->
+  <div id="sw" class="screen">
+    <div class="wb">
+      <span id="wb1">🎈</span><span id="wb2">🎈</span><span id="wb3">🎈</span>
+    </div>
+    <h1 class="wtitle">Pop the Balloon!</h1>
+    <p class="whint">🖐️ Open your hand to pop • Camera required!</p>
+    <button class="btn-play" id="btn-play">▶ Play!</button>
+    <div class="hsbadge" id="hsbadge">🏆 Best: 0</div>
+  </div>
+
+  <!-- ===== GAME ===== -->
+  <div id="sg" class="screen hidden">
+
+    <!-- Scenic background -->
+    <div class="sky"></div>
+    <div class="sun"></div>
+
+    <!-- Clouds (built via CSS divs) -->
+    <div class="cloud" id="cl1" style="top:8%;animation-duration:32s;animation-delay:-5s">
+      <div class="c" style="width:90px;height:38px;top:22px;left:0"></div>
+      <div class="c" style="width:60px;height:50px;top:8px;left:18px"></div>
+      <div class="c" style="width:70px;height:40px;top:18px;left:55px"></div>
+    </div>
+    <div class="cloud" id="cl2" style="top:18%;animation-duration:46s;animation-delay:-22s">
+      <div class="c" style="width:110px;height:44px;top:28px;left:0"></div>
+      <div class="c" style="width:70px;height:60px;top:10px;left:24px"></div>
+      <div class="c" style="width:80px;height:46px;top:22px;left:68px"></div>
+    </div>
+    <div class="cloud" id="cl3" style="top:12%;animation-duration:58s;animation-delay:-38s">
+      <div class="c" style="width:80px;height:34px;top:20px;left:0"></div>
+      <div class="c" style="width:55px;height:46px;top:6px;left:16px"></div>
+      <div class="c" style="width:65px;height:36px;top:16px;left:50px"></div>
+    </div>
+
+    <!-- Birds -->
+    <div class="bird" style="top:15%;animation-duration:18s;animation-delay:-4s">🐦</div>
+    <div class="bird" style="top:9%;animation-duration:24s;animation-delay:-14s;font-size:clamp(10px,1.5vw,16px)">🐦
+    </div>
+
+    <!-- Back mountains (SVG) -->
+    <svg class="mountains-back" viewBox="0 0 1200 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="0,220 120,60 240,220" fill="#78909C" />
+      <polygon points="100,220 280,20 460,220" fill="#90A4AE" />
+      <polygon points="300,220 500,50 700,220" fill="#78909C" />
+      <polygon points="500,220 680,80 860,220" fill="#90A4AE" />
+      <polygon points="700,220 900,30 1100,220" fill="#78909C" />
+      <polygon points="900,220 1080,70 1200,220" fill="#8D9EAA" />
+      <!-- Snow caps -->
+      <polygon points="280,20 240,65 320,65" fill="white" opacity=".9" />
+      <polygon points="500,50 460,90 540,90" fill="white" opacity=".9" />
+      <polygon points="900,30 860,74 940,74" fill="white" opacity=".9" />
+    </svg>
+
+    <!-- Front mountains (greener) -->
+    <svg class="mountains-front" viewBox="0 0 1200 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="0,180 160,40 320,180" fill="#558B2F" />
+      <polygon points="200,180 380,70 560,180" fill="#689F38" />
+      <polygon points="450,180 620,30 790,180" fill="#558B2F" />
+      <polygon points="680,180 840,60 1000,180" fill="#689F38" />
+      <polygon points="880,180 1050,45 1200,180" fill="#558B2F" />
+      <polygon points="0,180 1200,180 1200,160 0,160" fill="#7CB342" />
+    </svg>
+
+    <!-- Rolling green hill behind ground -->
+    <svg class="hills" viewBox="0 0 1200 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="200" cy="160" rx="320" ry="100" fill="#81C784" />
+      <ellipse cx="700" cy="160" rx="380" ry="110" fill="#66BB6A" />
+      <ellipse cx="1100" cy="160" rx="280" ry="90" fill="#81C784" />
+    </svg>
+
+    <!-- House (left) -->
+    <div class="house">
+      <svg width="clamp(70px,10vw,110px)" height="clamp(80px,12vw,130px)" viewBox="0 0 110 130"
+        xmlns="http://www.w3.org/2000/svg">
+        <!-- Roof -->
+        <polygon points="5,60 55,5 105,60" fill="#E53935" />
+        <polygon points="15,60 55,18 95,60" fill="#EF5350" />
+        <!-- Chimney -->
+        <rect x="70" y="18" width="14" height="28" fill="#795548" />
+        <rect x="68" y="14" width="18" height="6" fill="#6D4C41" />
+        <!-- Walls -->
+        <rect x="10" y="58" width="90" height="70" fill="#FFF9C4" />
+        <rect x="10" y="58" width="90" height="70" fill="#FFECB3" rx="2" />
+        <!-- Door -->
+        <rect x="40" y="96" width="30" height="32" rx="15 15 0 0" fill="#6D4C41" />
+        <circle cx="67" cy="113" r="3" fill="#FFD700" />
+        <!-- Windows -->
+        <rect x="15" y="68" width="24" height="22" rx="4" fill="#B3E5FC" />
+        <line x1="27" y1="68" x2="27" y2="90" stroke="#90CAF9" stroke-width="2" />
+        <line x1="15" y1="79" x2="39" y2="79" stroke="#90CAF9" stroke-width="2" />
+        <rect x="71" y="68" width="24" height="22" rx="4" fill="#B3E5FC" />
+        <line x1="83" y1="68" x2="83" y2="90" stroke="#90CAF9" stroke-width="2" />
+        <line x1="71" y1="79" x2="95" y2="79" stroke="#90CAF9" stroke-width="2" />
+      </svg>
+    </div>
+
+    <!-- Trees -->
+    <div class="tree" style="right:clamp(140px,20vw,240px)">
+      <svg width="50" height="90" viewBox="0 0 50 90" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="60" width="10" height="30" fill="#795548" />
+        <polygon points="25,0 5,40 45,40" fill="#388E3C" />
+        <polygon points="25,18 2,55 48,55" fill="#43A047" />
+        <polygon points="25,34 0,70 50,70" fill="#4CAF50" />
+      </svg>
+    </div>
+    <div class="tree" style="right:clamp(80px,12vw,150px)">
+      <svg width="40" height="74" viewBox="0 0 40 74" xmlns="http://www.w3.org/2000/svg">
+        <rect x="16" y="48" width="8" height="26" fill="#795548" />
+        <polygon points="20,0 3,32 37,32" fill="#2E7D32" />
+        <polygon points="20,14 1,44 39,44" fill="#388E3C" />
+        <polygon points="20,28 0,58 40,58" fill="#43A047" />
+      </svg>
+    </div>
+    <div class="tree" style="left:clamp(130px,18vw,220px)">
+      <svg width="45" height="82" viewBox="0 0 45 82" xmlns="http://www.w3.org/2000/svg">
+        <rect x="18" y="54" width="9" height="28" fill="#795548" />
+        <polygon points="22,0 4,36 41,36" fill="#33691E" />
+        <polygon points="22,16 1,50 44,50" fill="#388E3C" />
+        <polygon points="22,30 0,64 45,64" fill="#43A047" />
+      </svg>
+    </div>
+
+    <!-- Windmill (right) -->
+    <div class="windmill">
+      <svg width="clamp(50px,8vw,80px)" height="clamp(90px,14vw,130px)" viewBox="0 0 80 130"
+        xmlns="http://www.w3.org/2000/svg">
+        <!-- Tower -->
+        <polygon points="30,20 50,20 45,130 35,130" fill="#BCAAA4" />
+        <polygon points="30,20 50,20 45,130 35,130" fill="#A1887F" />
+        <!-- Body top -->
+        <ellipse cx="40" cy="22" rx="14" ry="8" fill="#BCAAA4" />
+        <!-- Blades group - animated -->
+        <g transform="translate(40,22)" style="transform-origin:40px 22px;animation:windmillSpin 3s linear infinite">
+          <rect x="-3" y="-38" width="6" height="36" rx="3" fill="#EF9A9A" />
+          <rect x="-3" y="2" width="6" height="36" rx="3" fill="#EF9A9A" />
+          <rect x="-38" y="-3" width="36" height="6" rx="3" fill="#EF9A9A" />
+          <rect x="2" y="-3" width="36" height="6" rx="3" fill="#EF9A9A" />
+        </g>
+        <circle cx="40" cy="22" r="5" fill="#D32F2F" />
+      </svg>
+    </div>
+
+    <!-- Ground -->
+    <div class="ground"></div>
+
+    <!-- Timer bar -->
+    <div class="tbar">
+      <div class="tfill" id="tfill"></div>
+    </div>
+
+    <!-- HUD -->
+    <div class="hud">
+      <div class="hcard"><span class="hico">⭐</span>
+        <div class="hval r" id="h-score">0</div>
+      </div>
+      <div class="hcard"><span class="hico">🏅</span>
+        <div class="hval g" id="h-level">1</div>
+      </div>
+      <div class="hcard"><span class="hico">❤️</span>
+        <div class="hval sm" id="h-lives">❤❤❤</div>
+      </div>
+      <div class="hcard"><span class="hico">⏱️</span>
+        <div class="hval b" id="h-time">90</div>
+      </div>
+      <div class="hcard"><span class="hico">🎯</span>
+        <div class="hval" id="h-pops" style="font-size:.85rem;color:#7C3AED">0/8</div>
+      </div>
+    </div>
+
+    <button class="mute" id="mute-btn">🔊</button>
+
+    <!-- Webcam feed -->
+    <video id="webcam" autoplay playsinline muted></video>
+
+    <!-- Camera status label (overlaid on webcam) -->
+    <div class="cam-status" id="cam-status">
+      <span class="cam-dot yellow" id="cam-dot"></span><span id="cam-txt">Starting…</span>
+    </div>
+
+    <!-- Gesture box -->
+    <div class="gbox" id="gbox">
+      <span class="gico" id="gico">👋</span>
+      <span class="gtxt" id="gtxt" style="color:#aaa">Show hand</span>
+    </div>
+
+    <!-- Flash miss overlay -->
+    <div class="flash" id="flash"></div>
+
+    <!-- Hand cursor -->
+    <div id="hcursor">🖐️</div>
+
+  </div>
+
+  <!-- ===== GAME OVER ===== -->
+  <div id="so" class="screen hidden">
+    <div class="go-em" id="go-em">🏆</div>
+    <div class="go-msg" id="go-msg">Amazing!</div>
+    <div class="go-box">
+      <div class="go-lbl">Your Score</div>
+      <div class="go-sc" id="go-sc">0</div>
+      <div class="go-stars" id="go-stars">⭐⭐⭐</div>
+      <div class="go-best" id="go-best"></div>
+    </div>
+    <button class="btn-again" id="btn-again">🎈 Play Again!</button>
+    <button class="btn-menu" id="btn-menu">🏠 Main Menu</button>
+  </div>
+
+  <script>
+    // ══ SOUND ══
+    const Snd = (() => {
+      let ctx = null, muted = false, bgT = null;
+      const init = () => { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === 'suspended') ctx.resume() };
+      const t = () => ctx ? ctx.currentTime : 0;
+      const osc = (f, type, vol, dur, when, fEnd) => { if (!ctx || muted) return; try { const o = ctx.createOscillator(), g = ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.type = type; o.frequency.setValueAtTime(f, when); if (fEnd) o.frequency.exponentialRampToValueAtTime(fEnd, when + dur); g.gain.setValueAtTime(vol, when); g.gain.exponentialRampToValueAtTime(.0001, when + dur); o.start(when); o.stop(when + dur) } catch (e) { } };
+      return {
+        unlock: init,
+        pop() { init(); osc(820, 'square', .4, .13, t(), 60); osc(1200, 'sine', .15, .06, t()) },
+        miss() { init(); osc(280, 'sawtooth', .25, .42, t(), 120) },
+        levelUp() { init();[523, 659, 784, 1047, 1319].forEach((f, i) => osc(f, 'triangle', .28, .24, t() + i * .1)) },
+        cheer() { init();[523, 659, 784, 1047, 1319, 1568].forEach((f, i) => osc(f, 'triangle', .22, .5, t() + i * .08)) },
+        combo() { init(); osc(1047, 'sine', .2, .18, t()); osc(1319, 'sine', .18, .18, t() + .1) },
+        startBg() {
+          if (muted) return; if (bgT) clearTimeout(bgT); init();
+          const ns = [[523, .25], [587, .25], [659, .25], [698, .25], [784, .5], [784, .25], [698, .25], [659, .25], [587, .25], [523, .5], [523, .5], [659, .25], [659, .25], [784, .25], [784, .25], [1047, .75]];
+          let s = t() + .1, tot = 0; ns.forEach(([f, d]) => { osc(f, 'sine', .07, d, s); s += d; tot += d });
+          bgT = setTimeout(() => Snd.startBg(), (tot + 1) * 1000)
+        },
+        stopBg() { if (bgT) { clearTimeout(bgT); bgT = null } },
+        toggleMute() { muted = !muted; if (muted) Snd.stopBg(); else Snd.startBg(); return muted },
+        bombHit() {
+          init();
+          // Deep boom sound
+          [80, 60, 40].forEach((f, i) => osc(f, 'sawtooth', 0.5, 0.6, t() + i * 0.08, 20));
+          osc(200, 'square', 0.3, 0.2, t());
+        },
+      };
+    })();
+
+    // ══ SPEECH ══
+    function speak(txt) { if (!window.speechSynthesis) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(txt); u.rate = .88; u.pitch = 1.3; u.volume = 1; const v = speechSynthesis.getVoices().find(v => v.lang.startsWith('en')); if (v) u.voice = v; speechSynthesis.speak(u) }
+    if (window.speechSynthesis) { speechSynthesis.getVoices(); speechSynthesis.addEventListener('voiceschanged', () => speechSynthesis.getVoices()) }
+
+    // ══ CONSTANTS ══
+    const COLS = [
+      { bg: 'radial-gradient(circle at 35% 35%,#FF9999,#FF2222)', tie: '#CC1111' },
+      { bg: 'radial-gradient(circle at 35% 35%,#FFEE66,#FFAA00)', tie: '#CC8800' },
+      { bg: 'radial-gradient(circle at 35% 35%,#88EE88,#22AA44)', tie: '#118833' },
+      { bg: 'radial-gradient(circle at 35% 35%,#88AAFF,#2244DD)', tie: '#1133BB' },
+      { bg: 'radial-gradient(circle at 35% 35%,#FF99DD,#EE22AA)', tie: '#BB1188' },
+      { bg: 'radial-gradient(circle at 35% 35%,#FFAA66,#FF5511)', tie: '#CC3300' },
+      { bg: 'radial-gradient(circle at 35% 35%,#CC99FF,#8833EE)', tie: '#6611BB' },
+      { bg: 'radial-gradient(circle at 35% 35%,#55DDDD,#009999)', tie: '#007777' },
+    ];
+    const EMOJIS = ['⭐', '🌟', '🌈', '🦋', '🌸', '🐶', '🐱', '🦄', '🍭', '🎵', '💖', '🎀', '🐸', '🍦', '🚀'];
+    const POP_EM = ['✨', '⭐', '💥', '🌟', '🎊', '💫', '🎉'];
+    // Level 2 is noticeably faster (speed ms lower = faster rise)
+    const LEVELS = [
+      { speed: 14000, spawnMs: 2800, max: 2 }, // Level 1 – gentle
+      { speed: 8500, spawnMs: 1800, max: 3 }, // Level 2 – SPEED UP!
+      { speed: 7200, spawnMs: 1600, max: 4 }, // Level 3 – bombs appear
+      { speed: 6000, spawnMs: 1400, max: 5 },
+      { speed: 5000, spawnMs: 1200, max: 5 },
+      { speed: 4200, spawnMs: 1000, max: 6 },
+    ];
+    const POPS_LVL = 8, GSECS = 90;
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const uid = () => Math.random().toString(36).slice(2, 9);
+    const lcfg = l => LEVELS[Math.min(l - 1, LEVELS.length - 1)];
+
+    // ══ STATE ══
+    let balloons = {}, score = 0, level = 1, lives = 3, pops = 0, timeLeft = GSECS, combo = 0, lastPopMs = 0, active = false;
+    let spawnTmr = null, countTmr = null, bombTmr = null;
+    let highScore = parseInt(localStorage.getItem('popHS') || '0');
+
+    // ══ DOM ══
+    const $ = id => document.getElementById(id);
+    const $sg = $('sg'), $hcursor = $('hcursor'), $flash = $('flash');
+    const $gbox = $('gbox'), $gico = $('gico'), $gtxt = $('gtxt');
+    const $camStatus = $('cam-status'), $camDot = $('cam-dot'), $camTxt = $('cam-txt');
+    const $webcam = $('webcam');
+
+    // ══ SCREEN ══
+    function showScreen(n) {
+      ['sw', 'sg', 'so'].forEach(id => $(id).classList.add('hidden'));
+      $(n).classList.remove('hidden');
+    }
+
+    // ══ HUD ══
+    function updateHUD() {
+      $('h-score').textContent = score;
+      $('h-level').textContent = level;
+      $('h-lives').innerHTML = [0, 1, 2].map(i => i < lives ? '❤️' : '🖤').join('');
+      const ht = $('h-time'); ht.textContent = timeLeft;
+      ht.className = 'hval b' + (timeLeft < 15 ? ' urg' : '');
+      $('tfill').style.width = `${(timeLeft / GSECS) * 100}%`;
+      $('tfill').style.background = timeLeft < 15 ? 'linear-gradient(90deg,#FF4444,#FF6B6B)' : 'linear-gradient(90deg,#FF6B6B,#FFD700)';
+      $('h-pops').textContent = `${pops}/${POPS_LVL * level}`;
+    }
+
+    // ══ BALLOON ══
+    function spawnBalloon() {
+      if (!active) return;
+      const cfg = lcfg(level);
+      if (Object.keys(balloons).length >= cfg.max) return;
+      const id = uid();
+      const c = COLS[Math.floor(Math.random() * COLS.length)];
+      const em = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+      const sz = Math.round(rand(76, 110));
+      const xPct = rand(5, 83);
+      const speed = cfg.speed + rand(-700, 700);
+
+      const wrap = document.createElement('div');
+      wrap.className = 'bwrap'; wrap.dataset.bid = id;
+      wrap.style.cssText = `left:${xPct}%;animation-duration:${speed}ms`;
+
+      const sway = document.createElement('div'); sway.className = 'bsway';
+      sway.style.animationDuration = `${rand(1.1, 2.1)}s`;
+
+      const body = document.createElement('div'); body.className = 'bbody';
+      body.style.cssText = `background:${c.bg};width:${sz}px;height:${sz * 1.18}px`;
+
+      const shine = document.createElement('div'); shine.className = 'bshine';
+      const emoji = document.createElement('span'); emoji.className = 'bemoji';
+      emoji.style.fontSize = `${sz * .34}px`; emoji.textContent = em;
+      const tie = document.createElement('div'); tie.className = 'btie';
+      tie.style.cssText = `background:${c.tie};width:6px;height:10px`;
+      const str = document.createElement('div'); str.className = 'bstr'; str.style.height = '52px';
+
+      body.appendChild(shine); body.appendChild(emoji);
+      sway.appendChild(body); sway.appendChild(tie); sway.appendChild(str);
+      wrap.appendChild(sway); $sg.appendChild(wrap);
+
+      // Miss when floated off top
+      wrap.addEventListener('animationend', () => {
+        if (!balloons[id]) return;
+        delete balloons[id]; wrap.remove(); handleMiss();
+      });
+      balloons[id] = { id, wrap, body };
+    }
+
+    function clearBalloons() { Object.values(balloons).forEach(b => b.wrap.remove()); balloons = {} }
+
+    function popBalloon(id) {
+      if (!balloons[id] || !active) return;
+      const b = balloons[id];
+      const r = b.body.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      delete balloons[id]; b.wrap.remove();
+      handlePop(cx, cy);
+    }
+
+    // ══ GAME LOGIC ══
+    function handleMiss() {
+      if (!active) return;
+      lives = Math.max(0, lives - 1); combo = 0;
+      Snd.miss(); flashScreen();
+      showFbk('😢', '#FF4444');
+      speak(['Try again!', 'You can do it!', 'Go go go!'][Math.floor(Math.random() * 3)]);
+      updateHUD();
+      if (lives <= 0) endGame(false);
+    }
+
+    function handlePop(cx, cy) {
+      if (!active) return;
+      Snd.pop(); burstFX(cx, cy); ringFX(cx, cy);
+      const now = Date.now();
+      const isCombo = (now - lastPopMs) < 1400; lastPopMs = now;
+      isCombo ? combo++ : (combo = 0);
+      score += 10 * level + (combo > 1 ? combo * 5 : 0); pops++;
+      if (combo > 1) { Snd.combo(); showCombo(combo); speak('Combo!') }
+      else { showFbk('🎉 Pop!', '#FF6B6B'); speak(['Pop!', 'Great!', 'Yes!', 'Wow!'][Math.floor(Math.random() * 4)]) }
+      if (pops >= POPS_LVL * level) {
+        level++;
+        Snd.levelUp();
+        speak(`Level ${level}! Amazing!`);
+        showLvlUp();
+        if (level === 2) showSpeedBanner();
+        if (level >= 3) startBombSpawner();
+        restartSpawner();
+      }
+      updateHUD();
+    }
+
+    function startGame() {
+      score = 0; level = 1; lives = 3; pops = 0; timeLeft = GSECS; combo = 0; lastPopMs = 0; active = true;
+      if (bombTmr) { clearInterval(bombTmr); bombTmr = null; }
+      clearBalloons();
+      document.querySelectorAll('.fbk,.lvlup,.cmb,.confetti,.burst,.popring,.speed-banner,.bomb-alert').forEach(e => e.remove());
+      showScreen('sg'); updateHUD(); Snd.startBg(); speak('Go! Pop the balloons!');
+      setTimeout(() => spawnBalloon(), 400); restartSpawner();
+      if (countTmr) clearInterval(countTmr);
+      countTmr = setInterval(() => {
+        if (!active) return;
+        timeLeft--;
+        if (timeLeft === 20) speak('Twenty seconds left!');
+        if (timeLeft === 10) speak('Ten seconds! Hurry!');
+        updateHUD();
+        if (timeLeft <= 0) { clearInterval(countTmr); endGame(score >= 50) }
+      }, 1000);
+    }
+
+    function restartSpawner() {
+      if (spawnTmr) clearInterval(spawnTmr);
+      spawnTmr = setInterval(() => spawnBalloon(), lcfg(level).spawnMs);
+    }
+
+    // ── SPEED BANNER ──
+    function showSpeedBanner() {
+      const el = document.createElement('div');
+      el.className = 'speed-banner';
+      el.innerHTML = '🚀 Speed is increasing! 🚀';
+      $sg.appendChild(el);
+      setTimeout(() => el.remove(), 2800);
+      speak('Watch out! Speed is increasing!');
+    }
+
+    // ── BOMB SPAWNER ──
+    function startBombSpawner() {
+      if (bombTmr) clearInterval(bombTmr);
+      // Spawn a bomb every ~7 seconds while level >= 3
+      bombTmr = setInterval(() => {
+        if (!active || level < 3) return;
+        spawnBomb();
+      }, 7000);
+      // Spawn one immediately after short delay
+      setTimeout(() => { if (active && level >= 3) spawnBomb(); }, 1500);
+    }
+
+    function spawnBomb() {
+      if (!active) return;
+      const id = uid();
+      const sz = 82;
+      const xPct = rand(5, 83);
+      const speed = lcfg(level).speed * 0.88; // bombs slightly faster
+
+      const wrap = document.createElement('div');
+      wrap.className = 'bwrap bomb-wrap'; wrap.dataset.bid = id; wrap.dataset.isBomb = '1';
+      wrap.style.cssText = `left:${xPct}%;animation-duration:${speed}ms`;
+
+      const sway = document.createElement('div'); sway.className = 'bsway';
+      sway.style.animationDuration = `${rand(1.0, 1.8)}s`;
+
+      const body = document.createElement('div'); body.className = 'bbody bomb-body';
+      body.style.cssText = `width:${sz}px;height:${sz}px`;
+
+      const label = document.createElement('div'); label.className = 'bomb-label';
+      label.textContent = '💣';
+
+      const fuse = document.createElement('div'); fuse.className = 'bomb-fuse';
+      const str = document.createElement('div'); str.className = 'bstr'; str.style.height = '52px';
+
+      body.appendChild(label); body.appendChild(fuse);
+      sway.appendChild(body); sway.appendChild(str);
+      wrap.appendChild(sway); $sg.appendChild(wrap);
+
+      // If bomb floats off – no penalty, just remove
+      wrap.addEventListener('animationend', () => {
+        if (!balloons[id]) return;
+        delete balloons[id]; wrap.remove();
+      });
+
+      balloons[id] = { id, wrap, body, isBomb: true };
+    }
+
+    // ── BOMB POP  (demote to level 2) ──
+    function triggerBomb(id, cx, cy) {
+      if (!balloons[id] || !active) return;
+      delete balloons[id];
+      // boom fx
+      burstBombFX(cx, cy);
+      flashScreen();
+      Snd.bombHit();
+      speak('Oh no! Bomb! Going back to Level 2!');
+      showBombAlert();
+      // Demote back to level 2, keep score & lives
+      level = 2;
+      pops = 0; // reset progress within level
+      updateHUD();
+      // Stop bomb spawner, clear all balloons, restart at level 2
+      if (bombTmr) { clearInterval(bombTmr); bombTmr = null; }
+      clearBalloons();
+      restartSpawner();
+      setTimeout(() => spawnBalloon(), 600);
+    }
+
+    function showBombAlert() {
+      const el = document.createElement('div');
+      el.className = 'bomb-alert';
+      el.innerHTML = '💣 BOOM! Back to Level 2! 💣';
+      $sg.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+
+    function burstBombFX(cx, cy) {
+      const bmEms = ['💥', '🔥', '💣', '⚡', '🌪️'];
+      for (let i = 0; i < 12; i++) {
+        const a = (i / 12) * Math.PI * 2, dist = rand(50, 130);
+        const dx = Math.cos(a) * dist, dy = Math.sin(a) * dist;
+        const el = document.createElement('div'); el.className = 'burst';
+        el.style.cssText = `left:${cx}px;top:${cy}px;--dx:${dx}px;--dy:${dy}px;font-size:2.2rem`;
+        el.textContent = bmEms[Math.floor(Math.random() * bmEms.length)];
+        $sg.appendChild(el); setTimeout(() => el.remove(), 700);
+      }
+    }
+
+    function endGame(won) {
+      active = false;
+      if (spawnTmr) { clearInterval(spawnTmr); spawnTmr = null }
+      if (countTmr) { clearInterval(countTmr); countTmr = null }
+      if (bombTmr) { clearInterval(bombTmr); bombTmr = null }
+      Snd.stopBg(); clearBalloons();
+      if (score > highScore) { highScore = score; localStorage.setItem('popHS', highScore); $('hsbadge').textContent = `🏆 Best: ${highScore}` }
+      setTimeout(() => {
+        showScreen('so');
+        const so = $('so'); so.className = `screen ${won ? 'win' : 'lose'}`;
+        $('go-em').textContent = won ? '🏆' : '💪';
+        $('go-msg').textContent = won ? 'Amazing!' : 'Keep Trying!';
+        $('go-sc').textContent = score;
+        $('go-stars').textContent = score >= 200 ? '⭐⭐⭐' : score >= 100 ? '⭐⭐' : '⭐';
+        $('go-best').textContent = score >= highScore ? '🎉 New Best Score!' : `Best: ${highScore}`;
+        if (won) { Snd.cheer(); spawnConfetti(); speak('Amazing! You are a superstar!') }
+        else speak('Good try! You can do it!');
+      }, 600);
+    }
+
+    // ══ FX ══
+    function showFbk(txt, color) { const el = document.createElement('div'); el.className = 'fbk'; el.style.color = color; el.textContent = txt; $sg.appendChild(el); setTimeout(() => el.remove(), 900) }
+    function showCombo(n) { const el = document.createElement('div'); el.className = 'cmb'; el.textContent = `🔥 x${n} COMBO!`; $sg.appendChild(el); setTimeout(() => el.remove(), 1200) }
+    function showLvlUp() { const el = document.createElement('div'); el.className = 'lvlup'; el.textContent = `🎊 Level ${level}! 🎊`; $sg.appendChild(el); setTimeout(() => el.remove(), 2600) }
+    function burstFX(cx, cy) { for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2, dist = rand(40, 90), dx = Math.cos(a) * dist, dy = Math.sin(a) * dist; const el = document.createElement('div'); el.className = 'burst'; el.style.cssText = `left:${cx}px;top:${cy}px;--dx:${dx}px;--dy:${dy}px`; el.textContent = POP_EM[Math.floor(Math.random() * POP_EM.length)]; $sg.appendChild(el); setTimeout(() => el.remove(), 600) } }
+    function ringFX(cx, cy) { const el = document.createElement('div'); el.className = 'popring'; el.style.cssText = `left:${cx}px;top:${cy}px`; $sg.appendChild(el); setTimeout(() => el.remove(), 520) }
+    function flashScreen() { $flash.classList.add('on'); setTimeout(() => $flash.classList.remove('on'), 370) }
+    function spawnConfetti() { const ems = ['🎊', '🎉', '⭐', '💖', '✨', '🌟', '🎈', '🏆']; for (let i = 0; i < 44; i++) { const el = document.createElement('div'); el.className = 'confetti'; el.textContent = ems[Math.floor(Math.random() * ems.length)]; el.style.cssText = `left:${rand(0, 100)}%;animation-duration:${rand(2, 4.5)}s;animation-delay:${rand(0, 2)}s`; $('so').appendChild(el); setTimeout(() => el.remove(), 8000) } }
+
+    // ══ CAMERA STATUS HELPERS ══
+    function setCamStatus(state, msg) {
+      $camTxt.textContent = msg;
+      $camDot.className = 'cam-dot ' + state; // 'green','red','yellow'
+    }
+
+    // ══ GESTURE DETECTION ══
+    function detectGesture(lm) {
+      if (!lm || !lm.length) return 'none';
+      const tips = [8, 12, 16, 20], mcps = [6, 10, 14, 18];
+      let ext = 0;
+      for (let i = 0; i < 4; i++)if (lm[tips[i]].y < lm[mcps[i]].y) ext++;
+      const thumbOpen = Math.abs(lm[4].x - lm[3].x) > .04;
+      const total = ext + (thumbOpen ? 1 : 0);
+      if (total >= 4) return 'open';
+      if (total <= 1) return 'closed';
+      return 'partial';
+    }
+
+    // ══ GESTURE UI ══
+    const GINFO = {
+      open: { icon: '🖐️', txt: 'POP!', color: '#4CAF50' },
+      closed: { icon: '✊', txt: 'Open hand', color: '#FF9800' },
+      partial: { icon: '🤚', txt: 'Almost!', color: '#2196F3' },
+      none: { icon: '👋', txt: 'Show hand', color: '#aaa' },
+    };
+    function updateGestureUI(g) {
+      const info = GINFO[g] || GINFO.none;
+      $gico.textContent = info.icon; $gtxt.textContent = info.txt; $gtxt.style.color = info.color;
+      $gbox.style.borderTopColor = info.color;
+      $gbox.classList.toggle('active', g === 'open');
+    }
+
+    // ══ HAND COLLISION ══
+    function checkHandHit(hx, hy) {
+      Object.keys(balloons).forEach(id => {
+        const b = balloons[id];
+        if (!b) return;
+        const el = document.querySelector(`[data-bid="${id}"]`);
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        if (Math.hypot(hx - cx, hy - cy) < 80) {
+          if (b.isBomb) triggerBomb(id, cx, cy);
+          else popBalloon(id);
+        }
+      });
+    }
+
+    // ══ MEDIAPIPE SETUP ══
+    let handX = null, handY = null, handGesture = 'none', cameraReady = false;
+
+    async function initCamera() {
+      setCamStatus('yellow', 'Starting…');
+
+      // Step 1: get camera
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: 'user' }, audio: false });
+        $webcam.srcObject = stream;
+        await $webcam.play();
+        setCamStatus('yellow', 'Camera on…');
+      } catch (err) {
+        setCamStatus('red', 'No camera');
+        cameraReady = true;
+        return;
+      }
+
+      // Step 2: wait for MediaPipe Hands CDN script (up to 10s)
+      let waited = 0;
+      while (!window.Hands && waited < 10000) {
+        await new Promise(r => setTimeout(r, 300));
+        waited += 300;
+      }
+      if (!window.Hands) {
+        setCamStatus('red', 'Tracking unavailable');
+        cameraReady = true;
+        return;
+      }
+
+      // Step 3: init Hands model
+      let hands;
+      try {
+        hands = new window.Hands({
+          locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/${f}`
+        });
+        hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.6 });
+        hands.onResults(results => {
+          if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
+            handX = null; handY = null; handGesture = 'none';
+            return;
+          }
+          const lm = results.multiHandLandmarks[0];
+          const palm = lm[9];
+          handX = (1 - palm.x) * window.innerWidth;
+          handY = palm.y * window.innerHeight;
+          handGesture = detectGesture(lm);
+        });
+      } catch (err) {
+        setCamStatus('red', 'Model error');
+        cameraReady = true; return;
+      }
+
+      // Step 4: frame loop
+      const frameLoop = async () => {
+        if ($webcam.readyState >= 2) {
+          try { await hands.send({ image: $webcam }) } catch (e) { }
+        }
+        requestAnimationFrame(frameLoop);
+      };
+      requestAnimationFrame(frameLoop);
+
+      setCamStatus('green', 'Hand tracking ON ✓');
+      cameraReady = true;
+    }
+
+    // ══ GAME LOOP POLL (50ms) ══
+    setInterval(() => {
+      if (!active) return;
+      // Update gesture display
+      updateGestureUI(handGesture);
+      // Move & show hand cursor
+      if (handX !== null) {
+        $hcursor.style.display = 'block';
+        $hcursor.style.left = handX + 'px';
+        $hcursor.style.top = handY + 'px';
+        $hcursor.textContent = handGesture === 'open' ? '🖐️' : handGesture === 'closed' ? '✊' : '✋';
+        $hcursor.style.fontSize = handGesture === 'open' ? '3.8rem' : '2.8rem';
+        // Only pop on open hand
+        if (handGesture === 'open') checkHandHit(handX, handY);
+      } else {
+        $hcursor.style.display = 'none';
+      }
+    }, 50);
+
+    // Mouse cursor during game (as fallback visual only – no pop on click)
+    $sg.addEventListener('mousemove', e => {
+      if (handX === null) {
+        $hcursor.style.display = 'block';
+        $hcursor.style.left = e.clientX + 'px';
+        $hcursor.style.top = e.clientY + 'px';
+        $hcursor.textContent = '👆';
+        $hcursor.style.fontSize = '2.8rem';
+      }
+    });
+    // Allow mouse click to pop ONLY if camera is not working
+    $sg.addEventListener('click', e => {
+      if (handX !== null) return; // hand tracking active – ignore mouse
+      const target = e.target.closest('.bbody');
+      if (!target) return;
+      const wrap = target.closest('.bwrap');
+      if (!wrap) return;
+      const bid = wrap.dataset.bid;
+      if (!bid) return;
+      const b = balloons[bid];
+      if (!b) return;
+      const r = target.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      if (b.isBomb) triggerBomb(bid, cx, cy);
+      else popBalloon(bid);
+    }, true);
+
+    // ── DISABLE ALL KEYBOARD INPUT ──
+    document.addEventListener('keydown', e => e.preventDefault(), true);
+    document.addEventListener('keyup', e => e.preventDefault(), true);
+    document.addEventListener('keypress', e => e.preventDefault(), true);
+
+    // ══ WELCOME BALLOON CLICKS ══
+    ['wb1', 'wb2', 'wb3'].forEach(id => {
+      $(id).addEventListener('click', () => {
+        Snd.unlock(); Snd.pop(); speak('Pop!');
+        const el = $(id); el.style.transition = 'transform .18s'; el.style.transform = 'scale(0)';
+        setTimeout(() => { el.style.transform = '' }, 380);
+      });
+    });
+
+    // ══ BUTTONS ══
+    $('btn-play').addEventListener('click', async () => {
+      Snd.unlock();
+      showScreen('sg');
+      // Start camera async (don't block game start)
+      initCamera().then(() => {
+        if (!cameraReady) cameraReady = true;
+      });
+      // Wait a moment for camera to init then start
+      setTimeout(() => startGame(), 800);
+    });
+
+    $('btn-again').addEventListener('click', () => { Snd.unlock(); startGame() });
+    $('btn-menu').addEventListener('click', () => { Snd.stopBg(); showScreen('sw'); speak("Let's pop some balloons!") });
+    $('mute-btn').addEventListener('click', () => { const m = Snd.toggleMute(); $('mute-btn').textContent = m ? '🔇' : '🔊' });
+
+    // ══ INIT ══
+    $('hsbadge').textContent = `🏆 Best: ${highScore}`;
+    $hcursor.style.display = 'none';
+    if (window.speechSynthesis) { speechSynthesis.getVoices(); speechSynthesis.addEventListener('voiceschanged', () => speechSynthesis.getVoices()) }
+    setTimeout(() => speak("Hello! Let's pop some balloons!"), 800);
+  </script>
+</body>
+
+</html>

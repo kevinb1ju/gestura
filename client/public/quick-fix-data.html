@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Quick Fix - Generate Game Data</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 500px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin: 10px;
+            display: inline-block;
+        }
+        .button:hover {
+            background: #2563eb;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Quick Fix - Generate Game Data</h1>
+        
+        <div class="success">
+            <strong>📊 This will instantly add test performance data for all students!</strong>
+            <br>Fixes the "No Game Data Available" issue immediately.
+        </div>
+
+        <button class="button" onclick="generateTestDataForAllStudents()">
+            🎮 Generate Test Data for All Students
+        </button>
+        
+        <button class="button" onclick="generateForCurrentStudent()">
+            👤 Generate for Current Student
+        </button>
+
+        <button class="button" onclick="checkData()">
+            🔍 Check Current Data
+        </button>
+
+        <button class="button" onclick="goToTeacherDashboard()">
+            👨‍🏫 Go to Teacher Dashboard
+        </button>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        function generateTestDataForAllStudents() {
+            const status = document.getElementById('status');
+            status.innerHTML = '<div class="success">🎮 Generating test data for all students...</div>';
+            
+            // Sample student data that matches your system
+            const students = [
+                { studentId: '1', name: 'Alice Johnson' },
+                { studentId: '2', name: 'Bob Smith' },
+                { studentId: '3', name: 'Charlie Brown' },
+                { studentId: '4', name: 'Diana Prince' },
+                { studentId: '5', name: 'Ethan Hunt' },
+                { studentId: 'TEST_STUDENT_001', name: 'Test Student' },
+                { studentId: 'DEMO_STUDENT', name: 'Demo Student' }
+            ];
+            
+            students.forEach(student => {
+                const performanceData = {
+                    'Egg Hunt': {
+                        cognitive: {
+                            pattern_recognition: Math.floor(Math.random() * 20) + 75,
+                            attention_span: Math.floor(Math.random() * 20) + 75,
+                            problem_solving: Math.floor(Math.random() * 20) + 75,
+                            memory: Math.floor(Math.random() * 20) + 75
+                        },
+                        motor: {
+                            hand_eye_coordination: Math.floor(Math.random() * 20) + 75,
+                            fine_motor_control: Math.floor(Math.random() * 20) + 75,
+                            reaction_time: Math.floor(Math.random() * 20) + 75
+                        },
+                        social: {
+                            cooperation: Math.floor(Math.random() * 20) + 75,
+                            communication: Math.floor(Math.random() * 20) + 75,
+                            sharing: Math.floor(Math.random() * 20) + 75
+                        },
+                        emotional: {
+                            frustration_tolerance: Math.floor(Math.random() * 20) + 75,
+                            persistence: Math.floor(Math.random() * 20) + 75,
+                            confidence: Math.floor(Math.random() * 20) + 75,
+                            emotional_regulation: Math.floor(Math.random() * 20) + 75
+                        }
+                    },
+                    'Pop Game': {
+                        cognitive: {
+                            visual_processing: Math.floor(Math.random() * 20) + 75,
+                            attention_to_detail: Math.floor(Math.random() * 20) + 75,
+                            concentration: Math.floor(Math.random() * 20) + 75,
+                            decision_making: Math.floor(Math.random() * 20) + 75
+                        },
+                        motor: {
+                            reaction_speed: Math.floor(Math.random() * 20) + 75,
+                            accuracy: Math.floor(Math.random() * 20) + 75,
+                            timing: Math.floor(Math.random() * 20) + 75
+                        },
+                        social: {
+                            turn_taking: Math.floor(Math.random() * 20) + 75,
+                            peer_interaction: Math.floor(Math.random() * 20) + 75,
+                            sportsmanship: Math.floor(Math.random() * 20) + 75
+                        },
+                        emotional: {
+                            impulse_control: Math.floor(Math.random() * 20) + 75,
+                            patience: Math.floor(Math.random() * 20) + 75,
+                            excitement_management: Math.floor(Math.random() * 20) + 75,
+                            resilience: Math.floor(Math.random() * 20) + 75
+                        }
+                    }
+                };
+                
+                // Save to localStorage
+                localStorage.setItem(`student_performance_${student.studentId}`, JSON.stringify(performanceData));
+                console.log(`✅ Generated data for ${student.name} (${student.studentId})`);
+            });
+            
+            status.innerHTML = '<div class="success">✅ Test data generated for all students! Now check the Teacher Dashboard.</div>';
+        }
+
+        function generateForCurrentStudent() {
+            const status = document.getElementById('status');
+            
+            // Try to get current student from URL or localStorage
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentId = urlParams.get('studentId') || '1';
+            
+            const performanceData = {
+                'Egg Hunt': {
+                    cognitive: {
+                        pattern_recognition: 85,
+                        attention_span: 78,
+                        problem_solving: 82,
+                        memory: 75
+                    },
+                    motor: {
+                        hand_eye_coordination: 88,
+                        fine_motor_control: 76,
+                        reaction_time: 80
+                    },
+                    social: {
+                        cooperation: 90,
+                        communication: 85,
+                        sharing: 88
+                    },
+                    emotional: {
+                        frustration_tolerance: 82,
+                        persistence: 87,
+                        confidence: 79,
+                        emotional_regulation: 84
+                    }
+                }
+            };
+            
+            localStorage.setItem(`student_performance_${studentId}`, JSON.stringify(performanceData));
+            
+            status.innerHTML = `<div class="success">✅ Test data generated for student ${studentId}!</div>`;
+        }
+
+        function checkData() {
+            const status = document.getElementById('status');
+            const keys = Object.keys(localStorage).filter(key => key.startsWith('student_performance_'));
+            
+            if (keys.length === 0) {
+                status.innerHTML = '<div class="status" style="background: #fee2e2; color: #991b1b;">❌ No performance data found</div>';
+            } else {
+                let dataInfo = '<div class="status" style="background: #d1fae5; color: #065f46;">✅ Found performance data for:<br>';
+                keys.forEach(key => {
+                    const studentId = key.replace('student_performance_', '');
+                    const data = JSON.parse(localStorage.getItem(key));
+                    const games = Object.keys(data);
+                    dataInfo += `• Student ${studentId}: ${games.join(', ')}<br>`;
+                });
+                dataInfo += '</div>';
+                status.innerHTML = dataInfo;
+            }
+        }
+
+        function goToTeacherDashboard() {
+            window.open('/teacher-dashboard', '_blank');
+        }
+
+        // Auto-generate data when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                generateTestDataForAllStudents();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

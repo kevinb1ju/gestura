@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test Data Flow</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .test-section h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .data-display {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .step {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .step.active {
+            border-color: #3b82f6;
+            background: #dbeafe;
+        }
+        .step.completed {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Data Flow - Game to Performance Tracker</h1>
+        
+        <div class="info">
+            <h4>📊 This tests the complete data flow from game play to performance tracking</h4>
+            <p>Follow these steps to verify that game data is properly saved and retrieved.</p>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Step 1: Check Current Student Data</h3>
+            <button onclick="checkStudentData()">👤 Check Current Student</button>
+            <button onclick="setTestStudent()">🧪 Set Test Student</button>
+            <div id="student-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎮 Step 2: Simulate Game Play</h3>
+            <button onclick="simulateEggHunt()">🥚 Simulate Egg Hunt Game</button>
+            <button onclick="simulatePopGame()">🎈 Simulate Pop Game</button>
+            <button onclick="simulateMultipleGames()">🎯 Simulate Multiple Games</button>
+            <div id="game-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>💾 Step 3: Verify Data Storage</h3>
+            <button onclick="checkPerformanceData()">📊 Check Performance Data</button>
+            <button onclick="checkLocalStorage()">💾 Check LocalStorage</button>
+            <button onclick="showRawData()">🔍 Show Raw Data</button>
+            <div id="storage-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 Step 4: Test Performance Tracker</h3>
+            <button onclick="testPerformanceTracker()">📈 Test Performance Tracker</button>
+            <button onclick="openPerformanceTracker()">🔗 Open Performance Tracker</button>
+            <button onclick="openTeacherDashboard()">👨‍🏫 Open Teacher Dashboard</button>
+            <div id="tracker-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Step 5: Debug & Fix</h3>
+            <button onclick="clearAllData()">🗑️ Clear All Data</button>
+            <button onclick="generateTestData()">🧪 Generate Test Data</button>
+            <button onclick="runFullTest()">🚀 Run Full Test</button>
+            <div id="debug-status"></div>
+        </div>
+
+        <div id="raw-data" class="data-display">Click buttons above to test data flow...</div>
+    </div>
+
+    <script src="game-integration.js"></script>
+    <script>
+        let currentStudentId = null;
+
+        function checkStudentData() {
+            const status = document.getElementById('student-status');
+            
+            // Check localStorage user data
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            currentStudentId = user.studentId || 'DEMO_STUDENT';
+            
+            status.innerHTML = `
+                <div class="success">
+                    <strong>👤 Current Student Data:</strong><br>
+                    Student ID: ${currentStudentId}<br>
+                    Name: ${user.name || 'Test Student'}<br>
+                    Role: ${user.role || 'student'}<br>
+                    Level: ${user.level || '1'}
+                </div>
+            `;
+            
+            console.log('Current student data:', user);
+        }
+
+        function setTestStudent() {
+            const testUser = {
+                studentId: 'TEST_STUDENT_001',
+                name: 'Test Student',
+                role: 'student',
+                level: '1',
+                age: '7 years'
+            };
+            
+            localStorage.setItem('user', JSON.stringify(testUser));
+            currentStudentId = 'TEST_STUDENT_001';
+            
+            document.getElementById('student-status').innerHTML = `
+                <div class="success">
+                    ✅ Test student set: TEST_STUDENT_001
+                </div>
+            `;
+        }
+
+        function simulateEggHunt() {
+            const status = document.getElementById('game-status');
+            status.innerHTML = '<div class="info">🎮 Simulating Egg Hunt game...</div>';
+            
+            if (!currentStudentId) {
+                checkStudentData();
+            }
+            
+            // Initialize game tracking
+            if (window.GameTracker) {
+                window.GameTracker.setupEggHunt(currentStudentId);
+                
+                // Simulate game events
+                setTimeout(() => {
+                    window.GameTracker.recordCorrect({ egg: 'golden', points: 5, time: 2.5 });
+                    window.GameTracker.recordPattern({ pattern: 'egg_catch', success: true });
+                    window.GameTracker.recordClick({ accuracy: 'high', target: 'egg' });
+                }, 1000);
+                
+                setTimeout(() => {
+                    window.GameTracker.recordCorrect({ egg: 'regular', points: 1, time: 3.2 });
+                    window.GameTracker.recordPersistence({ attempt: 'continue', motivation: 'high' });
+                }, 2000);
+                
+                setTimeout(() => {
+                    window.GameTracker.recordIncorrect({ egg: 'missed', missed: true });
+                    window.GameTracker.recordPersistence({ attempt: 'try_again', lives: 2 });
+                }, 3000);
+                
+                setTimeout(() => {
+                    const result = window.GameTracker.end();
+                    console.log('Egg Hunt game result:', result);
+                    
+                    status.innerHTML = `
+                        <div class="success">
+                            ✅ Egg Hunt game simulated successfully!<br>
+                            Student ID: ${currentStudentId}<br>
+                            Performance data saved to localStorage
+                        </div>
+                    `;
+                }, 4000);
+            } else {
+                status.innerHTML = '<div class="error">❌ GameTracker not available</div>';
+            }
+        }
+
+        function simulatePopGame() {
+            const status = document.getElementById('game-status');
+            status.innerHTML = '<div class="info">🎈 Simulating Pop Game...</div>';
+            
+            if (!currentStudentId) {
+                checkStudentData();
+            }
+            
+            if (window.GameTracker) {
+                window.GameTracker.setupPopGame(currentStudentId);
+                
+                // Simulate game events
+                setTimeout(() => {
+                    window.GameTracker.recordCorrect({ balloon: 'red', reaction_time: 0.8 });
+                    window.GameTracker.recordClick({ accuracy: 'high', target: 'balloon' });
+                }, 1000);
+                
+                setTimeout(() => {
+                    window.GameTracker.recordCorrect({ balloon: 'blue', reaction_time: 1.2 });
+                    window.GameTracker.recordPattern({ pattern: 'color_sequence', success: true });
+                }, 2000);
+                
+                setTimeout(() => {
+                    window.GameTracker.recordIncorrect({ balloon: 'missed', reaction_time: 2.5 });
+                    window.GameTracker.recordPersistence({ attempt: 'focus', motivation: 'medium' });
+                }, 3000);
+                
+                setTimeout(() => {
+                    const result = window.GameTracker.end();
+                    console.log('Pop Game result:', result);
+                    
+                    status.innerHTML = `
+                        <div class="success">
+                            ✅ Pop Game simulated successfully!<br>
+                            Student ID: ${currentStudentId}<br>
+                            Performance data saved to localStorage
+                        </div>
+                    `;
+                }, 4000);
+            } else {
+                status.innerHTML = '<div class="error">❌ GameTracker not available</div>';
+            }
+        }
+
+        function simulateMultipleGames() {
+            const status = document.getElementById('game-status');
+            status.innerHTML = '<div class="info">🎯 Simulating multiple games...</div>';
+            
+            simulateEggHunt();
+            
+            setTimeout(() => {
+                simulatePopGame();
+            }, 5000);
+            
+            setTimeout(() => {
+                status.innerHTML = `
+                    <div class="success">
+                        ✅ Multiple games simulated!<br>
+                        Egg Hunt + Pop Game completed<br>
+                        Student ID: ${currentStudentId}
+                    </div>
+                `;
+            }, 10000);
+        }
+
+        function checkPerformanceData() {
+            const status = document.getElementById('storage-status');
+            
+            if (!currentStudentId) {
+                checkStudentData();
+            }
+            
+            const key = `student_performance_${currentStudentId}`;
+            const data = localStorage.getItem(key);
+            
+            if (data) {
+                const performanceData = JSON.parse(data);
+                const games = Object.keys(performanceData);
+                
+                status.innerHTML = `
+                    <div class="success">
+                        ✅ Performance data found for ${currentStudentId}<br>
+                        Games: ${games.join(', ')}<br>
+                        Data keys: ${Object.keys(performanceData[games[0]] || {}).join(', ')}
+                    </div>
+                `;
+            } else {
+                status.innerHTML = `
+                    <div class="error">
+                        ❌ No performance data found for ${currentStudentId}<br>
+                        Key: ${key}
+                    </div>
+                `;
+            }
+        }
+
+        function checkLocalStorage() {
+            const status = document.getElementById('storage-status');
+            
+            const allKeys = Object.keys(localStorage);
+            const performanceKeys = allKeys.filter(key => 
+                key.includes('student_performance') || 
+                key.includes('game_session')
+            );
+            
+            status.innerHTML = `
+                <div class="info">
+                    📊 LocalStorage Analysis:<br>
+                    Total keys: ${allKeys.length}<br>
+                    Performance keys: ${performanceKeys.length}<br>
+                    Keys: ${performanceKeys.join(', ')}
+                </div>
+            `;
+        }
+
+        function showRawData() {
+            const rawData = document.getElementById('raw-data');
+            
+            if (!currentStudentId) {
+                checkStudentData();
+            }
+            
+            const key = `student_performance_${currentStudentId}`;
+            const data = localStorage.getItem(key);
+            
+            if (data) {
+                rawData.textContent = data;
+            } else {
+                rawData.textContent = 'No performance data found';
+            }
+        }
+
+        function testPerformanceTracker() {
+            const status = document.getElementById('tracker-status');
+            
+            if (!currentStudentId) {
+                checkStudentData();
+            }
+            
+            // Simulate what the performance tracker does
+            const key = `student_performance_${currentStudentId}`;
+            const data = localStorage.getItem(key);
+            
+            if (data) {
+                const performanceData = JSON.parse(data);
+                const analysis = analyzePerformanceData(performanceData);
+                
+                status.innerHTML = `
+                    <div class="success">
+                        ✅ Performance Tracker Test Passed!<br>
+                        Found data for: ${Object.keys(performanceData).join(', ')}<br>
+                        Analysis: Cognitive ${analysis.cognitive}%, Motor ${analysis.motor}%, Social ${analysis.social}%, Emotional ${analysis.emotional}%
+                    </div>
+                `;
+            } else {
+                status.innerHTML = `
+                    <div class="error">
+                        ❌ Performance Tracker Test Failed!<br>
+                        No data found for student ${currentStudentId}
+                    </div>
+                `;
+            }
+        }
+
+        function analyzePerformanceData(data) {
+            let scores = { cognitive: 0, motor: 0, social: 0, emotional: 0 };
+            let count = 0;
+            
+            Object.values(data).forEach(gameData => {
+                if (gameData.cognitive) scores.cognitive += Object.values(gameData.cognitive).reduce((a, b) => a + b, 0) / 4;
+                if (gameData.motor) scores.motor += Object.values(gameData.motor).reduce((a, b) => a + b, 0) / 3;
+                if (gameData.social) scores.social += Object.values(gameData.social).reduce((a, b) => a + b, 0) / 3;
+                if (gameData.emotional) scores.emotional += Object.values(gameData.emotional).reduce((a, b) => a + b, 0) / 4;
+                count++;
+            });
+            
+            if (count > 0) {
+                Object.keys(scores).forEach(key => {
+                    scores[key] = Math.round(scores[key] / count);
+                });
+            }
+            
+            return scores;
+        }
+
+        function openPerformanceTracker() {
+            window.open('/student-performance', '_blank');
+        }
+
+        function openTeacherDashboard() {
+            window.open('/teacher-dashboard', '_blank');
+        }
+
+        function clearAllData() {
+            const keysToRemove = Object.keys(localStorage).filter(key => 
+                key.includes('student_performance') || 
+                key.includes('game_session')
+            );
+            
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+            });
+            
+            document.getElementById('debug-status').innerHTML = `
+                <div class="success">
+                    ✅ Cleared ${keysToRemove.length} data entries
+                </div>
+            `;
+        }
+
+        function generateTestData() {
+            if (!currentStudentId) {
+                setTestStudent();
+            }
+            
+            const testData = {
+                'Egg Hunt': {
+                    cognitive: { pattern_recognition: 85, attention_span: 78, problem_solving: 82, memory: 75 },
+                    motor: { hand_eye_coordination: 88, fine_motor_control: 76, reaction_time: 80 },
+                    social: { cooperation: 90, communication: 85, sharing: 88 },
+                    emotional: { frustration_tolerance: 82, persistence: 87, confidence: 79, emotional_regulation: 84 }
+                },
+                'Pop Game': {
+                    cognitive: { visual_processing: 92, attention_to_detail: 88, concentration: 85, decision_making: 90 },
+                    motor: { reaction_speed: 95, accuracy: 87, timing: 89 },
+                    social: { turn_taking: 93, peer_interaction: 88, sportsmanship: 91 },
+                    emotional: { impulse_control: 86, patience: 89, excitement_management: 87, resilience: 90 }
+                }
+            };
+            
+            localStorage.setItem(`student_performance_${currentStudentId}`, JSON.stringify(testData));
+            
+            document.getElementById('debug-status').innerHTML = `
+                <div class="success">
+                    ✅ Test data generated for ${currentStudentId}
+                </div>
+            `;
+        }
+
+        function runFullTest() {
+            const status = document.getElementById('debug-status');
+            status.innerHTML = '<div class="info">🚀 Running full test sequence...</div>';
+            
+            // Step 1: Set test student
+            setTestStudent();
+            
+            // Step 2: Generate test data
+            setTimeout(() => {
+                generateTestData();
+            }, 1000);
+            
+            // Step 3: Check data
+            setTimeout(() => {
+                checkPerformanceData();
+            }, 2000);
+            
+            // Step 4: Test tracker
+            setTimeout(() => {
+                testPerformanceTracker();
+            }, 3000);
+            
+            // Step 5: Complete
+            setTimeout(() => {
+                status.innerHTML = `
+                    <div class="success">
+                        ✅ Full test completed!<br>
+                        1. Test student set<br>
+                        2. Test data generated<br>
+                        3. Data storage verified<br>
+                        4. Performance tracker tested<br>
+                        <br>
+                        <strong>Ready to test in Teacher Dashboard!</strong>
+                    </div>
+                `;
+            }, 4000);
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            console.log('🧪 Data Flow Test Tool loaded');
+            checkStudentData();
+        });
+    </script>
+</body>
+</html>

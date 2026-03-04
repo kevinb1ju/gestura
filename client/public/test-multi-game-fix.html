@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Multi-Game Assessment Test</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .success {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .info {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        .warning {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #2563eb;
+        }
+        .success-btn {
+            background: #10b981;
+        }
+        .success-btn:hover {
+            background: #059669;
+        }
+        .warning-btn {
+            background: #f59e0b;
+        }
+        .warning-btn:hover {
+            background: #d97706;
+        }
+        .results {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+        }
+        .game-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: #f9fafb;
+        }
+        .game-found {
+            border-left: 4px solid #10b981;
+        }
+        .game-missing {
+            border-left: 4px solid #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Multi-Game Assessment Test</h1>
+        
+        <div class="test-section success">
+            <h3>✅ Problem Fixed!</h3>
+            <p>The Student Performance Tracker has been updated to properly find and display data from ALL games played by students.</p>
+        </div>
+
+        <div class="test-section info">
+            <h3>🔧 What Was Fixed:</h3>
+            <ul>
+                <li><strong>Better Game Session Detection:</strong> Improved finding of game_session_* keys</li>
+                <li><strong>Enhanced Data Aggregation:</strong> Combines multiple game sessions properly</li>
+                <li><strong>Fallback Performance Data:</strong> Creates performance data from scores if missing</li>
+                <li><strong>Better Logging:</strong> Console logs show what data is being found</li>
+                <li><strong>Multiple Student Support:</strong> Handles various student ID formats</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Test the Fix</h3>
+            <p>Use these tools to verify that all games now show up in the assessment:</p>
+            
+            <div>
+                <button class="button success-btn" onclick="generateMultiGameData()">
+                    🎮 Generate Multi-Game Data
+                </button>
+                <button class="button" onclick="testDataRetrieval()">
+                    🔍 Test Data Retrieval
+                </button>
+                <button class="button" onclick="openAssessment()">
+                    📊 Open Assessment
+                </button>
+                <button class="button" onclick="openDebugger()">
+                    🔍 Open Debugger
+                </button>
+            </div>
+        </div>
+
+        <div class="results" id="test-results">
+            <h3>📊 Test Results</h3>
+            <div id="results-content">Click "Test Data Retrieval" to see results...</div>
+        </div>
+
+        <div class="test-section warning">
+            <h3>⚠️ Important Notes:</h3>
+            <ul>
+                <li><strong>Student ID Consistency:</strong> Make sure the same student ID is used across all games</li>
+                <li><strong>Game Completion:</strong> Games must be completed (not just started) to save data</li>
+                <li><strong>Data Aggregation:</strong> Multiple sessions of the same game are combined</li>
+                <li><strong>Browser Storage:</strong> Data is stored in localStorage per browser</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function generateMultiGameData() {
+            const studentId = 'TEST_STUDENT_MULTI';
+            const timestamp = Date.now();
+            
+            // Generate data for multiple games
+            const games = [
+                {
+                    gameName: 'Egg Hunt',
+                    score: 85,
+                    timestamp: timestamp - 3600000,
+                    performance: {
+                        cognitive: { score: 85, attempts: 10, successes: 8 },
+                        motor: { score: 90, attempts: 15, successes: 13 },
+                        social: { score: 75, attempts: 5, successes: 4 },
+                        emotional: { score: 80, attempts: 8, successes: 6 }
+                    }
+                },
+                {
+                    gameName: 'Pop Game',
+                    score: 72,
+                    timestamp: timestamp - 1800000,
+                    performance: {
+                        cognitive: { score: 70, attempts: 12, successes: 8 },
+                        motor: { score: 75, attempts: 18, successes: 13 },
+                        social: { score: 70, attempts: 6, successes: 4 },
+                        emotional: { score: 72, attempts: 10, successes: 7 }
+                    }
+                },
+                {
+                    gameName: 'Shape Explorers',
+                    score: 88,
+                    timestamp: timestamp - 900000,
+                    performance: {
+                        cognitive: { score: 90, attempts: 8, successes: 7 },
+                        motor: { score: 85, attempts: 10, successes: 8 },
+                        social: { score: 88, attempts: 4, successes: 4 },
+                        emotional: { score: 89, attempts: 6, successes: 5 }
+                    }
+                },
+                {
+                    gameName: 'Color Quest',
+                    score: 65,
+                    timestamp: timestamp - 600000,
+                    performance: {
+                        cognitive: { score: 68, attempts: 14, successes: 9 },
+                        motor: { score: 62, attempts: 16, successes: 10 },
+                        social: { score: 65, attempts: 7, successes: 4 },
+                        emotional: { score: 66, attempts: 11, successes: 7 }
+                    }
+                }
+            ];
+            
+            // Store game sessions
+            games.forEach(game => {
+                const sessionKey = `game_session_${studentId}_${game.gameName}_${game.timestamp}`;
+                localStorage.setItem(sessionKey, JSON.stringify({
+                    studentId: studentId,
+                    gameName: game.gameName,
+                    score: game.score,
+                    timestamp: game.timestamp,
+                    performance: game.performance
+                }));
+            });
+            
+            // Create aggregated performance data
+            const aggregatedData = {};
+            games.forEach(game => {
+                aggregatedData[game.gameName] = game.performance;
+            });
+            
+            localStorage.setItem(`student_performance_${studentId}`, JSON.stringify(aggregatedData));
+            
+            // Set as current user
+            localStorage.setItem('user', JSON.stringify({
+                studentId: studentId,
+                name: 'Test Student',
+                class: 'Pre-Primary',
+                grade: 'KG'
+            }));
+            
+            alert('✅ Multi-game test data generated successfully!');
+        }
+
+        function testDataRetrieval() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const studentId = user.studentId;
+            
+            if (!studentId) {
+                alert('❌ No student ID found. Please generate test data first.');
+                return;
+            }
+            
+            // Simulate the checkForGameData function
+            const keys = Object.keys(localStorage).filter(key => 
+                key.startsWith('student_performance_')
+            );
+            
+            const exactMatch = keys.find(key => key === `student_performance_${studentId}`);
+            const gameKeys = Object.keys(localStorage).filter(key => 
+                key.includes('game_session') && key.includes(studentId)
+            );
+            
+            let results = '<h4>🔍 Data Retrieval Test Results:</h4>';
+            
+            if (exactMatch) {
+                const data = JSON.parse(localStorage.getItem(exactMatch));
+                const games = Object.keys(data);
+                results += `<div class="game-result game-found">✅ Found aggregated performance data for ${games.length} games: ${games.join(', ')}</div>`;
+            } else if (gameKeys.length > 0) {
+                results += `<div class="game-result game-found">✅ Found ${gameKeys.length} game session keys for student ${studentId}</div>`;
+                
+                // Try to aggregate
+                const aggregatedData = {};
+                gameKeys.forEach(key => {
+                    try {
+                        const gameSession = JSON.parse(localStorage.getItem(key));
+                        if (gameSession.gameName) {
+                            aggregatedData[gameSession.gameName] = gameSession.performance || { score: gameSession.score };
+                        }
+                    } catch (e) {
+                        results += `<div class="game-result game-missing">❌ Error parsing: ${key}</div>`;
+                    }
+                });
+                
+                const games = Object.keys(aggregatedData);
+                results += `<div class="game-result game-found">✅ Aggregated data for ${games.length} games: ${games.join(', ')}</div>`;
+            } else {
+                results += `<div class="game-result game-missing">❌ No game data found for student ${studentId}</div>`;
+            }
+            
+            document.getElementById('results-content').innerHTML = results;
+        }
+
+        function openAssessment() {
+            window.open('/student-performance-tracker', '_blank');
+        }
+
+        function openDebugger() {
+            window.open('/debug-game-data.html', '_blank');
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            console.log('🧪 Multi-Game Assessment Test loaded');
+        });
+    </script>
+</body>
+</html>

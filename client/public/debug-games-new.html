@@ -85,6 +85,7 @@
         <div class="game-test">
             <h3>🧪 Test All Game Launches</h3>
             <button onclick="testGame('egg-hunt', '🥚 Egg Hunt')">Test Egg Hunt</button>
+            <button onclick="testGame('pop-game', '🎈 Pop Game')">Test Pop Game</button>
             <button onclick="testGame('shape', '🔷 Shape Explorers')">Test Shape Explorers</button>
             <button onclick="testGame('colors', '🎨 Color Quest')">Test Color Quest</button>
             <button onclick="testGame('numbers', '🔢 Number Adventures')">Test Number Adventures</button>
@@ -130,6 +131,15 @@
                 img: "🥚",
                 bgColor: "#ffda79",
                 buttonColor: "#3498db"
+            },
+            "Pop Game": {
+                title: "Pop Game",
+                path: "/games/pop-game/index.html",
+                type: "html",
+                port: null,
+                img: "🎈",
+                bgColor: "#fbbf24",
+                buttonColor: "#f59e0b"
             },
             "Shape Explorers": {
                 title: "Shape Explorers",
@@ -188,7 +198,7 @@
         };
 
         const LEVEL_CONFIG = {
-            1: { name: "Preprimary", games: ["Egg Hunt"] },
+            1: { name: "Preprimary", games: ["Egg Hunt", "Pop Game"] },
             2: { name: "Primary", games: ["Shape Explorers", "Color Quest", "Number Adventures"] },
             3: { name: "Bridge", games: ["Bridge Game"] },
             4: { name: "Pre-Vocational", games: ["Rupee Buddy"] },

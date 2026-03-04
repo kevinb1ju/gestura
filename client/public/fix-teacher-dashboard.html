@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👨‍🏫 Fix Teacher Dashboard Assessment</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .problem {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        .solution {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .info {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #2563eb;
+        }
+        .success {
+            background: #10b981;
+        }
+        .success:hover {
+            background: #059669;
+        }
+        .danger {
+            background: #ef4444;
+        }
+        .danger:hover {
+            background: #dc2626;
+        }
+        .warning {
+            background: #f59e0b;
+        }
+        .warning:hover {
+            background: #d97706;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .status-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .status-working {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+        .status-broken {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .status-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+        .data-display {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👨‍🏫 Fix Teacher Dashboard Assessment</h1>
+        
+        <div class="section problem">
+            <h3>❌ Problem Identified:</h3>
+            <p><strong>Teacher dashboard assessment section only showing Egg Hunt data</strong></p>
+            <p>Issue: StudentPerformanceTracker component not reading all game data properly</p>
+        </div>
+
+        <div class="section solution">
+            <h3>✅ Root Cause Analysis:</h3>
+            <p>The issue is likely in the StudentPerformanceTracker component's data loading logic:</p>
+            <ul>
+                <li><strong>checkForGameData function</strong> may not be finding all game sessions</li>
+                <li><strong>Student ID mismatch</strong> between teacher dashboard and performance tracker</li>
+                <li><strong>Data aggregation</strong> not working for all games</li>
+                <li><strong>Component state</strong> not updating properly</li>
+            </ul>
+        </div>
+
+        <div class="status-grid">
+            <div class="status-card status-working">
+                <div class="status-value">✅</div>
+                <div class="status-label">Teacher Dashboard</div>
+            </div>
+            <div class="status-card status-working">
+                <div class="status-value">✅</div>
+                <div class="status-label">Student Data Pass</div>
+            </div>
+            <div class="status-card status-broken">
+                <div class="status-value">❌</div>
+                <div class="status-label">Performance Tracker</div>
+            </div>
+            <div class="status-card status-broken">
+                <div class="status-value">❌</div>
+                <div class="status-label">Data Reading</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🔍 Current Data Analysis</h3>
+            <div id="data-analysis">
+                <p>Analyzing current data state...</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🔧 Quick Fixes</h3>
+            <div class="action-buttons">
+                <button class="button success" onclick="analyzeData()">🔍 Analyze Data</button>
+                <button class="button" onclick="fixStudentData()">👤 Fix Student Data</button>
+                <button class="button" onclick="forceDataRefresh()">🔄 Force Refresh</button>
+                <button class="button warning" onclick="clearAndReset()">🗑️ Clear & Reset</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🧪 Test Assessment</h3>
+            <div class="action-buttons">
+                <button class="button" onclick="generateMultiGameData()">🎮 Generate Multi-Game Data</button>
+                <button class="button" onclick="openTeacherDashboard()">👨‍🏫 Open Teacher Dashboard</button>
+                <button class="button" onclick="openPerformanceTracker()">📊 Open Performance Tracker</button>
+                <button class="button" onclick="openAIReport()">🤖 Open AI Report</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📋 Manual Fix Steps</h3>
+            <p>If the issue persists, follow these steps:</p>
+            <ol>
+                <li><strong>Step 1:</strong> Generate test data for all games</li>
+                <li><strong>Step 2:</strong> Open teacher dashboard and select a student</li>
+                <li><strong>Step 3:</strong> Click "View Performance" for that student</li>
+                <li><strong>Step 4:</strong> Verify all games appear with scores</li>
+                <li><strong>Step 5:</strong> Check browser console for any errors</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h3>🔑 LocalStorage Data</h3>
+            <div class="data-display" id="localStorage-display">
+                Loading localStorage data...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function analyzeData() {
+            const analysis = document.getElementById('data-analysis');
+            let results = '<h4>🔍 Data Analysis Results:</h4>';
+            
+            // Check student data in localStorage
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            results += `<div><strong>Current User:</strong> ${user.studentId || 'None'}</div>`;
+            
+            // Check performance data
+            const perfKeys = Object.keys(localStorage).filter(key => key.startsWith('student_performance_'));
+            results += `<div><strong>Performance Records:</strong> ${perfKeys.length}</div>`;
+            
+            // Check game sessions
+            const gameKeys = Object.keys(localStorage).filter(key => key.includes('game_session'));
+            results += `<div><strong>Game Sessions:</strong> ${gameKeys.length}</div>`;
+            
+            // Analyze game distribution
+            if (perfKeys.length > 0) {
+                const allGames = new Set();
+                perfKeys.forEach(key => {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        Object.keys(data).forEach(game => allGames.add(game));
+                    } catch (e) {
+                        console.error('Error parsing performance data:', e);
+                    }
+                });
+                results += `<div><strong>Games Found:</strong> ${Array.from(allGames).join(', ')}</div>`;
+            }
+            
+            analysis.innerHTML = results;
+        }
+
+        function fixStudentData() {
+            // Create consistent student data
+            const studentData = {
+                studentId: 'TEST_TEACHER_STUDENT',
+                name: 'Test Student',
+                class: 'Pre-Primary',
+                grade: 'KG',
+                mentalAge: '5 years',
+                level: 'Level 1',
+                avatar: 'https://via.placeholder.com/50'
+            };
+            
+            localStorage.setItem('user', JSON.stringify(studentData));
+            alert('✅ Student data fixed!');
+            analyzeData();
+        }
+
+        function forceDataRefresh() {
+            // Force refresh by updating timestamp
+            localStorage.setItem('data_refresh_timestamp', Date.now().toString());
+            
+            // Trigger storage event
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'data_refresh_timestamp',
+                newValue: Date.now().toString(),
+                oldValue: localStorage.getItem('data_refresh_timestamp') || '0'
+            }));
+            
+            alert('🔄 Data refresh triggered!');
+        }
+
+        function clearAndReset() {
+            if (confirm('⚠️ This will clear ALL data. Are you sure?')) {
+                const keys = Object.keys(localStorage);
+                keys.forEach(key => {
+                    if (key.includes('game_session') || key.includes('student_performance') || key.includes('highScore') || key.includes('user')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                
+                alert('🗑️ All data cleared!');
+                analyzeData();
+            }
+        }
+
+        function generateMultiGameData() {
+            const studentId = 'TEST_TEACHER_STUDENT';
+            const timestamp = Date.now();
+            
+            // Generate data for all games
+            const games = ['Egg Hunt', 'Pop Game', 'Shape Explorers', 'Color Quest', 'Number Adventures', 'Bridge Game', 'Rupee Buddy', 'Rupee Buddy Vocational'];
+            
+            // Create aggregated performance data
+            const aggregatedData = {};
+            games.forEach(gameName => {
+                const score = Math.floor(Math.random() * 50) + 50;
+                aggregatedData[gameName] = {
+                    cognitive: { score: score, attempts: 10, successes: Math.floor(score / 10) },
+                    motor: { score: Math.min(100, score + 5), attempts: 15, successes: Math.floor(score / 8) },
+                    social: { score: Math.max(0, score - 10), attempts: 5, successes: Math.floor(score / 20) },
+                    emotional: { score: Math.min(100, score + 8), attempts: 8, successes: Math.floor(score / 12) }
+                };
+            });
+            
+            localStorage.setItem(`student_performance_${studentId}`, JSON.stringify(aggregatedData));
+            
+            // Create individual sessions
+            games.forEach(gameName => {
+                const score = Math.floor(Math.random() * 50) + 50;
+                const sessionKey = `game_session_${studentId}_${gameName}_${timestamp}`;
+                localStorage.setItem(sessionKey, JSON.stringify({
+                    studentId: studentId,
+                    gameName: gameName,
+                    score: score,
+                    timestamp: timestamp,
+                    performance: aggregatedData[gameName]
+                }));
+            });
+            
+            alert('✅ Multi-game test data generated!');
+            analyzeData();
+        }
+
+        function openTeacherDashboard() {
+            window.open('/teacher-dashboard', '_blank');
+        }
+
+        function openPerformanceTracker() {
+            window.open('/student-performance-tracker', '_blank');
+        }
+
+        function openAIReport() {
+            window.open('/ai-student-report', '_blank');
+        }
+
+        function displayLocalStorage() {
+            const display = document.getElementById('localStorage-display');
+            const allKeys = Object.keys(localStorage);
+            
+            let html = '<h5>All LocalStorage Keys:</h5>';
+            allKeys.forEach(key => {
+                try {
+                    const value = localStorage.getItem(key);
+                    const preview = value.length > 100 ? value.substring(0, 100) + '...' : value;
+                    html += `<div style="margin: 2px 0; padding: 5px; background: white; border-radius: 3px;">`;
+                    html += `<strong>${key}:</strong> ${preview}</div>`;
+                } catch (e) {
+                    html += `<div style="margin: 2px 0; padding: 5px; background: #fef2f2; border-radius: 3px;">`;
+                    html += `<strong>${key}:</strong> Error reading</div>`;
+                }
+            });
+            
+            display.innerHTML = html;
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            console.log('👨‍🏫 Teacher Dashboard Fix Tool loaded');
+            analyzeData();
+            displayLocalStorage();
+        });
+
+        // Update localStorage display every 2 seconds
+        setInterval(displayLocalStorage, 2000);
+    </script>
+</body>
+</html>

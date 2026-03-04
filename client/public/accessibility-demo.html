@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧩 Accessibility-First Egg Hunt</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            background: #f9fafb;
+        }
+        .accessible-feature {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        .feature-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #374151;
+        }
+        .play-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: block;
+            margin: 20px auto;
+        }
+        .play-button:hover {
+            background: #2563eb;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .comparison-table th, .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .comparison-table th {
+            background: #f3f4f6;
+            font-weight: bold;
+        }
+        .better {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .worse {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .neutral {
+            background: #f3f4f6;
+            color: #374151;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧩 Accessibility-First Egg Hunt Game</h1>
+        
+        <div class="success">
+            <h3>✅ Designed for Children with Autism & Different Abilities</h3>
+            <p>Completely redesigned to be predictable, calming, and accessible for all children.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card accessible-feature">
+                <div class="feature-title">🐌 Slower Pace</div>
+                <p>• Eggs fall every 4 seconds (was 2)</p>
+                <p>• Slower falling speed</p>
+                <p>• Predictable timing</p>
+                <p>• No overwhelming action</p>
+            </div>
+            
+            <div class="feature-card accessible-feature">
+                <div class="feature-title">🎨 Visual Cues</div>
+                <p>• Color-coded egg types</p>
+                <p>• Glowing indicators</p>
+                <p>• Clear visual feedback</p>
+                <p>• No sudden changes</p>
+            </div>
+            
+            <div class="feature-card accessible-feature">
+                <div class="feature-title">🎮 Calm Controls</div>
+                <p>• Slower basket movement</p>
+                <p>• Smoother acceleration</p>
+                <p>• Better friction control</p>
+                <p>• Easier to handle</p>
+            </div>
+            
+            <div class="feature-card accessible-feature">
+                <div class="feature-title">🔇 Sensory-Friendly</div>
+                <p>• Reduced sound frequency</p>
+                <p>• Less overwhelming stimuli</p>
+                <p>• Predictable patterns</p>
+                <p>• Calm environment</p>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value">4s</div>
+                <div class="stat-label">Egg Drop Interval</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">50%</div>
+                <div class="stat-label">Sound Frequency</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">5%</div>
+                <div class="stat-label">Black Egg Chance</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">10%</div>
+                <div class="stat-label">Golden Egg Chance</div>
+            </div>
+        </div>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Before (Overwhelming)</th>
+                    <th>After (Accessible)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Egg Speed</td>
+                    <td class="worse">Fast (1.0 velocity)</td>
+                    <td class="better">Slow (0.5 velocity)</td>
+                </tr>
+                <tr>
+                    <td>Spawn Rate</td>
+                    <td class="worse">Every 2 seconds</td>
+                    <td class="better">Every 4 seconds</td>
+                </tr>
+                <tr>
+                    <td>Basket Speed</td>
+                    <td class="worse">Fast (max 15)</td>
+                    <td class="better">Slow (max 8)</td>
+                </tr>
+                <tr>
+                    <td>Black Eggs</td>
+                    <td class="worse">10% chance</td>
+                    <td class="better">5% chance</td>
+                </tr>
+                <tr>
+                    <td>Sound Frequency</td>
+                    <td class="worse">Every egg</td>
+                    <td class="better">50% of eggs</td>
+                </tr>
+                <tr>
+                    <td>Visual Cues</td>
+                    <td class="neutral">Basic colors</td>
+                    <td class="better">Glowing indicators</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info">
+            <h3>🧩 Autism-Friendly Features:</h3>
+            <p><strong>Predictable Patterns:</strong> Children can anticipate when eggs will appear</p>
+            <p><strong>Reduced Anxiety:</strong> Fewer black eggs and overwhelming situations</p>
+            <p><strong>Clear Visual Feedback:</strong> Glowing indicators show egg types clearly</p>
+            <p><strong>Calm Environment:</strong> Slower pace and reduced sensory stimulation</p>
+        </div>
+
+        <div class="success">
+            <h3>🎯 Benefits for Different Abilities:</h3>
+            <p><strong>🧠 Cognitive:</strong> More time to process and respond</p>
+            <p><strong>💪 Motor Skills:</strong> Slower, more controlled movements</p>
+            <p><strong>❤️ Emotional:</strong> Less frustration, more success experiences</p>
+            <p><strong>👥 Social:</strong> Can play at own pace without pressure</p>
+        </div>
+
+        <div class="warning">
+            <h3>⚠️ Important Considerations:</h3>
+            <p><strong>Pacing:</strong> Children can take their time without feeling rushed</p>
+            <p><strong>Sensory:</strong> Reduced sound and visual overload</p>
+            <p><strong>Predictability:</strong> Clear patterns help reduce anxiety</p>
+            <p><strong>Success:</strong> More positive experiences build confidence</p>
+        </div>
+
+        <button class="play-button" onclick="playGame()">
+            🎮 Play Accessible Egg Hunt
+        </button>
+
+        <div class="info">
+            <h3>🔧 Technical Improvements:</h3>
+            <p><strong>Physics:</strong> Slower gravity (0.08 vs 0.15) and velocity</p>
+            <p><strong>Controls:</strong> Reduced acceleration and max speed</p>
+            <p><strong>Timing:</strong> Longer intervals between egg drops</p>
+            <p><strong>Visual:</strong> Glowing indicators for egg types</p>
+            <p><strong>Audio:</strong> Reduced sound frequency for sensory comfort</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="play-button" onclick="openTeacherDashboard()">
+                👨‍🏫 View Performance Data
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function playGame() {
+            // Open the accessible Egg Hunt game
+            window.open('/games/egg-hunt/index.html', '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+        }
+
+        function openTeacherDashboard() {
+            window.open('/teacher-dashboard', '_blank');
+        }
+
+        // Auto-highlight accessibility features
+        window.addEventListener('load', () => {
+            console.log('🧩 Accessibility-First Egg Hunt Demo loaded');
+            console.log('✅ Game designed for children with autism and different abilities');
+        });
+    </script>
+</body>
+</html>

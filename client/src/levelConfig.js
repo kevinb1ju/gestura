@@ -3,7 +3,7 @@ export const LEVEL_CONFIG = {
   1: {
     name: "Preprimary",
     description: "Early learning fundamentals",
-    games: ["Egg Hunt"]
+    games: ["Egg Hunt", "Pop Game"]
   },
   2: {
     name: "Primary", 
@@ -37,6 +37,15 @@ export const GAME_DETAILS = {
     img: "🥚",
     bgColor: "#ffda79",
     buttonColor: "#3498db"
+  },
+  "Pop Game": {
+    title: "Pop Game",
+    path: "/games/pop-game/index.html",
+    type: "html",
+    port: null,
+    img: "🎈",
+    bgColor: "#fbbf24",
+    buttonColor: "#f59e0b"
   },
   "Shape Explorers": {
     title: "Shape Explorers",
@@ -136,23 +145,31 @@ export const getGamesForLevel = (level) => {
 export const launchGame = (game) => {
   console.log('Launching game:', game);
   
+  // Get current student data
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const studentId = user.studentId || 'DEMO_STUDENT';
+  
   // All games are now HTML type, open directly in new tab
   const fullPath = game.path;
   console.log('Game path:', fullPath);
+  console.log('Student ID:', studentId);
   console.log('Full URL:', window.location.origin + fullPath);
   
   try {
-    const newWindow = window.open(fullPath, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+    // Open game with student ID as URL parameter
+    const gameUrl = `${fullPath}?studentId=${studentId}`;
+    const newWindow = window.open(gameUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
     
     // Check if popup was blocked
     if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
       // Popup blocked, provide alternative
-      alert(`Popup blocked! To play ${game.title}:\n\nPlease open this URL manually:\n${window.location.origin}${fullPath}\n\nOr right-click the game button and choose "Open in new tab".`);
+      alert(`Popup blocked! To play ${game.title}:\n\nPlease open this URL manually:\n${window.location.origin}${gameUrl}\n\nOr right-click the game button and choose "Open in new tab".`);
     } else {
-      console.log('Game opened successfully');
+      console.log('Game opened successfully with student ID:', studentId);
     }
   } catch (error) {
     console.error('Error opening game:', error);
-    alert(`To play ${game.title}:\n\nPlease open this URL in your browser:\n${window.location.origin}${fullPath}`);
+    const gameUrl = `${fullPath}?studentId=${studentId}`;
+    alert(`To play ${game.title}:\n\nPlease open this URL in your browser:\n${window.location.origin}${gameUrl}`);
   }
 };

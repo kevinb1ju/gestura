@@ -96,6 +96,12 @@
             </div>
             
             <div class="game-card">
+                <div class="game-title">🎈 Pop Game</div>
+                <a href="/games/pop-game/index.html" target="_blank" class="game-link" onclick="testGame(this, 'pop-game')">▶ Play Now</a>
+                <div id="status-pop-game" class="status">Click to test...</div>
+            </div>
+            
+            <div class="game-card">
                 <div class="game-title">🔷 Shape Explorers</div>
                 <a href="/games/shape/index.html" target="_blank" class="game-link" onclick="testGame(this, 'shape')">▶ Play Now</a>
                 <div id="status-shape" class="status">Click to test...</div>
@@ -170,7 +176,7 @@
         // Auto-test all games on page load
         window.addEventListener('load', () => {
             setTimeout(() => {
-                const games = ['egg-hunt', 'shape', 'colors', 'numbers', 'bridge', 'rupee-buddy', 'rupee-buddy-voc'];
+                const games = ['egg-hunt', 'pop-game', 'shape', 'colors', 'numbers', 'bridge', 'rupee-buddy', 'rupee-buddy-voc'];
                 games.forEach(game => {
                     const link = document.querySelector(`a[href="/games/${game}/index.html"]`);
                     if (link) {

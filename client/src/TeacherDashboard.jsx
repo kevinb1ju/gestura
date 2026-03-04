@@ -398,6 +398,22 @@ export default function TeacherDashboard() {
                               >
                                 View Details
                               </ActionLink>
+                              <ActionLink 
+                                as={Link} 
+                                to="/student-performance" 
+                                state={{ student }}
+                                style={{ marginLeft: '0.5rem' }}
+                              >
+                                View Performance
+                              </ActionLink>
+                              <ActionLink 
+                                as={Link} 
+                                to="/ai-student-report" 
+                                state={{ student }}
+                                style={{ marginLeft: '0.5rem' }}
+                              >
+                                🤖 AI Report
+                              </ActionLink>
                             </Td>
                           </tr>
                         ))}
