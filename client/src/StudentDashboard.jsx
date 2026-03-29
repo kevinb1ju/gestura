@@ -5,9 +5,14 @@ import { getGamesForLevel, getLevelName, launchGame } from "./levelConfig";
 
 // ---------- Animations ----------
 const float = keyframes`
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0px); }
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+`;
+
+const shine = keyframes`
+  0% { left: -100%; }
+  100% { left: 100%; }
 `;
 
 const sunRays = keyframes`
@@ -152,13 +157,110 @@ const WelcomeSection = styled.div`
 
 const GameGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
   justify-content: center;
   
   @media (max-width: 480px) {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
+  }
+`;
+
+const GlassCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 1.5rem;
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    transition: 0.5s;
+  }
+
+  &:hover {
+    transform: translateY(-10px) scale(1.02);
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
+    
+    &::before {
+      animation: ${shine} 1.5s infinite;
+    }
+  }
+`;
+
+const ProgressBarContainer = styled.div`
+  width: 100%;
+  max-width: 400px;
+  background: rgba(0, 0, 0, 0.1);
+  height: 1.25rem;
+  border-radius: 1rem;
+  margin: 1rem auto;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid white;
+`;
+
+const ProgressFill = styled.div`
+  height: 100%;
+  background: linear-gradient(90deg, #f97316, #facc15);
+  width: ${props => props.width}%;
+  border-radius: 1rem;
+  transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.5rem;
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
+`;
+
+const MascotWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+  margin-top: -1rem;
+  animation: ${float} 4s ease-in-out infinite;
+`;
+
+const SpeechBubble = styled.div`
+  position: absolute;
+  top: -40px;
+  right: -80px;
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  font-weight: 700;
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 10px;
+    border-width: 10px 10px 0;
+    border-style: solid;
+    border-color: white transparent;
   }
 `;
 
@@ -298,38 +400,32 @@ export default function StudentDashboard() {
               🎉 {levelUpdateNotification}
             </div>
           )}
+          <MascotWrapper>
+            <SpeechBubble>Ready to play?</SpeechBubble>
+            <div style={{ fontSize: '4rem' }}>🤖</div>
+          </MascotWrapper>
+
           <h2>Welcome back, {studentData?.name || 'Student'}!</h2>
-          <div className="level">
-            <span>⭐</span> Current Level: {getLevelName(currentLevel)}
+          
+          <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="level" style={{ marginBottom: '1rem' }}>
+              <span>⭐</span> {getLevelName(currentLevel)}
+            </div>
+            
+            <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1e3a8a', marginBottom: '0.5rem' }}>
+              Your Journey to Level 5
+            </p>
+            <ProgressBarContainer>
+              <ProgressFill width={(currentLevel / 5) * 100}>
+                <span style={{ fontSize: '0.8rem', color: 'white' }}>✨</span>
+              </ProgressFill>
+            </ProgressBarContainer>
           </div>
         </WelcomeSection>
 
         <GameGrid>
           {games.map((game, index) => (
-            <div 
-              key={index} 
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                backgroundColor: game.bgColor || '#fff',
-                padding: '1.5rem',
-                borderRadius: '1.5rem',
-                border: '4px solid black',
-                boxShadow: '6px 6px 0px 0px 0px',
-                transform: 'rotate(-1deg)',
-                transition: 'all 0.3s ease-in-out'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'rotate(1deg) scale(1.05)';
-                e.currentTarget.style.boxShadow = '9px 9px 0px 0px 0px';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'rotate(-1deg)';
-                e.currentTarget.style.boxShadow = '6px 6px 0px 0px 0px';
-                e.currentTarget.style.boxShadow = '8px 8px 0px rgba(0,0,0,0.2)';
-              }}
-            >
+            <GlassCard key={index}>
               <div 
                 style={{
                   width: '100%',
@@ -420,7 +516,7 @@ export default function StudentDashboard() {
               >
                 ▶ Play Now
               </button>
-            </div>
+            </GlassCard>
           ))}
         </GameGrid>
       </MainContainer>
