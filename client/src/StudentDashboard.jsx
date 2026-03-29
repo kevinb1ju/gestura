@@ -148,8 +148,9 @@ const WelcomeSection = styled.div`
 
 const GameGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  justify-content: center;
 `;
 
 /* const GameCardWrapper = styled.div`
