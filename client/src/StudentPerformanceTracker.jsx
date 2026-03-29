@@ -4,7 +4,6 @@ import {
   analyzeGamePerformance,
   generateRecommendations,
   calculateLevelProgression,
-  PERFORMANCE_CATEGORIES,
   PERFORMANCE_LEVELS
 } from './gamePerformanceAnalysis';
 
@@ -145,87 +144,6 @@ const GameCard = styled.div`
   }
 `;
 
-const GameIcon = styled.div`
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-`;
-
-const GameName = styled.div`
-  font-weight: bold;
-  color: #374151;
-  margin-bottom: 0.5rem;
-`;
-
-const GameScore = styled.div`
-  font-size: 0.9rem;
-  color: ${props => props.color || '#6b7280'};
-`;
-
-const RecommendationsSection = styled.div`
-  background: #fef3c7;
-  border: 2px solid #f59e0b;
-  border-radius: 10px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-`;
-
-const RecommendationsTitle = styled.h3`
-  color: #92400e;
-  margin: 0 0 1rem 0;
-`;
-
-const RecommendationList = styled.ul`
-  margin: 0;
-  padding-left: 1.5rem;
-`;
-
-const RecommendationItem = styled.li`
-  margin-bottom: 0.5rem;
-  color: #78350f;
-  
-  &::marker {
-    color: #f59e0b;
-  }
-`;
-
-const PriorityBadge = styled.span`
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border-radius: 3px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  margin-left: 0.5rem;
-  background: ${props =>
-    props.priority === 'high' ? '#ef4444' :
-      props.priority === 'medium' ? '#f59e0b' : '#10b981'
-  };
-  color: white;
-`;
-
-const LevelProgressionSection = styled.div`
-  background: #dbeafe;
-  border: 2px solid #3b82f6;
-  border-radius: 10px;
-  padding: 1.5rem;
-  text-align: center;
-`;
-
-const LevelProgressionTitle = styled.h3`
-  color: #1e40af;
-  margin: 0 0 1rem 0;
-`;
-
-const LevelProgressionContent = styled.div`
-  color: #1e3a8a;
-  font-size: 1.1rem;
-`;
-
-const ActionButtons = styled.div`
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-`;
-
 const ActionButton = styled.button`
   padding: 0.75rem 1.5rem;
   border: none;
@@ -251,95 +169,6 @@ const ActionButton = styled.button`
   `}
 `;
 
-const Modal = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background: white;
-  border-radius: 15px;
-  padding: 2rem;
-  max-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-`;
-
-const ModalTitle = styled.h3`
-  color: #1f2937;
-  margin: 0;
-`;
-
-const CloseButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #6b7280;
-  
-  &:hover {
-    color: #374151;
-  }
-`;
-
-const MetricDetails = styled.div`
-  margin-bottom: 1rem;
-`;
-
-const MetricName = styled.div`
-  font-weight: bold;
-  color: #374151;
-  margin-bottom: 0.25rem;
-`;
-
-const MetricDescription = styled.div`
-  font-size: 0.9rem;
-  color: #6b7280;
-  margin-bottom: 0.5rem;
-`;
-
-const MetricScore = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-`;
-
-const MetricBar = styled.div`
-  flex: 1;
-  height: 6px;
-  background: #e5e7eb;
-  border-radius: 3px;
-  overflow: hidden;
-`;
-
-const MetricFill = styled.div`
-  height: 100%;
-  background: ${props => props.color || '#3b82f6'};
-  border-radius: 3px;
-`;
-
-const MetricValue = styled.span`
-  font-weight: bold;
-  color: ${props => props.color || '#3b82f6'};
-  min-width: 50px;
-  text-align: right;
-`;
-
 export default function StudentPerformanceTracker({ student, onBack }) {
   const [performanceData, setPerformanceData] = useState(null);
   const [analysis, setAnalysis] = useState(null);
@@ -350,151 +179,68 @@ export default function StudentPerformanceTracker({ student, onBack }) {
   const [analyses, setAnalyses] = useState({});
 
   useEffect(() => {
-    // Load performance data for this student
     loadStudentPerformance();
   }, [student]);
 
   const loadStudentPerformance = () => {
-    // Check if student has played any games (this function aggregates all game_sessions to create the single performance entry)
     const gameData = checkForGameData(student.studentId);
     if (gameData) {
       setPerformanceData(gameData);
       analyzePerformance(gameData);
     } else {
-      // Show message that no game data is available
       setPerformanceData(null);
       setAnalysis(null);
     }
   };
 
   const checkForGameData = (studentId) => {
-    console.log('🔍 Checking for game data for student:', studentId);
-
-    // First check for aggregated performance data
     const keys = Object.keys(localStorage).filter(key =>
       key.startsWith('student_performance_')
     );
 
-    // Try to find exact match first
     const exactMatch = keys.find(key => key === `student_performance_${studentId}`);
     if (exactMatch) {
-      const data = JSON.parse(localStorage.getItem(exactMatch));
-      console.log('✅ Found exact performance match:', data);
-      return data;
+      return JSON.parse(localStorage.getItem(exactMatch));
     }
 
-    // Try partial match
     const partialMatch = keys.find(key => key.includes(studentId));
     if (partialMatch) {
-      const data = JSON.parse(localStorage.getItem(partialMatch));
-      console.log('✅ Found partial performance match:', data);
-      return data;
+      return JSON.parse(localStorage.getItem(partialMatch));
     }
 
-    // Check for individual game sessions and aggregate them
     const gameKeys = Object.keys(localStorage).filter(key =>
       key.includes('game_session') && key.includes(studentId)
     );
-    console.log('🎮 Found game session keys:', gameKeys);
 
     if (gameKeys.length > 0) {
       const aggregatedData = {};
-      let sessionCount = 0;
-
       gameKeys.forEach(key => {
         try {
           const gameSession = JSON.parse(localStorage.getItem(key));
-          console.log('📊 Processing game session:', gameSession);
-
           if (gameSession.gameName && gameSession.performance) {
-            // gameSession.performance already contains the detailed { cognitive: {...}, motor: {...}, etc } objects
-            // Use this structured object directly so analyzeGamePerformance can read the specific metrics.
             aggregatedData[gameSession.gameName] = gameSession.performance;
-            sessionCount++;
-          } else if (gameSession.gameName && gameSession.score !== undefined) {
-            console.log(`Fallback score used for ${gameSession.gameName}`);
           }
         } catch (e) {
           console.error('❌ Error parsing game session:', key, e);
         }
       });
 
-      console.log('📈 Aggregated data from sessions:', aggregatedData);
-      console.log(`🎮 Processed ${sessionCount} game sessions`);
-
       if (Object.keys(aggregatedData).length > 0) {
-        // Save the aggregated data for future use
         localStorage.setItem(`student_performance_${studentId}`, JSON.stringify(aggregatedData));
         return aggregatedData;
       }
     }
 
-    // Check for common test student IDs
     const testIds = ['TEST_STUDENT_001', 'DEMO_STUDENT', 'student123', 'TEST_STUDENT_MULTI'];
     for (const testId of testIds) {
       const testKey = `student_performance_${testId}`;
       const testData = localStorage.getItem(testKey);
       if (testData) {
-        console.log(`🧪 Found test data for ${testId}, using it for ${studentId}`);
         return JSON.parse(testData);
       }
     }
 
-    console.log('❌ No game data found for student:', studentId);
     return null;
-  };
-
-  const generateSamplePerformanceData = () => {
-    return {
-      'Egg Hunt': {
-        cognitive: {
-          pattern_recognition: 85,
-          attention_span: 78,
-          problem_solving: 82,
-          memory: 75
-        },
-        motor: {
-          hand_eye_coordination: 88,
-          fine_motor_control: 76,
-          reaction_time: 80
-        },
-        social: {
-          cooperation: 90,
-          communication: 85,
-          sharing: 88
-        },
-        emotional: {
-          frustration_tolerance: 82,
-          persistence: 87,
-          confidence: 79,
-          emotional_regulation: 84
-        }
-      },
-      'Pop Game': {
-        cognitive: {
-          visual_processing: 92,
-          attention_to_detail: 88,
-          concentration: 85,
-          decision_making: 90
-        },
-        motor: {
-          reaction_speed: 95,
-          accuracy: 87,
-          timing: 89
-        },
-        social: {
-          turn_taking: 93,
-          peer_interaction: 88,
-          sportsmanship: 91
-        },
-        emotional: {
-          impulse_control: 86,
-          patience: 89,
-          excitement_management: 87,
-          resilience: 90
-        }
-      }
-    };
   };
 
   const analyzePerformance = (data) => {
@@ -505,16 +251,11 @@ export default function StudentPerformanceTracker({ student, onBack }) {
     let overallEmotional = 0;
     let gameCount = 0;
 
-    // Analyze each game using the comprehensive analyzer
     Object.keys(data).forEach(gameName => {
       try {
         const gameData = data[gameName];
-
-        // Ensure game performance metrics exist for this game name
         const gameAnalysis = analyzeGamePerformance(gameName, gameData);
-
         analyses[gameName] = gameAnalysis;
-
         overallCognitive += gameAnalysis.cognitive.score;
         overallMotor += gameAnalysis.motor.score;
         overallSocial += gameAnalysis.social.score;
@@ -525,7 +266,6 @@ export default function StudentPerformanceTracker({ student, onBack }) {
       }
     });
 
-    // Calculate overall averages
     if (gameCount > 0) {
       const overallAnalysis = {
         cognitive: {
@@ -554,26 +294,15 @@ export default function StudentPerformanceTracker({ student, onBack }) {
 
       overallAnalysis.overallLevel = getPerformanceLevel(overallAnalysis.overall);
       setAnalysis(overallAnalysis);
-
-      // Generate recommendations
       const recs = generateRecommendations(overallAnalysis);
       setRecommendations(recs);
-
-      // Calculate level progression
       const currentLevel = student.level ? parseInt(student.level.toString().replace('Level ', '')) || 1 : 1;
       const progression = calculateLevelProgression(overallAnalysis.overall, currentLevel);
       setLevelProgression(progression);
     }
-
     setAnalyses(analyses);
   };
 
-  const calculateSimpleAverage = (categoryData) => {
-    if (!categoryData || typeof categoryData !== 'object') return 0;
-
-    const values = Object.values(categoryData).filter(val => typeof val === 'number');
-    return values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
-  };
 
   const getPerformanceLevel = (score) => {
     if (score >= 90) return PERFORMANCE_LEVELS.EXCELLENT;

@@ -512,7 +512,7 @@ export default function AdminDashboard() {
   
   // Institutions list
   const [institutions, setInstitutions] = useState([]);
-  const [institutionsLoading, setInstitutionsLoading] = useState(false);
+  const [institutionsLoading, /* setInstitutionsLoading */] = useState(false);
 
   // Derive student counts per institution from localStorage (students added by teachers)
   const getLocalStudentCount = (institutionName) => {

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import API_URL from "./config";
 import styled, { keyframes } from "styled-components";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { 
   Users, 
   PlusCircle, 
@@ -15,7 +15,6 @@ import {
   Bot, 
   X, 
   ChevronRight,
-  UserPlus,
   Activity,
   Sparkles,
   Camera,

@@ -148,7 +148,7 @@ const RecommendationsList = styled.div`
 `;
 
 export default function AIStudentReport({ student, onBack }) {
-  const [performanceData, setPerformanceData] = useState(null);
+  const [/* performanceData */, setPerformanceData] = useState(null);
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -349,7 +349,7 @@ export default function AIStudentReport({ student, onBack }) {
     );
   }
 
-  const { studentProfile, developmentalAnalysis, strengthsWeaknesses, interventionNeeds, predictiveInsights, careerAlignment, recommendations, confidenceScores } = analysis;
+  const { studentProfile, developmentalAnalysis, strengthsWeaknesses, predictiveInsights, recommendations, confidenceScores } = analysis;
 
   return (
     <ReportContainer>

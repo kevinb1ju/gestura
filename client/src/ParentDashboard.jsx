@@ -2,9 +2,20 @@ import React, { useState, useEffect } from "react";
 import API_URL from "./config";
 import styled, { keyframes } from "styled-components";
 import { 
-  Heart, Activity, TrendingUp, Calendar, AlertCircle, 
-  ChevronRight, ArrowRight, User, BookOpen, Clock, 
-  Send, Bot, X, Sparkles
+  PlusCircle, 
+  MessageSquare, 
+  Send, 
+  Bot, 
+  X, 
+  ChevronRight,
+  Activity,
+  Sparkles,
+  Camera,
+  BrainCircuit,
+  Zap,
+  TrendingUp,
+  History,
+  Info
 } from "lucide-react";
 
 const Container = styled.div`

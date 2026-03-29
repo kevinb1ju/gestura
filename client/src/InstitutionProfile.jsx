@@ -6,17 +6,12 @@ import {
   ArrowLeft, 
   Building2, 
   Users, 
-  UserPlus, 
   GraduationCap, 
   Calendar, 
   MapPin, 
   ShieldCheck, 
   Edit3, 
-  Trash2,
-  ChevronRight,
-  TrendingUp,
-  Mail,
-  Clock
+  Trash2
 } from "lucide-react";
 
 // ---------------- Styled Components ----------------
@@ -55,13 +50,6 @@ const BackButton = styled.button`
     transform: translateX(-4px);
     box-shadow: 0 10px 15px -3px rgba(13, 166, 242, 0.2);
   }
-`;
-
-const Title = styled.h1`
-  font-size: 2rem;
-  font-weight: bold;
-  color: #111827;
-  margin: 0;
 `;
 
 const Card = styled.div`
@@ -180,35 +168,6 @@ const DetailValue = styled.span`
   font-weight: 800;
 `;
 
-const MemberList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const MemberItem = styled.div`
-  padding: 1.25rem;
-  background: #f8fafc;
-  border-radius: 1.25rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid rgba(0, 0, 0, 0.02);
-  transition: all 0.2s;
-
-  &:hover {
-    background: white;
-    border-color: #0da6f2;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  }
-`;
-
-const MemberInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-`;
-
 const Avatar = styled.div`
   width: 3rem;
   height: 3rem;
@@ -220,37 +179,6 @@ const Avatar = styled.div`
   justify-content: center;
   font-weight: 800;
   font-size: 1.25rem;
-`;
-
-const Section = styled.div`
-  margin-top: 2rem;
-`;
-
-const SectionTitle = styled.h3`
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: #111827;
-  margin-bottom: 1rem;
-`;
-
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-`;
-
-const Th = styled.th`
-  text-align: left;
-  padding: 0.75rem;
-  font-weight: 600;
-  color: #6b7280;
-  border-bottom: 2px solid #e5e7eb;
-  font-size: 0.875rem;
-`;
-
-const Td = styled.td`
-  padding: 0.75rem;
-  border-bottom: 1px solid #e5e7eb;
-  color: #111827;
 `;
 
 const EmptyState = styled.div`

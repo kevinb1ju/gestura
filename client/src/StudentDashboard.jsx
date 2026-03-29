@@ -4,17 +4,6 @@ import styled, { keyframes } from "styled-components";
 import { getGamesForLevel, getLevelName, launchGame } from "./levelConfig";
 
 // ---------- Animations ----------
-const wobble = keyframes`
-  0%, 100% { transform: rotate(-3deg); }
-  50% { transform: rotate(3deg); }
-`;
-
-const bounce = keyframes`
-  0%,20%,50%,80%,100% { transform: translateY(0); }
-  40% { transform: translateY(-20px); }
-  60% { transform: translateY(-10px); }
-`;
-
 const float = keyframes`
   0% { transform: translateY(0px); }
   50% { transform: translateY(-20px); }
@@ -158,32 +147,21 @@ const WelcomeSection = styled.div`
 `;
 
 const GameGrid = styled.div`
-  display: flex;
+  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 2rem;
 `;
 
-const GameCardWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: ${({ bgColor }) => bgColor || "#fff"};
-  padding: 1.5rem;
-  border-radius: 1.5rem;
-  border: 4px solid ${({ buttonColor }) => buttonColor || "#007bff"};
-  box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
-  transform: rotate(-1deg);
-  transition: all 0.3s ease-in-out;
-  min-height: 320px;
+/* const GameCardWrapper = styled.div`
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
 
   &:hover {
-    transform: rotate(1deg) scale(1.05);
-    box-shadow: 12px 12px 0px rgba(0,0,0,0.3);
+    transform: translateY(-10px) scale(1.02);
   }
 
   img {
-    width: 200px;
-    height: 200px;
     aspect-ratio: 1/1;
     border-radius: 1rem;
     border: 3px solid ${({ buttonColor }) => buttonColor || "#007bff"};
@@ -195,46 +173,7 @@ const GameCardWrapper = styled.div`
   &:hover img {
     transform: scale(1.1);
   }
-
-  h3 {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin: 0.5rem 0;
-    color: #333;
-    text-align: center;
-    font-family: 'Fredoka One', cursive;
-    text-shadow: 1px 1px 0 #000;
-  }
-
-  button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1.1rem;
-    font-weight: bold;
-    background-color: ${({ buttonColor }) => buttonColor || "#007bff"};
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 0.5rem;
-
-    &:hover {
-      background-color: ${({ buttonColor }) => buttonColor || "#0056b3"};
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-
-    &:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-  }
-`;
+`; */
 
 // ---------- React Component ----------
 export default function StudentDashboard() {
