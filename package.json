@@ -2,12 +2,11 @@
   "name": "gestura-unified",
   "version": "1.0.0",
   "scripts": {
-    "start": "node server/server.js",
+    "start": "npm start --prefix server",
     "build": "echo 'No root build needed'",
     "install-server": "npm install --prefix server",
     "install-client": "npm install --prefix client",
-    "start-server": "npm start --prefix server",
-    "start-client": "npm start --prefix client"
+    "build-client": "npm run build --prefix client"
   },
   "dependencies": {
     "jsdom": "^28.1.0"
