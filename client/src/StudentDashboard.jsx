@@ -123,6 +123,10 @@ const WelcomeSection = styled.div`
     font-size: 3rem;
     color: #ff6b6b;
     text-shadow: 2px 2px 0 #000;
+    
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
   }
 
   .level {
@@ -148,9 +152,14 @@ const WelcomeSection = styled.div`
 
 const GameGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.25rem;
   justify-content: center;
+  
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
 `;
 
 /* const GameCardWrapper = styled.div`
@@ -323,8 +332,8 @@ export default function StudentDashboard() {
             >
               <div 
                 style={{
-                  width: '200px',
-                  height: '200px',
+                  width: '100%',
+                  maxWidth: '180px',
                   aspectRatio: '1/1',
                   borderRadius: '1rem',
                   border: `3px solid ${game.buttonColor || '#007bff'}`,
