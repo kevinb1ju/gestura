@@ -549,6 +549,14 @@ export default function AdminDashboard() {
       const teacherResponse = await fetch(`${API_URL}/users?role=teacher`);
       const teacherData = await teacherResponse.json();
       
+      const [adminUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    } catch (e) {
+      return {};
+    }
+  });
+      
       const localStudents = JSON.parse(localStorage.getItem('teacherStudents') || '[]');
       
       if (instData.institutions?.length === 0 && teacherData.users?.length === 0) {

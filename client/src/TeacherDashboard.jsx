@@ -605,8 +605,13 @@ const Tabs = styled.div`
 
 export default function TeacherDashboard() {
   const [students, setStudents] = useState(() => {
-    const saved = localStorage.getItem('teacherStudents');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('teacherStudents');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('Error parsing teacherStudents:', e);
+      return [];
+    }
   });
   const [activeTab, setActiveTab] = useState("view");
   const [activeSidebar, setActiveSidebar] = useState("students");
