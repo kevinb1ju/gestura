@@ -596,7 +596,7 @@ export default function AdminDashboard() {
       });
 
       const data = await response.json();
-      setAiMessages([...newMessages, { text: data.reply, isAi: true }]);
+      setAiMessages([...newMessages, { text: data.response || data.reply, isAi: true }]);
     } catch (err) {
       setAiMessages([...newMessages, { text: "I'm having trouble connecting to my knowledge base. Please try again soon.", isAi: true }]);
     } finally {

@@ -39,6 +39,7 @@ exports.chatWithAi = async (req, res) => {
           return res.json({
             success: true,
             response: aiResponse,
+            reply: aiResponse,
             model: "Llama-3.3 (Cloud SDK)"
           });
         }
@@ -74,6 +75,7 @@ exports.chatWithAi = async (req, res) => {
     res.json({
       success: true,
       response: response,
+      reply: response,
       model: "Llama-Mock (Fallback)",
       note: "Add GROQ_API_KEY to your .env to enable real Llama-3 intelligence."
     });
