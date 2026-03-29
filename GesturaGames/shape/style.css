@@ -1,0 +1,643 @@
+    :root {
+      --primary: #FF6B6B;
+      /* Pastel Red */
+      --secondary: #4ECDC4;
+      /* Turquoise */
+      --accent: #FFE66D;
+      /* Yellow */
+      --dark: #2D3436;
+      /* Dark Grey */
+      --light: #F7FFF7;
+      /* Off-white */
+      --card-bg: #FFFFFF;
+      --shadow: 6px 6px 0px var(--dark);
+      --border: 3px solid var(--dark);
+      --radius: 20px;
+      --font-main: 'Fredoka', 'Comic Sans MS', cursive;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-main);
+      text-align: center;
+      background-color: #8EC5FC;
+      background-image: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%);
+      min-height: 100vh;
+      max-height: 100vh;
+      padding: 10px;
+      color: var(--dark);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Background Decorations */
+    .bg-decoration {
+      position: absolute;
+      font-size: 3rem;
+      opacity: 0.6;
+      animation: float 6s ease-in-out infinite;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .cloud-1 {
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+      font-size: 5rem;
+    }
+
+    .cloud-2 {
+      top: 20%;
+      right: 10%;
+      animation-delay: 3s;
+      font-size: 4rem;
+    }
+
+    .star-1 {
+      bottom: 15%;
+      left: 15%;
+      animation-delay: 1s;
+      font-size: 2rem;
+    }
+
+    .star-2 {
+      top: 40%;
+      right: 5%;
+      animation-delay: 4s;
+      font-size: 2.5rem;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(-20px) rotate(5deg);
+      }
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 10;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: white;
+      text-shadow: 4px 4px 0px var(--dark);
+      margin: 10px 0;
+      flex-shrink: 0;
+      letter-spacing: 1px;
+    }
+
+    .phase {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+      animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .phase.active {
+      display: flex;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Cards & Containers */
+    .shape-card,
+    .camera-setup-card {
+      background: var(--card-bg);
+      border: var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin: 10px auto;
+      box-shadow: var(--shadow);
+      max-width: 100%;
+      width: 95%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .shape-name {
+      font-size: 2.2rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Buttons */
+    button {
+      font-family: var(--font-main);
+      border: var(--border);
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 12px 24px;
+      margin: 8px;
+      font-weight: 600;
+      transition: all 0.1s;
+      box-shadow: 4px 4px 0px var(--dark);
+      text-transform: uppercase;
+    }
+
+    button:active {
+      transform: translate(4px, 4px);
+      box-shadow: 0px 0px 0px var(--dark);
+    }
+
+    .nav-button {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .nav-button.secondary {
+      background: white;
+      color: var(--dark);
+    }
+
+    .listen-button {
+      background: var(--accent);
+      color: var(--dark);
+    }
+
+    .voice-button {
+      background: var(--primary);
+      color: white;
+    }
+
+    .voice-button.listening {
+      animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+      }
+
+      70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 20px rgba(255, 107, 107, 0);
+      }
+
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+      }
+    }
+
+    /* Shapes with Personality */
+    .shape-display {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 120px;
+    }
+
+    .circle-shape,
+    .square-shape,
+    .triangle-shape,
+    .rectangle-shape {
+      border: var(--border);
+      box-shadow: var(--shadow);
+      position: relative;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .circle-shape:hover,
+    .square-shape:hover,
+    .rectangle-shape:hover,
+    .triangle-shape:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    /* Add faces to shapes */
+    .circle-shape::after,
+    .square-shape::after,
+    .rectangle-shape::after {
+      content: '^^';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(90deg);
+      font-size: 24px;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.5);
+      letter-spacing: 8px;
+    }
+
+    .triangle-shape::after {
+      content: '^^';
+      position: absolute;
+      top: 40px;
+      left: -15px;
+      /* Centering for triangle structure */
+      transform: rotate(90deg);
+      font-size: 20px;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.5);
+      letter-spacing: 6px;
+    }
+
+    .circle-shape {
+      width: 120px;
+      height: 120px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    .square-shape {
+      width: 110px;
+      height: 110px;
+      background: var(--secondary);
+    }
+
+    .triangle-shape {
+      width: 0;
+      height: 0;
+      border-left: 65px solid transparent;
+      border-right: 65px solid transparent;
+      border-bottom: 110px solid var(--accent);
+      box-shadow: none;
+      /* Shadow handled by filter for triangle */
+      filter: drop-shadow(6px 6px 0px var(--dark));
+      border-top: none;
+      /* cleanup */
+    }
+
+    .rectangle-shape {
+      width: 160px;
+      height: 100px;
+      background: #A8E6CF;
+      /* Mint */
+    }
+
+    /* Camera Feed */
+    .camera-container {
+      border: var(--border);
+      border-radius: 15px;
+      overflow: hidden;
+      background: black;
+      position: relative;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .small-mirror {
+      height: 150px;
+      width: 200px;
+      margin: 0 auto;
+      border-width: 4px;
+      border-color: var(--accent);
+    }
+
+    #camera-video,
+    #game-camera-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    #camera-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Learning Phase Specifics */
+    .instruction-text {
+      font-size: 1.3rem;
+      color: var(--dark);
+      margin: 10px 0;
+      line-height: 1.4;
+    }
+
+    .progress-bar-container {
+      background: rgba(0, 0, 0, 0.1);
+      height: 20px;
+      border-radius: 20px;
+      width: 100%;
+      margin: 10px 0;
+      border: 2px solid var(--dark);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: repeating-linear-gradient(45deg,
+          var(--accent),
+          var(--accent) 10px,
+          #FFD93D 10px,
+          #FFD93D 20px);
+      height: 100%;
+      transition: width 0.5s ease;
+    }
+
+    .feedback,
+    .camera-status {
+      font-size: 1.2rem;
+      font-weight: bold;
+      min-height: 1.5em;
+      margin: 5px 0;
+    }
+
+    /* Game Phase */
+    .game-layout {
+      display: flex;
+      flex-direction: row;
+      gap: 15px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .camera-side {
+      flex: 0 0 35%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .shapes-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .game-area-gesture,
+    .game-area {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      padding: 10px;
+      width: 100%;
+    }
+
+    .game-box,
+    .game-box-gesture {
+      background: white;
+      border: var(--border);
+      border-radius: 15px;
+      box-shadow: 4px 4px 0px var(--dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      transition: all 0.2s;
+      cursor: pointer;
+      position: relative;
+      /* For selection progress */
+      overflow: hidden;
+    }
+
+    .game-box:hover,
+    .game-box-gesture:hover {
+      transform: translate(-2px, -2px) scale(1.02);
+      box-shadow: 6px 6px 0px var(--dark);
+      background: #fff9e6;
+    }
+
+    .game-box-gesture.highlighted {
+      background: #ffe0e0;
+      transform: scale(0.98);
+      box-shadow: 2px 2px 0px var(--dark);
+    }
+
+    /* Scaling shapes down for game grid */
+    .game-box .circle-shape,
+    .game-box-gesture .circle-shape {
+      width: 60px;
+      height: 60px;
+    }
+
+    .game-box .square-shape,
+    .game-box-gesture .square-shape {
+      width: 60px;
+      height: 60px;
+    }
+
+    .game-box .triangle-shape,
+    .game-box-gesture .triangle-shape {
+      border-width: 0 35px 60px 35px;
+    }
+
+    .game-box .rectangle-shape,
+    .game-box-gesture .rectangle-shape {
+      width: 80px;
+      height: 50px;
+    }
+
+    /* Remove faces in small game grid to reduce clutter */
+    .game-box div::after,
+    .game-box-gesture div::after {
+      display: none;
+    }
+
+    .score {
+      background: var(--accent);
+      color: var(--dark);
+      padding: 5px 15px;
+      border: 3px solid var(--dark);
+      border-radius: 20px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: inline-block;
+      box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+    }
+
+    .instruction-banner {
+      background: white;
+      border: var(--border);
+      border-radius: 15px;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    .instruction {
+      font-size: 1.5rem;
+      color: var(--secondary);
+    }
+
+    .game-feedback {
+      font-size: 1.5rem;
+      height: 30px;
+      margin: 5px 0;
+    }
+
+    /* Selection Progress Overlay */
+    .selection-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 8px;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    .selection-progress.active {
+      display: block;
+    }
+
+    .selection-progress-fill {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.05s linear;
+    }
+
+    /* Finger Pointer */
+    .finger-pointer {
+      position: fixed;
+      width: 30px;
+      height: 30px;
+      background: var(--accent);
+      border-radius: 50%;
+      border: 3px solid var(--dark);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Media Queries for Mobile/Tablet */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .shape-name {
+        font-size: 1.8rem;
+      }
+
+      .game-layout {
+        flex-direction: column;
+      }
+
+      .camera-side {
+        flex: 0 0 auto;
+        margin-bottom: 10px;
+      }
+
+      .small-mirror {
+        width: 150px;
+        height: 110px;
+      }
+
+      .container {
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .bg-decoration {
+        display: none;
+      }
+
+      /* Reduce clutter on small screens */
+    }
+
+    /* Celebration Animation */
+    .celebration {
+      display: inline-block;
+      animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+    }
+
+    /* Victory Phase */
+    .victory-card {
+      background: white;
+      border: var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      margin: auto;
+      text-align: center;
+      box-shadow: var(--shadow);
+      max-width: 90%;
+      animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .victory-emoji {
+      font-size: 5rem;
+      margin: 20px 0;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .victory-text {
+      font-size: 1.5rem;
+      color: var(--dark);
+      margin-bottom: 30px;
+    }
+
+    #final-score {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 2rem;
+    }
+
+    /* Level 2: Shape Rain */
+    .falling-shape {
+      position: absolute;
+      animation: spin 3s linear infinite;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .falling-shape.caught {
+      animation: pop 0.2s forwards;
+    }

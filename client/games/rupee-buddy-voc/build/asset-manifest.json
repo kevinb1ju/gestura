@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/games/rupee-buddy-voc/static/js/main.ebbc8489.js",
+    "index.html": "/games/rupee-buddy-voc/index.html",
+    "main.ebbc8489.js.map": "/games/rupee-buddy-voc/static/js/main.ebbc8489.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.ebbc8489.js"
+  ]
+}

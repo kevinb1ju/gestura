@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Debug Performance Data</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .debug-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .debug-section h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .data-display {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .student-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .student-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .student-card:hover {
+            border-color: #3b82f6;
+            transform: scale(1.05);
+        }
+        .student-card.has-data {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        .student-card.no-data {
+            background: #fee2e2;
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Performance Data Debug Tool</h1>
+        
+        <div class="info">
+            <h4>📊 This tool helps debug performance data collection issues</h4>
+            <p>Use this to check if game data is being properly saved and can be retrieved by the performance tracker.</p>
+        </div>
+
+        <div class="debug-section">
+            <h3>🔍 Check All Performance Data</h3>
+            <button onclick="checkAllPerformanceData()">📊 Check All Student Data</button>
+            <button onclick="checkGameSessions()">🎮 Check Game Sessions</button>
+            <button onclick="checkLocalStorage()">💾 Check LocalStorage</button>
+            <div id="data-status"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>👥 Students with Performance Data</h3>
+            <div id="student-list" class="student-list"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>📈 Test Data Generation</h3>
+            <button onclick="generateTestData()">🧪 Generate Test Data</button>
+            <button onclick="clearAllData()">🗑️ Clear All Data</button>
+            <button onclick="simulateGamePlay()">🎮 Simulate Game Play</button>
+            <div id="test-status"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🔧 Manual Data Entry</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <input type="text" id="student-id" placeholder="Student ID (e.g., TEST_STUDENT_001)" style="padding: 8px; border: 1px solid #e5e7eb; border-radius: 5px;">
+                <input type="text" id="game-name" placeholder="Game Name (e.g., Egg Hunt)" style="padding: 8px; border: 1px solid #e5e7eb; border-radius: 5px;">
+            </div>
+            <button onclick="addManualData()">➕ Add Manual Performance Data</button>
+            <div id="manual-status"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>📋 Raw Data Display</h3>
+            <div id="raw-data" class="data-display">Click "Check All Student Data" to view raw performance data...</div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🔗 Quick Links</h3>
+            <button onclick="window.open('/teacher-dashboard', '_blank')">👨‍🏫 Teacher Dashboard</button>
+            <button onclick="window.open('/student-performance', '_blank')">📊 Performance Tracker</button>
+            <button onclick="window.open('/ai-student-report', '_blank')">🤖 AI Report</button>
+            <button onclick="window.open('/test-game-data-collection.html', '_blank')">🎮 Test Game</button>
+        </div>
+    </div>
+
+    <script>
+        function checkAllPerformanceData() {
+            const status = document.getElementById('data-status');
+            const rawData = document.getElementById('raw-data');
+            const studentList = document.getElementById('student-list');
+            
+            status.innerHTML = '<div class="info">🔍 Checking all performance data...</div>';
+            
+            // Get all performance data keys
+            const performanceKeys = Object.keys(localStorage).filter(key => 
+                key.startsWith('student_performance_')
+            );
+            
+            if (performanceKeys.length === 0) {
+                status.innerHTML = '<div class="warning">⚠️ No performance data found in localStorage!</div>';
+                studentList.innerHTML = '<div class="error">❌ No students with performance data</div>';
+                rawData.textContent = 'No performance data found.';
+                return;
+            }
+            
+            let allData = {};
+            let studentCards = '';
+            
+            performanceKeys.forEach(key => {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    const studentId = key.replace('student_performance_', '');
+                    allData[studentId] = data;
+                    
+                    const gameCount = Object.keys(data).length;
+                    const hasData = gameCount > 0;
+                    
+                    studentCards += `
+                        <div class="student-card ${hasData ? 'has-data' : 'no-data'}" onclick="viewStudentDetails('${studentId}')">
+                            <div><strong>${studentId}</strong></div>
+                            <div>${gameCount} games</div>
+                            <div>${hasData ? '✅ Has Data' : '❌ No Data'}</div>
+                        </div>
+                    `;
+                } catch (e) {
+                    console.error('Error parsing data for key:', key, e);
+                }
+            });
+            
+            status.innerHTML = `<div class="success">✅ Found ${performanceKeys.length} students with performance data</div>`;
+            studentList.innerHTML = studentCards;
+            rawData.textContent = JSON.stringify(allData, null, 2);
+        }
+
+        function checkGameSessions() {
+            const status = document.getElementById('data-status');
+            const rawData = document.getElementById('raw-data');
+            
+            // Get all game session keys
+            const sessionKeys = Object.keys(localStorage).filter(key => 
+                key.includes('game_session_')
+            );
+            
+            if (sessionKeys.length === 0) {
+                status.innerHTML = '<div class="warning">⚠️ No game sessions found!</div>';
+                rawData.textContent = 'No game sessions found.';
+                return;
+            }
+            
+            let allSessions = {};
+            sessionKeys.forEach(key => {
+                try {
+                    allSessions[key] = JSON.parse(localStorage.getItem(key));
+                } catch (e) {
+                    console.error('Error parsing session for key:', key, e);
+                }
+            });
+            
+            status.innerHTML = `<div class="success">✅ Found ${sessionKeys.length} game sessions</div>`;
+            rawData.textContent = JSON.stringify(allSessions, null, 2);
+        }
+
+        function checkLocalStorage() {
+            const status = document.getElementById('data-status');
+            const rawData = document.getElementById('raw-data');
+            
+            const allKeys = Object.keys(localStorage);
+            const relevantKeys = allKeys.filter(key => 
+                key.includes('student_performance') || 
+                key.includes('game_session') ||
+                key.includes('user')
+            );
+            
+            if (relevantKeys.length === 0) {
+                status.innerHTML = '<div class="warning">⚠️ No relevant data found in localStorage!</div>';
+                rawData.textContent = 'No relevant data found.';
+                return;
+            }
+            
+            let relevantData = {};
+            relevantKeys.forEach(key => {
+                try {
+                    relevantData[key] = localStorage.getItem(key);
+                } catch (e) {
+                    relevantData[key] = 'Error reading data';
+                }
+            });
+            
+            status.innerHTML = `<div class="success">✅ Found ${relevantKeys.length} relevant localStorage entries</div>`;
+            rawData.textContent = JSON.stringify(relevantData, null, 2);
+        }
+
+        function generateTestData() {
+            const status = document.getElementById('test-status');
+            const studentId = 'TEST_STUDENT_001';
+            
+            // Generate sample performance data
+            const testData = {
+                'Egg Hunt': {
+                    cognitive: {
+                        pattern_recognition: 85,
+                        attention_span: 78,
+                        problem_solving: 82,
+                        memory: 75
+                    },
+                    motor: {
+                        hand_eye_coordination: 88,
+                        fine_motor_control: 76,
+                        reaction_time: 80
+                    },
+                    social: {
+                        cooperation: 90,
+                        communication: 85,
+                        sharing: 88
+                    },
+                    emotional: {
+                        frustration_tolerance: 82,
+                        persistence: 87,
+                        confidence: 79,
+                        emotional_regulation: 84
+                    }
+                },
+                'Pop Game': {
+                    cognitive: {
+                        visual_processing: 92,
+                        attention_to_detail: 88,
+                        concentration: 85,
+                        decision_making: 90
+                    },
+                    motor: {
+                        reaction_speed: 95,
+                        accuracy: 87,
+                        timing: 89
+                    },
+                    social: {
+                        turn_taking: 93,
+                        peer_interaction: 88,
+                        sportsmanship: 91
+                    },
+                    emotional: {
+                        impulse_control: 86,
+                        patience: 89,
+                        excitement_management: 87,
+                        resilience: 90
+                    }
+                }
+            };
+            
+            // Save to localStorage
+            localStorage.setItem(`student_performance_${studentId}`, JSON.stringify(testData));
+            
+            status.innerHTML = `<div class="success">✅ Test data generated for ${studentId}</div>`;
+            
+            // Refresh the display
+            setTimeout(() => checkAllPerformanceData(), 500);
+        }
+
+        function simulateGamePlay() {
+            const status = document.getElementById('test-status');
+            
+            // Simulate a game session
+            const studentId = 'TEST_STUDENT_001';
+            const gameName = 'Egg Hunt';
+            
+            // Create simulated game session
+            const session = {
+                gameName: gameName,
+                studentId: studentId,
+                startTime: Date.now() - 60000, // 1 minute ago
+                endTime: Date.now(),
+                duration: 60000,
+                scores: {
+                    correct: 8,
+                    incorrect: 2,
+                    total: 10
+                },
+                performance: {
+                    cognitive: {
+                        pattern_recognition: 80,
+                        attention_span: 75,
+                        problem_solving: 85,
+                        memory: 70
+                    },
+                    motor: {
+                        hand_eye_coordination: 85,
+                        fine_motor_control: 75,
+                        reaction_time: 80
+                    },
+                    social: {
+                        cooperation: 88,
+                        communication: 82,
+                        sharing: 85
+                    },
+                    emotional: {
+                        frustration_tolerance: 78,
+                        persistence: 90,
+                        confidence: 82,
+                        emotional_regulation: 80
+                    }
+                }
+            };
+            
+            // Save session
+            const sessionKey = `game_session_${studentId}_${gameName}_${Date.now()}`;
+            localStorage.setItem(sessionKey, JSON.stringify(session));
+            
+            // Update performance data
+            const perfKey = `student_performance_${studentId}`;
+            const existingData = localStorage.getItem(perfKey);
+            let studentData = existingData ? JSON.parse(existingData) : {};
+            studentData[gameName] = session.performance;
+            localStorage.setItem(perfKey, JSON.stringify(studentData));
+            
+            status.innerHTML = `<div class="success">✅ Simulated game play for ${studentId} in ${gameName}</div>`;
+            
+            // Refresh display
+            setTimeout(() => checkAllPerformanceData(), 500);
+        }
+
+        function addManualData() {
+            const status = document.getElementById('manual-status');
+            const studentId = document.getElementById('student-id').value.trim();
+            const gameName = document.getElementById('game-name').value.trim();
+            
+            if (!studentId || !gameName) {
+                status.innerHTML = '<div class="error">❌ Please enter both Student ID and Game Name</div>';
+                return;
+            }
+            
+            // Create sample performance data
+            const performanceData = {
+                cognitive: {
+                    pattern_recognition: Math.floor(Math.random() * 30) + 70,
+                    attention_span: Math.floor(Math.random() * 30) + 70,
+                    problem_solving: Math.floor(Math.random() * 30) + 70,
+                    memory: Math.floor(Math.random() * 30) + 70
+                },
+                motor: {
+                    hand_eye_coordination: Math.floor(Math.random() * 30) + 70,
+                    fine_motor_control: Math.floor(Math.random() * 30) + 70,
+                    reaction_time: Math.floor(Math.random() * 30) + 70
+                },
+                social: {
+                    cooperation: Math.floor(Math.random() * 30) + 70,
+                    communication: Math.floor(Math.random() * 30) + 70,
+                    sharing: Math.floor(Math.random() * 30) + 70
+                },
+                emotional: {
+                    frustration_tolerance: Math.floor(Math.random() * 30) + 70,
+                    persistence: Math.floor(Math.random() * 30) + 70,
+                    confidence: Math.floor(Math.random() * 30) + 70,
+                    emotional_regulation: Math.floor(Math.random() * 30) + 70
+                }
+            };
+            
+            // Save to localStorage
+            const key = `student_performance_${studentId}`;
+            const existingData = localStorage.getItem(key);
+            let studentData = existingData ? JSON.parse(existingData) : {};
+            studentData[gameName] = performanceData;
+            localStorage.setItem(key, JSON.stringify(studentData));
+            
+            status.innerHTML = `<div class="success">✅ Added performance data for ${studentId} in ${gameName}</div>`;
+            
+            // Clear inputs
+            document.getElementById('student-id').value = '';
+            document.getElementById('game-name').value = '';
+            
+            // Refresh display
+            setTimeout(() => checkAllPerformanceData(), 500);
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all performance data? This cannot be undone.')) {
+                // Clear all performance-related data
+                const keysToRemove = Object.keys(localStorage).filter(key => 
+                    key.includes('student_performance') || 
+                    key.includes('game_session')
+                );
+                
+                keysToRemove.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                
+                document.getElementById('data-status').innerHTML = '<div class="success">✅ All performance data cleared</div>';
+                document.getElementById('student-list').innerHTML = '';
+                document.getElementById('raw-data').textContent = 'All data cleared.';
+            }
+        }
+
+        function viewStudentDetails(studentId) {
+            const key = `student_performance_${studentId}`;
+            const data = localStorage.getItem(key);
+            
+            if (data) {
+                const performanceData = JSON.parse(data);
+                alert(`Student: ${studentId}\nGames: ${Object.keys(performanceData).join(', ')}\n\nData: ${JSON.stringify(performanceData, null, 2)}`);
+            } else {
+                alert(`No data found for student: ${studentId}`);
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            console.log('🔍 Performance Data Debug Tool loaded');
+            checkAllPerformanceData();
+        });
+    </script>
+</body>
+</html>

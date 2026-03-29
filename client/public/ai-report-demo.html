@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI Student Report Demo</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        .demo-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .demo-section h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .feature-title {
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        .feature-desc {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        .data-display {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI-Powered Student Performance Report System</h1>
+        
+        <div class="demo-section">
+            <h3>🎯 What This System Does</h3>
+            <p>The AI Student Report system analyzes student performance across <strong>Cognitive</strong>, <strong>Motor Skills</strong>, <strong>Social</strong>, and <strong>Emotional</strong> domains using advanced AI algorithms to generate comprehensive insights and recommendations.</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-title">Cognitive Analysis</div>
+                    <div class="feature-desc">Pattern recognition, problem-solving, memory, attention span analysis with AI insights</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💪</div>
+                    <div class="feature-title">Motor Skills</div>
+                    <div class="feature-desc">Hand-eye coordination, fine motor control, reaction time with developmental assessment</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <div class="feature-title">Social Development</div>
+                    <div class="feature-desc">Cooperation, communication, sharing, leadership skills analysis</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">❤️</div>
+                    <div class="feature-title">Emotional Growth</div>
+                    <div class="feature-desc">Frustration tolerance, persistence, confidence, emotional regulation insights</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🔬 AI Analysis Features</h3>
+            <button onclick="demonstrateAnalysis()">🤖 Demonstrate AI Analysis</button>
+            <button onclick="showSampleData()">📊 Show Sample Data</button>
+            <div id="analysis-result"></div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🎋 Key AI Insights Generated</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Strengths & Weaknesses</div>
+                    <div class="feature-desc">Identifies specific strengths and areas needing development with detailed descriptions</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <div class="feature-title">Learning Patterns</div>
+                    <div class="feature-desc">Recognizes learning styles, processing speed, and engagement patterns</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔮</div>
+                    <div class="feature-title">Predictive Insights</div>
+                    <div class="feature-desc">Forecasts learning trajectory and potential challenges with confidence scores</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <div class="feature-title">Personalized Strategies</div>
+                    <div class="feature-desc">Generates specific recommendations for teachers, parents, and students</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🚀 How to Use</h3>
+            <ol>
+                <li><strong>Teacher Dashboard:</strong> Click "🤖 AI Report" button next to any student</li>
+                <li><strong>Automatic Analysis:</strong> AI processes performance data instantly</li>
+                <li><strong>Comprehensive Report:</strong> View detailed analysis across all development domains</li>
+                <li><strong>Actionable Insights:</strong> Get personalized recommendations and strategies</li>
+                <li><strong>Export Options:</strong> Print or export reports for sharing</li>
+            </ol>
+        </div>
+
+        <div class="demo-section">
+            <h3>📊 Report Sections</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">👤</div>
+                    <div class="feature-title">Student Profile</div>
+                    <div class="feature-desc">Developmental stage, learning pace, engagement level</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <div class="feature-title">Performance Analysis</div>
+                    <div class="feature-desc">Domain-specific scores with AI-generated insights</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Developmental Insights</div>
+                    <div class="feature-desc">Growth areas, talents, concerns, readiness indicators</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <div class="feature-title">AI Recommendations</div>
+                    <div class="feature-desc">Immediate strategies, long-term goals, home activities</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🔗 Quick Access</h3>
+            <button onclick="window.open('/teacher-dashboard', '_blank')">👨‍🏫 Teacher Dashboard</button>
+            <button onclick="window.open('/ai-student-report', '_blank')">🤖 AI Student Report</button>
+            <button onclick="window.open('/performance-system-test.html', '_blank')">🧪 Test Performance System</button>
+            <button onclick="window.open('/debug-games-new.html', '_blank')">🎮 Debug Games</button>
+        </div>
+    </div>
+
+    <script>
+        // Sample student data for demonstration
+        const sampleStudentData = {
+            studentId: 'AI_DEMO_001',
+            name: 'Alex Johnson',
+            age: '7 years',
+            level: 'Level 2',
+            photo: 'https://via.placeholder.com/150'
+        };
+
+        const samplePerformanceData = {
+            'Egg Hunt': {
+                cognitive: { pattern_recognition: 85, attention_span: 78, problem_solving: 82, memory: 75 },
+                motor: { hand_eye_coordination: 88, fine_motor_control: 76, reaction_time: 80 },
+                social: { cooperation: 90, communication: 85, sharing: 88 },
+                emotional: { frustration_tolerance: 82, persistence: 87, confidence: 79, emotional_regulation: 84 }
+            },
+            'Pop Game': {
+                cognitive: { visual_processing: 92, attention_to_detail: 88, concentration: 85, decision_making: 90 },
+                motor: { reaction_speed: 95, accuracy: 87, timing: 89 },
+                social: { turn_taking: 93, peer_interaction: 88, sportsmanship: 91 },
+                emotional: { impulse_control: 86, patience: 89, excitement_management: 87, resilience: 90 }
+            }
+        };
+
+        function demonstrateAnalysis() {
+            const result = document.getElementById('analysis-result');
+            result.innerHTML = '<div class="success">🤖 AI Analysis in Progress...</div>';
+            
+            setTimeout(() => {
+                const analysis = generateAIAnalysis(samplePerformanceData);
+                result.innerHTML = `
+                    <div class="info">
+                        <h4>🧠 Cognitive Analysis:</h4>
+                        <p><strong>Pattern:</strong> ${analysis.cognitive.pattern}</p>
+                        <p><strong>Strengths:</strong> ${analysis.cognitive.strengths.join(', ')}</p>
+                        <p><strong>Areas for Development:</strong> ${analysis.cognitive.weaknesses.join(', ')}</p>
+                        
+                        <h4>💪 Motor Skills Analysis:</h4>
+                        <p><strong>Pattern:</strong> ${analysis.motor.pattern}</p>
+                        <p><strong>Strengths:</strong> ${analysis.motor.strengths.join(', ')}</p>
+                        <p><strong>Areas for Development:</strong> ${analysis.motor.weaknesses.join(', ')}</p>
+                        
+                        <h4>👥 Social Development Analysis:</h4>
+                        <p><strong>Pattern:</strong> ${analysis.social.pattern}</p>
+                        <p><strong>Strengths:</strong> ${analysis.social.strengths.join(', ')}</p>
+                        <p><strong>Areas for Development:</strong> ${analysis.social.weaknesses.join(', ')}</p>
+                        
+                        <h4>❤️ Emotional Development Analysis:</h4>
+                        <p><strong>Pattern:</strong> ${analysis.emotional.pattern}</p>
+                        <p><strong>Strengths:</strong> ${analysis.emotional.strengths.join(', ')}</p>
+                        <p><strong>Areas for Development:</strong> ${analysis.emotional.weaknesses.join(', ')}</p>
+                        
+                        <h4>🎯 Overall AI Recommendation:</h4>
+                        <p><strong>Learning Path:</strong> ${analysis.recommendations.learningPath}</p>
+                        <p><strong>Focus Areas:</strong> ${analysis.recommendations.focusAreas.join(', ')}</p>
+                        <p><strong>Success Probability:</strong> ${analysis.recommendations.successProbability}%</p>
+                    </div>
+                `;
+            }, 2000);
+        }
+
+        function showSampleData() {
+            const result = document.getElementById('analysis-result');
+            result.innerHTML = `
+                <div class="info">
+                    <h4>📊 Sample Student Data:</h4>
+                    <div class="data-display">${JSON.stringify(sampleStudentData, null, 2)}</div>
+                    
+                    <h4>🎮 Sample Performance Data:</h4>
+                    <div class="data-display">${JSON.stringify(samplePerformanceData, null, 2)}</div>
+                    
+                    <h4>🧠 AI Analysis Summary:</h4>
+                    <p><strong>Developmental Stage:</strong> On Track</p>
+                    <p><strong>Learning Pace:</strong> Steady Learner</p>
+                    <p><strong>Engagement Level:</strong> Engaged</p>
+                    <p><strong>Confidence Level:</strong> Confident</p>
+                    <p><strong>Overall Score:</strong> 83.5</p>
+                </div>
+            `;
+        }
+
+        function generateAIAnalysis(performanceData) {
+            // Simulate AI analysis
+            const analysis = {
+                cognitive: {
+                    pattern: "Strong analytical thinking with excellent pattern recognition",
+                    strengths: ["Pattern recognition", "Problem-solving", "Attention to detail"],
+                    weaknesses: ["Memory retention", "Processing speed"],
+                    confidence: "High"
+                },
+                motor: {
+                    pattern: "Advanced fine motor development with good coordination",
+                    strengths: ["Hand-eye coordination", "Reaction speed", "Fine motor control"],
+                    weaknesses: ["Endurance", "Complex motor sequences"],
+                    confidence: "High"
+                },
+                social: {
+                    pattern: "Developing social skills with good peer interaction",
+                    strengths: ["Cooperation", "Communication", "Turn-taking"],
+                    weaknesses: ["Conflict resolution", "Leadership"],
+                    confidence: "Medium"
+                },
+                emotional: {
+                    pattern: "Growing emotional regulation with high resilience",
+                    strengths: ["Frustration tolerance", "Persistence", "Confidence"],
+                    weaknesses: ["Patience", "Emotional regulation in stress"],
+                    confidence: "Medium"
+                },
+                recommendations: {
+                    learningPath: "Continue current level with targeted social-emotional support",
+                    focusAreas: ["Social skills practice", "Emotional regulation strategies"],
+                    successProbability: 87
+                }
+            };
+
+            return analysis;
+        }
+
+        // Initialize demo
+        window.addEventListener('load', () => {
+            console.log('🤖 AI Student Report System Demo Loaded');
+            console.log('Sample student:', sampleStudentData);
+            console.log('Sample performance:', samplePerformanceData);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Game Data Debugger</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .student-section {
+            background: #dbeafe;
+            border-color: #3b82f6;
+        }
+        .data-section {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        .keys-section {
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+        .key-item {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #e5e7eb;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .game-data {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #2563eb;
+        }
+        .danger {
+            background: #ef4444;
+        }
+        .danger:hover {
+            background: #dc2626;
+        }
+        .success {
+            background: #10b981;
+        }
+        .success:hover {
+            background: #059669;
+        }
+        .warning {
+            background: #f59e0b;
+        }
+        .warning:hover {
+            background: #d97706;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Game Data Debugger</h1>
+        
+        <div class="section student-section">
+            <h3>👤 Current Student Info</h3>
+            <div id="student-info"></div>
+            <button class="button" onclick="refreshStudentInfo()">🔄 Refresh Student Info</button>
+        </div>
+
+        <div class="section keys-section">
+            <h3>🔑 All LocalStorage Keys</h3>
+            <div id="all-keys"></div>
+            <button class="button" onclick="refreshAllKeys()">🔄 Refresh Keys</button>
+        </div>
+
+        <div class="section data-section">
+            <h3>🎮 Game Session Data</h3>
+            <div id="game-sessions"></div>
+            <button class="button" onclick="refreshGameSessions()">🔄 Refresh Game Sessions</button>
+        </div>
+
+        <div class="section data-section">
+            <h3>📊 Student Performance Data</h3>
+            <div id="performance-data"></div>
+            <button class="button" onclick="refreshPerformanceData()">🔄 Refresh Performance Data</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="total-keys">0</div>
+                <div class="stat-label">Total Keys</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="game-sessions-count">0</div>
+                <div class="stat-label">Game Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="performance-records">0</div>
+                <div class="stat-label">Performance Records</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="students-found">0</div>
+                <div class="stat-label">Students Found</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🧪 Test Data Generator</h3>
+            <p>Generate test data for multiple games to test the assessment system:</p>
+            <div>
+                <button class="button success" onclick="generateMultiGameData()">🎮 Generate Multi-Game Data</button>
+                <button class="button warning" onclick="generateTestData()">🧪 Generate Test Data</button>
+                <button class="button danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🔧 Fix Common Issues</h3>
+            <div>
+                <button class="button" onclick="fixStudentData()">🔧 Fix Student Data</button>
+                <button class="button" onclick="migrateGameData()">🔄 Migrate Game Data</button>
+                <button class="button" onclick="validateData()">✅ Validate Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function refreshStudentInfo() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const studentInfo = document.getElementById('student-info');
+            
+            if (user.studentId) {
+                studentInfo.innerHTML = `
+                    <div class="game-data">
+                        <strong>Student ID:</strong> ${user.studentId}<br>
+                        <strong>Name:</strong> ${user.name || 'N/A'}<br>
+                        <strong>Class:</strong> ${user.class || 'N/A'}<br>
+                        <strong>Grade:</strong> ${user.grade || 'N/A'}
+                    </div>
+                `;
+            } else {
+                studentInfo.innerHTML = '<div class="game-data">No student data found</div>';
+            }
+        }
+
+        function refreshAllKeys() {
+            const allKeys = Object.keys(localStorage);
+            const keysDiv = document.getElementById('all-keys');
+            
+            if (allKeys.length === 0) {
+                keysDiv.innerHTML = '<div class="key-item">No keys found</div>';
+                return;
+            }
+            
+            keysDiv.innerHTML = allKeys.map(key => 
+                `<div class="key-item">${key}</div>`
+            ).join('');
+            
+            document.getElementById('total-keys').textContent = allKeys.length;
+        }
+
+        function refreshGameSessions() {
+            const gameKeys = Object.keys(localStorage).filter(key => 
+                key.includes('game_session')
+            );
+            const sessionsDiv = document.getElementById('game-sessions');
+            
+            if (gameKeys.length === 0) {
+                sessionsDiv.innerHTML = '<div class="game-data">No game sessions found</div>';
+                document.getElementById('game-sessions-count').textContent = '0';
+                return;
+            }
+            
+            const sessions = gameKeys.map(key => {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    return `
+                        <div class="game-data">
+                            <strong>Key:</strong> ${key}<br>
+                            <strong>Game:</strong> ${data.gameName || 'N/A'}<br>
+                            <strong>Student:</strong> ${data.studentId || 'N/A'}<br>
+                            <strong>Score:</strong> ${data.score || 'N/A'}<br>
+                            <strong>Date:</strong> ${data.timestamp ? new Date(data.timestamp).toLocaleString() : 'N/A'}<br>
+                            <strong>Performance:</strong> ${data.performance ? 'Yes' : 'No'}
+                        </div>
+                    `;
+                } catch (e) {
+                    return `<div class="game-data"><strong>Error reading:</strong> ${key}</div>`;
+                }
+            }).join('');
+            
+            sessionsDiv.innerHTML = sessions;
+            document.getElementById('game-sessions-count').textContent = gameKeys.length;
+        }
+
+        function refreshPerformanceData() {
+            const perfKeys = Object.keys(localStorage).filter(key => 
+                key.startsWith('student_performance_')
+            );
+            const perfDiv = document.getElementById('performance-data');
+            
+            if (perfKeys.length === 0) {
+                perfDiv.innerHTML = '<div class="game-data">No performance data found</div>';
+                document.getElementById('performance-records').textContent = '0';
+                return;
+            }
+            
+            const records = perfKeys.map(key => {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    const games = Object.keys(data || {});
+                    return `
+                        <div class="game-data">
+                            <strong>Key:</strong> ${key}<br>
+                            <strong>Games:</strong> ${games.join(', ')}<br>
+                            <strong>Data:</strong> ${JSON.stringify(data, null, 2).substring(0, 200)}...
+                        </div>
+                    `;
+                } catch (e) {
+                    return `<div class="game-data"><strong>Error reading:</strong> ${key}</div>`;
+                }
+            }).join('');
+            
+            perfDiv.innerHTML = records;
+            document.getElementById('performance-records').textContent = perfKeys.length;
+        }
+
+        function generateMultiGameData() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const studentId = user.studentId || 'TEST_STUDENT_MULTI';
+            
+            // Generate data for multiple games
+            const games = [
+                {
+                    gameName: 'Egg Hunt',
+                    score: 85,
+                    timestamp: Date.now() - 3600000,
+                    performance: {
+                        cognitive: { score: 85, attempts: 10, successes: 8 },
+                        motor: { score: 90, attempts: 15, successes: 13 },
+                        social: { score: 75, attempts: 5, successes: 4 },
+                        emotional: { score: 80, attempts: 8, successes: 6 }
+                    }
+                },
+                {
+                    gameName: 'Pop Game',
+                    score: 72,
+                    timestamp: Date.now() - 1800000,
+                    performance: {
+                        cognitive: { score: 70, attempts: 12, successes: 8 },
+                        motor: { score: 75, attempts: 18, successes: 13 },
+                        social: { score: 70, attempts: 6, successes: 4 },
+                        emotional: { score: 72, attempts: 10, successes: 7 }
+                    }
+                },
+                {
+                    gameName: 'Shape Explorers',
+                    score: 88,
+                    timestamp: Date.now() - 900000,
+                    performance: {
+                        cognitive: { score: 90, attempts: 8, successes: 7 },
+                        motor: { score: 85, attempts: 10, successes: 8 },
+                        social: { score: 88, attempts: 4, successes: 4 },
+                        emotional: { score: 89, attempts: 6, successes: 5 }
+                    }
+                },
+                {
+                    gameName: 'Color Quest',
+                    score: 65,
+                    timestamp: Date.now() - 600000,
+                    performance: {
+                        cognitive: { score: 68, attempts: 14, successes: 9 },
+                        motor: { score: 62, attempts: 16, successes: 10 },
+                        social: { score: 65, attempts: 7, successes: 4 },
+                        emotional: { score: 66, attempts: 11, successes: 7 }
+                    }
+                }
+            ];
+            
+            // Store game sessions
+            games.forEach(game => {
+                const sessionKey = `game_session_${studentId}_${game.gameName}_${game.timestamp}`;
+                localStorage.setItem(sessionKey, JSON.stringify({
+                    studentId: studentId,
+                    gameName: game.gameName,
+                    score: game.score,
+                    timestamp: game.timestamp,
+                    performance: game.performance
+                }));
+            });
+            
+            // Create aggregated performance data
+            const aggregatedData = {};
+            games.forEach(game => {
+                aggregatedData[game.gameName] = game.performance;
+            });
+            
+            localStorage.setItem(`student_performance_${studentId}`, JSON.stringify(aggregatedData));
+            
+            alert('✅ Multi-game test data generated successfully!');
+            refreshAllData();
+        }
+
+        function generateTestData() {
+            const studentId = prompt('Enter student ID for test data:', 'TEST_STUDENT_001');
+            if (!studentId) return;
+            
+            const testData = {
+                'Egg Hunt': {
+                    cognitive: { score: 75, attempts: 10, successes: 7 },
+                    motor: { score: 80, attempts: 15, successes: 12 },
+                    social: { score: 70, attempts: 5, successes: 3 },
+                    emotional: { score: 72, attempts: 8, successes: 5 }
+                },
+                'Pop Game': {
+                    cognitive: { score: 68, attempts: 12, successes: 8 },
+                    motor: { score: 72, attempts: 18, successes: 13 },
+                    social: { score: 65, attempts: 6, successes: 4 },
+                    emotional: { score: 70, attempts: 10, successes: 7 }
+                }
+            };
+            
+            localStorage.setItem(`student_performance_${studentId}`, JSON.stringify(testData));
+            alert('✅ Test data generated successfully!');
+            refreshAllData();
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ This will delete ALL game data. Are you sure?')) {
+                const keys = Object.keys(localStorage);
+                keys.forEach(key => {
+                    if (key.includes('game_session') || key.includes('student_performance') || key.includes('highScore')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                alert('🗑️ All data cleared successfully!');
+                refreshAllData();
+            }
+        }
+
+        function fixStudentData() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (!user.studentId) {
+                user.studentId = 'TEST_STUDENT_001';
+                user.name = 'Test Student';
+                user.class = 'Pre-Primary';
+                user.grade = 'KG';
+                localStorage.setItem('user', JSON.stringify(user));
+                alert('🔧 Student data fixed!');
+                refreshStudentInfo();
+            }
+        }
+
+        function migrateGameData() {
+            const gameKeys = Object.keys(localStorage).filter(key => 
+                key.includes('game_session')
+            );
+            
+            let migratedCount = 0;
+            gameKeys.forEach(key => {
+                try {
+                    const session = JSON.parse(localStorage.getItem(key));
+                    if (session.studentId && session.gameName && session.performance) {
+                        const perfKey = `student_performance_${session.studentId}`;
+                        let existingData = {};
+                        
+                        try {
+                            existingData = JSON.parse(localStorage.getItem(perfKey) || '{}');
+                        } catch (e) {
+                            existingData = {};
+                        }
+                        
+                        existingData[session.gameName] = session.performance;
+                        localStorage.setItem(perfKey, JSON.stringify(existingData));
+                        migratedCount++;
+                    }
+                } catch (e) {
+                    console.error('Error migrating:', key, e);
+                }
+            });
+            
+            alert(`🔄 Migrated ${migratedCount} game sessions to performance data!`);
+            refreshAllData();
+        }
+
+        function validateData() {
+            const issues = [];
+            const gameKeys = Object.keys(localStorage).filter(key => 
+                key.includes('game_session')
+            );
+            
+            gameKeys.forEach(key => {
+                try {
+                    const session = JSON.parse(localStorage.getItem(key));
+                    if (!session.studentId) issues.push(`${key}: Missing studentId`);
+                    if (!session.gameName) issues.push(`${key}: Missing gameName`);
+                    if (!session.performance) issues.push(`${key}: Missing performance data`);
+                } catch (e) {
+                    issues.push(`${key}: Parse error - ${e.message}`);
+                }
+            });
+            
+            if (issues.length === 0) {
+                alert('✅ All game data is valid!');
+            } else {
+                alert(`❌ Found ${issues.length} issues:\n${issues.join('\n')}`);
+            }
+        }
+
+        function refreshAllData() {
+            refreshStudentInfo();
+            refreshAllKeys();
+            refreshGameSessions();
+            refreshPerformanceData();
+        }
+
+        function countStudents() {
+            const students = new Set();
+            Object.keys(localStorage).forEach(key => {
+                if (key.includes('game_session')) {
+                    try {
+                        const session = JSON.parse(localStorage.getItem(key));
+                        if (session.studentId) {
+                            students.add(session.studentId);
+                        }
+                    } catch (e) {
+                        // Ignore parse errors
+                    }
+                }
+            });
+            document.getElementById('students-found').textContent = students.size;
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            refreshAllData();
+            countStudents();
+        });
+    </script>
+</body>
+</html>

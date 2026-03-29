@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗑️ Clear All Database Data</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #ef4444, #dc2626);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #dc2626;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .warning {
+            background: #fef2f2;
+            border: 2px solid #ef4444;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #991b1b;
+        }
+        .warning h3 {
+            color: #dc2626;
+            margin-top: 0;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .button {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            font-size: 1rem;
+        }
+        .button:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+        .button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .success {
+            background: #10b981;
+        }
+        .success:hover {
+            background: #059669;
+        }
+        .warning-btn {
+            background: #f59e0b;
+        }
+        .warning-btn:hover {
+            background: #d97706;
+        }
+        .data-count {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .count-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+        }
+        .count-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .count-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .status.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .status.warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        .console-output {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .checkbox-group {
+            margin: 15px 0;
+        }
+        .checkbox-group label {
+            display: block;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        .confirmation {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .confirmation input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ Clear All Database Data</h1>
+        
+        <div class="warning">
+            <h3>⚠️ DANGER: This will permanently delete ALL data!</h3>
+            <p><strong>This action cannot be undone!</strong> All student data, performance records, game sessions, and user information will be permanently deleted.</p>
+            <p>Please make sure you have backups if you need any of this data.</p>
+        </div>
+
+        <div class="section">
+            <h3>📊 Current Data Overview</h3>
+            <div class="data-count" id="data-counts">
+                <div class="count-card">
+                    <div class="count-number" id="total-keys">0</div>
+                    <div class="count-label">Total Database Keys</div>
+                </div>
+                <div class="count-card">
+                    <div class="count-number" id="student-data">0</div>
+                    <div class="count-label">Student Records</div>
+                </div>
+                <div class="count-card">
+                    <div class="count-number" id="game-sessions">0</div>
+                    <div class="count-label">Game Sessions</div>
+                </div>
+                <div class="count-card">
+                    <div class="count-number" id="user-data">0</div>
+                    <div class="count-label">User Data</div>
+                </div>
+            </div>
+            <button class="button success" onclick="scanDatabase()">🔍 Scan Database</button>
+        </div>
+
+        <div class="section">
+            <h3>🗑️ Select Data to Clear</h3>
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" id="clear-students" checked>
+                    <strong>Student Data</strong> - All student records and profiles
+                </label>
+                <label>
+                    <input type="checkbox" id="clear-performance" checked>
+                    <strong>Performance Data</strong> - All performance tracking and analytics
+                </label>
+                <label>
+                    <input type="checkbox" id="clear-game-sessions" checked>
+                    <strong>Game Sessions</strong> - All game session records
+                </label>
+                <label>
+                    <input type="checkbox" id="clear-users" checked>
+                    <strong>User Data</strong> - All user accounts and login data
+                </label>
+                <label>
+                    <input type="checkbox" id="clear-settings" checked>
+                    <strong>Settings & Config</strong> - Application settings and configuration
+                </label>
+                <label>
+                    <input type="checkbox" id="clear-all" checked>
+                    <strong>EVERYTHING</strong> - Complete database wipe
+                </label>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🔐 Confirmation Required</h3>
+            <div class="confirmation">
+                <p>Type <strong>"DELETE ALL DATA"</strong> to confirm:</p>
+                <input type="text" id="confirmation-text" placeholder="Type DELETE ALL DATA">
+                <div>
+                    <button class="button" onclick="clearSelectedData()" id="clear-btn" disabled>
+                        🗑️ Clear Selected Data
+                    </button>
+                    <button class="button warning-btn" onclick="clearEverything()" id="clear-all-btn" disabled>
+                        💀 DELETE EVERYTHING
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📝 Operation Log</h3>
+            <div id="operation-status" class="status warning">Ready to clear data...</div>
+            <div id="console-output" class="console-output">
+                Operation log will appear here...
+            </div>
+            <button class="button success" onclick="exportBackup()">💾 Export Backup</button>
+            <button class="button" onclick="clearConsole()">🗑️ Clear Log</button>
+        </div>
+
+        <div class="warning">
+            <h3>📋 What Will Be Deleted:</h3>
+            <ul>
+                <li><strong>Student Records:</strong> Names, ages, levels, parent info</li>
+                <li><strong>Performance Data:</strong> Cognitive, motor, social, emotional scores</li>
+                <li><strong>Game Sessions:</strong> All game play records and analytics</li>
+                <li><strong>User Accounts:</strong> Teacher, parent, student login information</li>
+                <li><strong>Settings:</strong> Application configuration and preferences</li>
+                <li><strong>Cache:</strong> All cached data and temporary files</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let operationLog = [];
+        let databaseStats = {};
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            operationLog.push(logEntry);
+            
+            const outputDiv = document.getElementById('console-output');
+            outputDiv.innerHTML = operationLog.join('\n');
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+            
+            console.log(logEntry);
+        }
+
+        function scanDatabase() {
+            log('Scanning database for data...', 'info');
+            
+            databaseStats = {
+                totalKeys: 0,
+                studentData: 0,
+                performanceData: 0,
+                gameSessions: 0,
+                userData: 0,
+                settings: 0,
+                other: 0
+            };
+
+            // Scan localStorage
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                
+                databaseStats.totalKeys++;
+                
+                if (key.includes('student_performance')) {
+                    databaseStats.performanceData++;
+                } else if (key.includes('game_session')) {
+                    databaseStats.gameSessions++;
+                } else if (key.includes('teacherStudents') || key.includes('student_')) {
+                    databaseStats.studentData++;
+                } else if (key.includes('user') || key.includes('auth') || key.includes('login')) {
+                    databaseStats.userData++;
+                } else if (key.includes('settings') || key.includes('config') || key.includes('theme')) {
+                    databaseStats.settings++;
+                } else {
+                    databaseStats.other++;
+                }
+            }
+
+            // Update UI
+            document.getElementById('total-keys').textContent = databaseStats.totalKeys;
+            document.getElementById('student-data').textContent = databaseStats.studentData;
+            document.getElementById('game-sessions').textContent = databaseStats.gameSessions;
+            document.getElementById('user-data').textContent = databaseStats.userData;
+
+            log(`Database scan complete: ${databaseStats.totalKeys} keys found`, 'success');
+            log(`- Student Data: ${databaseStats.studentData} keys`, 'info');
+            log(`- Game Sessions: ${databaseStats.gameSessions} keys`, 'info');
+            log(`- User Data: ${databaseStats.userData} keys`, 'info');
+            log(`- Settings: ${databaseStats.settings} keys`, 'info');
+            log(`- Other: ${databaseStats.other} keys`, 'info');
+
+            updateStatus('Database scanned. Ready to clear data.', 'success');
+        }
+
+        function updateStatus(message, type) {
+            const statusDiv = document.getElementById('operation-status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+        }
+
+        function clearSelectedData() {
+            const confirmation = document.getElementById('confirmation-text').value;
+            if (confirmation !== 'DELETE ALL DATA') {
+                alert('Please type "DELETE ALL DATA" to confirm.');
+                return;
+            }
+
+            let deletedCount = 0;
+            
+            log('Starting selective data clear...', 'warning');
+
+            // Clear selected data types
+            if (document.getElementById('clear-students').checked) {
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i);
+                    if (key.includes('teacherStudents') || key.includes('student_')) {
+                        localStorage.removeItem(key);
+                        deletedCount++;
+                    }
+                }
+                log(`Cleared ${deletedCount} student records`, 'success');
+            }
+
+            if (document.getElementById('clear-performance').checked) {
+                let performanceDeleted = 0;
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i);
+                    if (key.includes('student_performance')) {
+                        localStorage.removeItem(key);
+                        performanceDeleted++;
+                    }
+                }
+                log(`Cleared ${performanceDeleted} performance records`, 'success');
+                deletedCount += performanceDeleted;
+            }
+
+            if (document.getElementById('clear-game-sessions').checked) {
+                let sessionsDeleted = 0;
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i);
+                    if (key.includes('game_session')) {
+                        localStorage.removeItem(key);
+                        sessionsDeleted++;
+                    }
+                }
+                log(`Cleared ${sessionsDeleted} game sessions`, 'success');
+                deletedCount += sessionsDeleted;
+            }
+
+            if (document.getElementById('clear-users').checked) {
+                let usersDeleted = 0;
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i);
+                    if (key.includes('user') || key.includes('auth') || key.includes('login')) {
+                        localStorage.removeItem(key);
+                        usersDeleted++;
+                    }
+                }
+                log(`Cleared ${usersDeleted} user records`, 'success');
+                deletedCount += usersDeleted;
+            }
+
+            if (document.getElementById('clear-settings').checked) {
+                let settingsDeleted = 0;
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i);
+                    if (key.includes('settings') || key.includes('config') || key.includes('theme')) {
+                        localStorage.removeItem(key);
+                        settingsDeleted++;
+                    }
+                }
+                log(`Cleared ${settingsDeleted} settings records`, 'success');
+                deletedCount += settingsDeleted;
+            }
+
+            // Clear cache
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                    log('Cleared service worker cache', 'success');
+                });
+            }
+
+            log(`Selective clear complete: ${deletedCount} items deleted`, 'success');
+            updateStatus('Data cleared successfully!', 'success');
+            
+            // Reset confirmation
+            document.getElementById('confirmation-text').value = '';
+            document.getElementById('clear-btn').disabled = true;
+            document.getElementById('clear-all-btn').disabled = true;
+            
+            // Rescan to show updated counts
+            setTimeout(scanDatabase, 1000);
+        }
+
+        function clearEverything() {
+            const confirmation = document.getElementById('confirmation-text').value;
+            if (confirmation !== 'DELETE ALL DATA') {
+                alert('Please type "DELETE ALL DATA" to confirm.');
+                return;
+            }
+
+            if (!confirm('⚠️ FINAL WARNING: This will delete EVERYTHING! Are you absolutely sure?')) {
+                return;
+            }
+
+            log('Starting complete database wipe...', 'error');
+            
+            const totalKeys = localStorage.length;
+            
+            // Clear everything
+            localStorage.clear();
+            
+            // Clear service worker cache
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                    log('Cleared service worker cache', 'success');
+                });
+            }
+
+            // Clear session storage
+            sessionStorage.clear();
+            log('Cleared session storage', 'success');
+
+            log(`Complete database wipe: ${totalKeys} items deleted`, 'error');
+            updateStatus('All data has been permanently deleted!', 'error');
+            
+            // Reset confirmation
+            document.getElementById('confirmation-text').value = '';
+            document.getElementById('clear-btn').disabled = true;
+            document.getElementById('clear-all-btn').disabled = true;
+            
+            // Show empty counts
+            document.getElementById('total-keys').textContent = '0';
+            document.getElementById('student-data').textContent = '0';
+            document.getElementById('game-sessions').textContent = '0';
+            document.getElementById('user-data').textContent = '0';
+            
+            alert('✅ All database data has been permanently deleted!\n\nThe page will now refresh to show the empty database.');
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        }
+
+        function exportBackup() {
+            log('Creating backup export...', 'info');
+            
+            const backup = {
+                timestamp: new Date().toISOString(),
+                data: {}
+            };
+            
+            // Export all localStorage data
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                backup.data[key] = localStorage.getItem(key);
+            }
+            
+            // Create download
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `database-backup-${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            log('Backup exported successfully', 'success');
+        }
+
+        function clearConsole() {
+            operationLog = [];
+            document.getElementById('console-output').innerHTML = 'Console cleared...';
+        }
+
+        // Confirmation text monitoring
+        document.getElementById('confirmation-text').addEventListener('input', function(e) {
+            const value = e.target.value;
+            const clearBtn = document.getElementById('clear-btn');
+            const clearAllBtn = document.getElementById('clear-all-btn');
+            
+            if (value === 'DELETE ALL DATA') {
+                clearBtn.disabled = false;
+                clearAllBtn.disabled = false;
+            } else {
+                clearBtn.disabled = true;
+                clearAllBtn.disabled = true;
+            }
+        });
+
+        // "Clear All" checkbox handling
+        document.getElementById('clear-all').addEventListener('change', function(e) {
+            const isChecked = e.target.checked;
+            const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]:not(#clear-all)');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            log('Database clearing tool loaded', 'info');
+            log('Please scan database first to see current data', 'warning');
+            updateStatus('Ready to scan database...', 'warning');
+        });
+    </script>
+</body>
+</html>

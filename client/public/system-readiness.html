@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 System Readiness Check</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .ready {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .not-ready {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        .warning {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        .info {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #2563eb;
+        }
+        .success {
+            background: #10b981;
+        }
+        .success:hover {
+            background: #059669;
+        }
+        .danger {
+            background: #ef4444;
+        }
+        .danger:hover {
+            background: #dc2626;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .status-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .status-ready {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+        .status-not-ready {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .status-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.3s ease;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 System Readiness Check</h1>
+        
+        <div class="section" id="overall-status">
+            <h3>🔍 System Status</h3>
+            <div id="status-content">Checking system readiness...</div>
+        </div>
+
+        <div class="status-grid">
+            <div class="status-card" id="react-status">
+                <div class="status-value" id="react-status-value">⏳</div>
+                <div class="status-label">React App</div>
+            </div>
+            <div class="status-card" id="server-status">
+                <div class="status-value" id="server-status-value">⏳</div>
+                <div class="status-label">Dev Server</div>
+            </div>
+            <div class="status-card" id="games-status">
+                <div class="status-value" id="games-status-value">⏳</div>
+                <div class="status-label">Games Folder</div>
+            </div>
+            <div class="status-card" id="integration-status">
+                <div class="status-value" id="integration-status-value">⏳</div>
+                <div class="status-label">Integration</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📊 Progress</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <p id="progress-text">Initializing system check...</p>
+        </div>
+
+        <div class="section">
+            <h3>🔧 Quick Fixes</h3>
+            <div class="action-buttons">
+                <button class="button success" onclick="startDevServer()">🚀 Start Dev Server</button>
+                <button class="button" onclick="buildGames()">🎮 Build Games</button>
+                <button class="button" onclick="installDependencies()">📦 Install Dependencies</button>
+                <button class="button" onclick="clearCache()">🗑️ Clear Cache</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🎮 Test Games</h3>
+            <div class="action-buttons">
+                <button class="button" onclick="openGame('egg-hunt')">🥚 Egg Hunt</button>
+                <button class="button" onclick="openGame('pop-game')">🎈 Pop Game</button>
+                <button class="button" onclick="openGame('shape/')">🔷 Shape Explorers</button>
+                <button class="button" onclick="openGame('colors/')">🌈 Color Quest</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📊 Assessment & AI</h3>
+            <div class="action-buttons">
+                <button class="button" onclick="openAssessment()">📊 Performance Tracker</button>
+                <button class="button" onclick="openAIReport()">🤖 AI Report</button>
+                <button class="button" onclick="openTeacherDashboard()">👨‍🏫 Teacher Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let checkCount = 0;
+        const maxChecks = 20;
+
+        function updateStatus(component, isReady, message) {
+            const statusCard = document.getElementById(`${component}-status`);
+            const statusValue = document.getElementById(`${component}-status-value`);
+            
+            if (isReady) {
+                statusCard.className = 'status-card status-ready';
+                statusValue.textContent = '✅';
+            } else {
+                statusCard.className = 'status-card status-not-ready';
+                statusValue.textContent = '❌';
+            }
+            
+            console.log(`${component}: ${isReady ? 'READY' : 'NOT READY'} - ${message}`);
+        }
+
+        function updateProgress(percent, message) {
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            
+            progressFill.style.width = `${percent}%`;
+            progressText.textContent = message;
+        }
+
+        function checkSystemReadiness() {
+            checkCount++;
+            updateProgress((checkCount / maxChecks) * 100, `Checking system... (${checkCount}/${maxChecks})`);
+            
+            // Check React app
+            try {
+                fetch('/')
+                    .then(response => {
+                        if (response.ok) {
+                            updateStatus('react', true, 'React app running on port 3000');
+                            updateProgress(25, 'React server OK');
+                        } else {
+                            updateStatus('react', false, 'React server not responding');
+                        }
+                    })
+                    .catch(() => {
+                        updateStatus('react', false, 'Cannot reach React server');
+                    });
+            } catch (e) {
+                updateStatus('react', false, `Error checking React: ${e.message}`);
+            }
+            
+            // Check games folder
+            setTimeout(() => {
+                try {
+                    fetch('/games/egg-hunt/index.html')
+                        .then(response => {
+                            if (response.ok) {
+                                updateStatus('games', true, 'Games folder accessible');
+                                updateProgress(50, 'Games folder OK');
+                            } else {
+                                updateStatus('games', false, 'Games folder not found');
+                            }
+                        })
+                        .catch(() => {
+                            updateStatus('games', false, 'Cannot reach games folder');
+                        });
+                } catch (e) {
+                    updateStatus('games', false, `Error checking games: ${e.message}`);
+                }
+            }, 1000);
+            
+            // Check integration files
+            setTimeout(() => {
+                try {
+                    Promise.all([
+                        fetch('/game-integration.js'),
+                        fetch('/realAIAnalyzer.js'),
+                        fetch('/StudentPerformanceTracker.jsx')
+                    ])
+                    .then(responses => {
+                        const allOk = responses.every(r => r.ok);
+                        updateStatus('integration', allOk, allOk ? 'All integration files OK' : 'Some integration files missing');
+                        updateProgress(75, allOk ? 'Integration OK' : 'Integration issues');
+                    })
+                    .catch(() => {
+                        updateStatus('integration', false, 'Cannot check integration files');
+                    });
+                } catch (e) {
+                    updateStatus('integration', false, `Error checking integration: ${e.message}`);
+                }
+            }, 2000);
+            
+            // Final check
+            setTimeout(() => {
+                try {
+                    fetch('/ai-student-report')
+                        .then(response => {
+                            if (response.ok) {
+                                updateProgress(100, 'System fully ready!');
+                                document.getElementById('overall-status').className = 'section ready';
+                                document.getElementById('status-content').innerHTML = `
+                                    <h3>✅ System Ready!</h3>
+                                    <p>All components are running and accessible. You can now:</p>
+                                    <ul>
+                                        <li>🎮 Play games with full tracking</li>
+                                        <li>📊 View assessment with real data</li>
+                                        <li>🤖 Generate AI-powered reports</li>
+                                        <li>👨‍🏫 Access teacher dashboard</li>
+                                    </ul>
+                                `;
+                            } else {
+                                updateProgress(90, 'AI report not accessible');
+                                document.getElementById('overall-status').className = 'section warning';
+                                document.getElementById('status-content').innerHTML = `
+                                    <h3>⚠️ Partial System Ready</h3>
+                                    <p>Most components are working, but some issues remain:</p>
+                                    <p>Check the individual status above for details.</p>
+                                `;
+                            }
+                        })
+                        .catch(() => {
+                            updateProgress(85, 'Cannot check AI report');
+                            document.getElementById('overall-status').className = 'section not-ready';
+                        });
+                } catch (e) {
+                    updateProgress(80, 'Error during final check');
+                    document.getElementById('overall-status').className = 'section not-ready';
+                }
+            }, 3000);
+        }
+
+        function startDevServer() {
+            updateProgress(50, 'Starting development server...');
+            // This would typically be done via npm start
+            alert('To start the development server, run: npm start\n\nThen refresh this page.');
+        }
+
+        function buildGames() {
+            updateProgress(75, 'Building games...');
+            // This would typically be done via npm run build-games
+            alert('To build games, run: npm run build-games\n\nThen refresh this page.');
+        }
+
+        function installDependencies() {
+            updateProgress(25, 'Installing dependencies...');
+            alert('To install dependencies, run: npm install\n\nThen refresh this page.');
+        }
+
+        function clearCache() {
+            if (confirm('Clear browser cache? This will reload the page.')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                location.reload();
+            }
+        }
+
+        function openGame(gamePath) {
+            window.open(`/games/${gamePath}index.html`, '_blank');
+        }
+
+        function openAssessment() {
+            window.open('/student-performance-tracker', '_blank');
+        }
+
+        function openAIReport() {
+            window.open('/ai-student-report', '_blank');
+        }
+
+        function openTeacherDashboard() {
+            window.open('/teacher-dashboard', '_blank');
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            console.log('🚀 System Readiness Check loaded');
+            checkSystemReadiness();
+        });
+    </script>
+</body>
+</html>

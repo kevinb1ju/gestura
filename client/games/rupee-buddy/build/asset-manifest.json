@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/games/rupee-buddy/static/js/main.60fd2a77.js",
+    "index.html": "/games/rupee-buddy/index.html",
+    "main.60fd2a77.js.map": "/games/rupee-buddy/static/js/main.60fd2a77.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.60fd2a77.js"
+  ]
+}

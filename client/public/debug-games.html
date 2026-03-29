@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Game Loading</title>
+</head>
+<body>
+    <h1>Debug Game Loading</h1>
+    
+    <h2>Test Direct URLs:</h2>
+    <ul>
+        <li><a href="/games/egg-hunt/index.html" target="_blank">Egg Hunt</a></li>
+        <li><a href="/games/shape/index.html" target="_blank">Shape Explorers</a></li>
+        <li><a href="/games/colors/index.html" target="_blank">Color Quest</a></li>
+        <li><a href="/games/numbers/index.html" target="_blank">Number Adventures</a></li>
+        <li><a href="/games/bridge/index.html" target="_blank">Bridge Game</a></li>
+        <li><a href="/games/rupee-buddy/index.html" target="_blank">Rupee Buddy</a></li>
+        <li><a href="/games/rupee-buddy-voc/index.html" target="_blank">Rupee Buddy Vocational</a></li>
+    </ul>
+
+    <h2>Test JavaScript Launch:</h2>
+    <button onclick="testLaunch('/games/numbers/index.html')">Test Numbers Game</button>
+    <button onclick="testLaunch('/games/bridge/index.html')">Test Bridge Game</button>
+    
+    <div id="result"></div>
+
+    <script>
+        function testLaunch(path) {
+            console.log('Testing launch:', path);
+            document.getElementById('result').innerHTML = 'Testing...';
+            
+            try {
+                const newWindow = window.open(path, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+                if (newWindow) {
+                    document.getElementById('result').innerHTML = '<span style="color: green;">✓ Game opened successfully!</span>';
+                } else {
+                    document.getElementById('result').innerHTML = '<span style="color: red;">✗ Popup blocked! Check browser settings.</span>';
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<span style="color: red;">✗ Error: ' + error.message + '</span>';
+                console.error('Launch error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

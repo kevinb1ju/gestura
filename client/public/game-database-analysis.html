@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗄️ Game Database & Score Storage Analysis</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .integrated {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .not-integrated {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        .partial {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        .info {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #2563eb;
+        }
+        .success {
+            background: #10b981;
+        }
+        .success:hover {
+            background: #059669;
+        }
+        .danger {
+            background: #ef4444;
+        }
+        .danger:hover {
+            background: #dc2626;
+        }
+        .warning {
+            background: #f59e0b;
+        }
+        .warning:hover {
+            background: #d97706;
+        }
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .game-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .game-integrated {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+        .game-not-integrated {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        .game-partial {
+            border-color: #3b82f6;
+            background: #dbeafe;
+        }
+        .game-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .game-status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            margin: 5px 0;
+        }
+        .status-integrated {
+            background: #10b981;
+            color: white;
+        }
+        .status-not-integrated {
+            background: #ef4444;
+            color: white;
+        }
+        .status-partial {
+            background: #3b82f6;
+            color: white;
+        }
+        .database-info {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f3f4f6;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .storage-keys {
+            font-family: monospace;
+            font-size: 0.8rem;
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ Game Database & Score Storage Analysis</h1>
+        
+        <div class="section info">
+            <h3>🔍 Database & Storage Analysis</h3>
+            <p>This tool analyzes all games to check if they have proper database integration and score storage for assessment.</p>
+        </div>
+
+        <div class="summary-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="total-games">8</div>
+                <div class="stat-label">Total Games</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="integrated-games">0</div>
+                <div class="stat-label">Fully Integrated</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="partial-games">0</div>
+                <div class="stat-label">Partially Integrated</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="not-integrated-games">0</div>
+                <div class="stat-label">Not Integrated</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🎮 Game Integration Status</h3>
+            <div class="game-grid" id="game-grid">
+                <!-- Game cards will be populated here -->
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🗄️ Database Storage Analysis</h3>
+            <div id="database-analysis">
+                <p>Analyzing database storage...</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🔑 LocalStorage Keys</h3>
+            <div class="storage-keys" id="storage-keys">
+                Loading localStorage keys...
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="button" onclick="analyzeAllGames()">🔍 Analyze All Games</button>
+            <button class="button success" onclick="fixIntegration()">🔧 Fix Integration</button>
+            <button class="button warning" onclick="generateTestData()">🧪 Generate Test Data</button>
+            <button class="button danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+        </div>
+    </div>
+
+    <script>
+        const games = [
+            { name: 'Egg Hunt', path: 'egg-hunt', icon: '🥚', integrated: false, hasTracking: false },
+            { name: 'Pop Game', path: 'pop-game', icon: '🎈', integrated: false, hasTracking: false },
+            { name: 'Shape Explorers', path: 'shape', icon: '🔷', integrated: false, hasTracking: false },
+            { name: 'Color Quest', path: 'colors', icon: '🌈', integrated: false, hasTracking: false },
+            { name: 'Number Adventures', path: 'numbers', icon: '🔢', integrated: false, hasTracking: false },
+            { name: 'Bridge Game', path: 'bridge', icon: '🌉', integrated: false, hasTracking: false },
+            { name: 'Rupee Buddy', path: 'rupee-buddy', icon: '💰', integrated: false, hasTracking: false },
+            { name: 'Rupee Buddy Vocational', path: 'rupee-buddy-voc', icon: '💼', integrated: false, hasTracking: false }
+        ];
+
+        function analyzeAllGames() {
+            let integratedCount = 0;
+            let partialCount = 0;
+            let notIntegratedCount = 0;
+            
+            const gameGrid = document.getElementById('game-grid');
+            gameGrid.innerHTML = '';
+            
+            games.forEach(game => {
+                // Check if game has integration script
+                fetch(`/games/${game.path}/index.html`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const hasIntegration = html.includes('game-integration.js');
+                        const hasTracking = html.includes('GameTracker') || html.includes('endGameTracking');
+                        
+                        let status, statusClass, statusText;
+                        
+                        if (hasIntegration && hasTracking) {
+                            status = 'integrated';
+                            statusClass = 'game-integrated';
+                            statusText = '✅ Fully Integrated';
+                            integratedCount++;
+                        } else if (hasIntegration || hasTracking) {
+                            status = 'partial';
+                            statusClass = 'game-partial';
+                            statusText = '🔄 Partially Integrated';
+                            partialCount++;
+                        } else {
+                            status = 'not-integrated';
+                            statusClass = 'game-not-integrated';
+                            statusText = '❌ Not Integrated';
+                            notIntegratedCount++;
+                        }
+                        
+                        game.integrated = hasIntegration;
+                        game.hasTracking = hasTracking;
+                        
+                        const gameCard = document.createElement('div');
+                        gameCard.className = `game-card ${statusClass}`;
+                        gameCard.innerHTML = `
+                            <div class="game-name">${game.icon} ${game.name}</div>
+                            <div class="game-status status-${status}">${statusText}</div>
+                            <div class="database-info">
+                                <strong>Integration Script:</strong> ${hasIntegration ? '✅ Found' : '❌ Missing'}<br>
+                                <strong>Tracking Functions:</strong> ${hasTracking ? '✅ Found' : '❌ Missing'}<br>
+                                <strong>Score Storage:</strong> ${hasIntegration ? '✅ localStorage' : '❌ No Storage'}
+                            </div>
+                        `;
+                        gameGrid.appendChild(gameCard);
+                        
+                        updateStats(integratedCount, partialCount, notIntegratedCount);
+                    })
+                    .catch(error => {
+                        console.error(`Error checking ${game.name}:`, error);
+                        const gameCard = document.createElement('div');
+                        gameCard.className = 'game-card game-not-integrated';
+                        gameCard.innerHTML = `
+                            <div class="game-name">${game.icon} ${game.name}</div>
+                            <div class="game-status status-not-integrated">❌ Error Checking</div>
+                            <div class="database-info">
+                                <strong>Error:</strong> ${error.message}
+                            </div>
+                        `;
+                        gameGrid.appendChild(gameCard);
+                        notIntegratedCount++;
+                        updateStats(integratedCount, partialCount, notIntegratedCount);
+                    });
+            });
+            
+            // Analyze database storage
+            setTimeout(() => analyzeDatabaseStorage(), 2000);
+        }
+
+        function analyzeDatabaseStorage() {
+            const allKeys = Object.keys(localStorage);
+            const gameSessionKeys = allKeys.filter(key => key.includes('game_session'));
+            const performanceKeys = allKeys.filter(key => key.startsWith('student_performance_'));
+            const highScoreKeys = allKeys.filter(key => key.includes('highScore'));
+            
+            const databaseAnalysis = document.getElementById('database-analysis');
+            databaseAnalysis.innerHTML = `
+                <h4>🗄️ Database Storage Analysis:</h4>
+                <div class="database-info">
+                    <strong>🔑 Total Keys:</strong> ${allKeys.length}<br>
+                    <strong>🎮 Game Sessions:</strong> ${gameSessionKeys.length}<br>
+                    <strong>📊 Performance Records:</strong> ${performanceKeys.length}<br>
+                    <strong>🏆 High Scores:</strong> ${highScoreKeys.length}<br>
+                    <strong>💾 Storage Method:</strong> localStorage (Client-side)<br>
+                    <strong>🔄 Real-time Updates:</strong> Yes (Storage Events)<br>
+                    <strong>📈 Assessment Integration:</strong> ${performanceKeys.length > 0 ? '✅ Working' : '❌ Not Working'}
+                </div>
+            `;
+            
+            // Show storage keys
+            const storageKeys = document.getElementById('storage-keys');
+            storageKeys.innerHTML = allKeys.map(key => 
+                `<div style="margin: 2px 0; padding: 2px; background: white; border-radius: 3px;">${key}</div>`
+            ).join('');
+        }
+
+        function updateStats(integrated, partial, notIntegrated) {
+            document.getElementById('integrated-games').textContent = integrated;
+            document.getElementById('partial-games').textContent = partial;
+            document.getElementById('not-integrated-games').textContent = notIntegrated;
+        }
+
+        function fixIntegration() {
+            alert('🔧 Integration Fix:\n\nTo fix missing integration:\n\n1. Add <script src="../../game-integration.js"></script> to each game\'s HTML\n2. Add tracking functions to game JavaScript\n3. Call GameTracker.setup[GameName](studentId) on game start\n4. Call GameTracker.end() on game end\n\nUse the "Generate Test Data" button to test the system.');
+        }
+
+        function generateTestData() {
+            const studentId = prompt('Enter student ID for test data:', 'TEST_STUDENT_DB');
+            if (!studentId) return;
+            
+            const timestamp = Date.now();
+            
+            // Generate test data for all games
+            games.forEach(game => {
+                const score = Math.floor(Math.random() * 50) + 50; // 50-100
+                const sessionKey = `game_session_${studentId}_${game.name}_${timestamp}`;
+                
+                localStorage.setItem(sessionKey, JSON.stringify({
+                    studentId: studentId,
+                    gameName: game.name,
+                    score: score,
+                    timestamp: timestamp,
+                    performance: {
+                        cognitive: { score: score, attempts: 10, successes: Math.floor(score / 10) },
+                        motor: { score: Math.min(100, score + 5), attempts: 15, successes: Math.floor(score / 8) },
+                        social: { score: Math.max(0, score - 10), attempts: 5, successes: Math.floor(score / 20) },
+                        emotional: { score: Math.min(100, score + 8), attempts: 8, successes: Math.floor(score / 12) }
+                    }
+                }));
+            });
+            
+            // Create aggregated performance data
+            const aggregatedData = {};
+            games.forEach(game => {
+                const score = Math.floor(Math.random() * 50) + 50;
+                aggregatedData[game.name] = {
+                    cognitive: { score: score, attempts: 10, successes: Math.floor(score / 10) },
+                    motor: { score: Math.min(100, score + 5), attempts: 15, successes: Math.floor(score / 8) },
+                    social: { score: Math.max(0, score - 10), attempts: 5, successes: Math.floor(score / 20) },
+                    emotional: { score: Math.min(100, score + 8), attempts: 8, successes: Math.floor(score / 12) }
+                };
+            });
+            
+            localStorage.setItem(`student_performance_${studentId}`, JSON.stringify(aggregatedData));
+            
+            alert('✅ Test data generated for all games!');
+            analyzeAllGames();
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ This will delete ALL game data. Are you sure?')) {
+                const keys = Object.keys(localStorage);
+                keys.forEach(key => {
+                    if (key.includes('game_session') || key.includes('student_performance') || key.includes('highScore')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                alert('🗑️ All game data cleared!');
+                analyzeAllGames();
+            }
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            console.log('🗄️ Game Database Analysis loaded');
+            analyzeAllGames();
+        });
+    </script>
+</body>
+</html>

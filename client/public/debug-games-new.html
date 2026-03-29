@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games Debug Test</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #ff6b6b;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        .game-test {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .game-test h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        .game-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Games Debug Test</h1>
+        
+        <div class="game-test">
+            <h3>🧪 Test All Game Launches</h3>
+            <button onclick="testGame('egg-hunt', '🥚 Egg Hunt')">Test Egg Hunt</button>
+            <button onclick="testGame('pop-game', '🎈 Pop Game')">Test Pop Game</button>
+            <button onclick="testGame('shape', '🔷 Shape Explorers')">Test Shape Explorers</button>
+            <button onclick="testGame('colors', '🎨 Color Quest')">Test Color Quest</button>
+            <button onclick="testGame('numbers', '🔢 Number Adventures')">Test Number Adventures</button>
+            <button onclick="testGame('bridge', '🌉 Bridge Game')">Test Bridge Game</button>
+            <button onclick="testGame('rupee-buddy', '💰 Rupee Buddy')">Test Rupee Buddy</button>
+            <button onclick="testGame('rupee-buddy-voc', '💼 Rupee Buddy Vocational')">Test Rupee Buddy Vocational</button>
+            <div id="game-status" class="status info">Click a game to test...</div>
+        </div>
+
+        <div class="game-test">
+            <h3>📊 Game Configuration Test</h3>
+            <button onclick="testGameConfig()">Test Game Configuration</button>
+            <div id="config-status" class="status info">Click to test configuration...</div>
+            <div id="config-display" style="display:none; background: #f3f4f6; padding: 15px; border-radius: 8px; font-family: monospace; white-space: pre-wrap; margin: 10px 0;"></div>
+        </div>
+
+        <div class="game-test">
+            <h3>🎯 Level System Test</h3>
+            <button onclick="testLevel(1)">Test Level 1 (Preprimary)</button>
+            <button onclick="testLevel(2)">Test Level 2 (Primary)</button>
+            <button onclick="testLevel(3)">Test Level 3 (Bridge)</button>
+            <button onclick="testLevel(4)">Test Level 4 (Pre-Vocational)</button>
+            <button onclick="testLevel(5)">Test Level 5 (Vocational)</button>
+            <div id="level-status" class="status info">Click to test level system...</div>
+            <div id="level-games" style="display:none; background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 10px 0;"></div>
+        </div>
+
+        <div class="game-test">
+            <h3>🔗 File Existence Test</h3>
+            <button onclick="testFileExistence()">Test Game Files Exist</button>
+            <div id="file-status" class="status info">Click to test file existence...</div>
+        </div>
+    </div>
+
+    <script>
+        // Game configuration (same as levelConfig.js)
+        const GAME_DETAILS = {
+            "Egg Hunt": {
+                title: "Egg Hunt Gestura",
+                path: "/games/egg-hunt/index.html",
+                type: "html",
+                port: null,
+                img: "🥚",
+                bgColor: "#ffda79",
+                buttonColor: "#3498db"
+            },
+            "Pop Game": {
+                title: "Pop Game",
+                path: "/games/pop-game/index.html",
+                type: "html",
+                port: null,
+                img: "🎈",
+                bgColor: "#fbbf24",
+                buttonColor: "#f59e0b"
+            },
+            "Shape Explorers": {
+                title: "Shape Explorers",
+                path: "/games/shape/index.html", 
+                type: "html",
+                port: null,
+                img: "🔷",
+                bgColor: "#7ed6df",
+                buttonColor: "#ff6b6b"
+            },
+            "Color Quest": {
+                title: "Color Quest",
+                path: "/games/colors/index.html",
+                type: "html",
+                port: null,
+                img: "🎨",
+                bgColor: "#82ccdd", 
+                buttonColor: "#f9d423"
+            },
+            "Number Adventures": {
+                title: "Number Adventures",
+                path: "/games/numbers/index.html",
+                type: "html",
+                port: null,
+                img: "🔢",
+                bgColor: "#a8e6cf",
+                buttonColor: "#ff8b94"
+            },
+            "Bridge Game": {
+                title: "Bridge Game",
+                path: "/games/bridge/index.html",
+                type: "html",
+                port: null,
+                img: "🌉",
+                bgColor: "#ffd3b6",
+                buttonColor: "#ffaaa5"
+            },
+            "Rupee Buddy": {
+                title: "Rupee Buddy",
+                path: "/games/rupee-buddy/index.html",
+                type: "html",
+                port: null,
+                img: "💰",
+                bgColor: "#dcedc8",
+                buttonColor: "#81c784"
+            },
+            "Rupee Buddy Vocational": {
+                title: "Rupee Buddy Vocational",
+                path: "/games/rupee-buddy-voc/index.html",
+                type: "html",
+                port: null,
+                img: "💼",
+                bgColor: "#e1bee7",
+                buttonColor: "#ba68c8"
+            }
+        };
+
+        const LEVEL_CONFIG = {
+            1: { name: "Preprimary", games: ["Egg Hunt", "Pop Game"] },
+            2: { name: "Primary", games: ["Shape Explorers", "Color Quest", "Number Adventures"] },
+            3: { name: "Bridge", games: ["Bridge Game"] },
+            4: { name: "Pre-Vocational", games: ["Rupee Buddy"] },
+            5: { name: "Vocational", games: ["Rupee Buddy Vocational"] }
+        };
+
+        function testGame(gamePath, gameTitle) {
+            const status = document.getElementById('game-status');
+            status.innerHTML = `🎮 Testing ${gameTitle}...`;
+            status.className = 'status info';
+
+            // Test if game file exists
+            fetch(gamePath)
+                .then(response => {
+                    if (response.ok) {
+                        status.innerHTML = `✅ ${gameTitle} - File exists and accessible!`;
+                        status.className = 'status success';
+                        
+                        // Try to open the game
+                        const newWindow = window.open(gamePath, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+                        
+                        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                            status.innerHTML += ` ⚠️ Popup blocked. Right-click and choose "Open in new tab" to play.`;
+                        } else {
+                            status.innerHTML += ` 🎯 Game opened successfully!`;
+                        }
+                    } else {
+                        status.innerHTML = `❌ ${gameTitle} - File not found (Error: ${response.status})`;
+                        status.className = 'status error';
+                    }
+                })
+                .catch(error => {
+                    status.innerHTML = `❌ ${gameTitle} - Network error: ${error.message}`;
+                    status.className = 'status error';
+                });
+        }
+
+        function testGameConfig() {
+            const status = document.getElementById('config-status');
+            const display = document.getElementById('config-display');
+            
+            status.innerHTML = '📊 Testing game configuration...';
+            status.className = 'status info';
+            
+            display.style.display = 'block';
+            display.textContent = JSON.stringify(GAME_DETAILS, null, 2);
+            
+            const gameCount = Object.keys(GAME_DETAILS).length;
+            status.innerHTML = `✅ Configuration loaded successfully! Found ${gameCount} games.`;
+            status.className = 'status success';
+        }
+
+        function testLevel(level) {
+            const status = document.getElementById('level-status');
+            const display = document.getElementById('level-games');
+            
+            status.innerHTML = `🎯 Testing Level ${level}...`;
+            status.className = 'status info';
+            
+            const levelConfig = LEVEL_CONFIG[level];
+            if (!levelConfig) {
+                status.innerHTML = `❌ Level ${level} not found!`;
+                status.className = 'status error';
+                return;
+            }
+            
+            const games = levelConfig.games.map(gameName => GAME_DETAILS[gameName]).filter(game => game);
+            
+            display.style.display = 'block';
+            display.innerHTML = `
+                <h4>${levelConfig.name} (Level ${level})</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    ${games.map(game => `
+                        <div style="text-align: center; padding: 15px; border: 2px solid ${game.buttonColor}; border-radius: 10px; background: ${game.bgColor};">
+                            <div style="font-size: 3rem;">${game.img}</div>
+                            <h5>${game.title}</h5>
+                            <button onclick="window.open('${game.path}', '_blank')" style="background: ${game.buttonColor}; margin-top: 10px;">Play</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            status.innerHTML = `✅ Level ${level} (${levelConfig.name}) - Found ${games.length} games`;
+            status.className = 'status success';
+        }
+
+        function testFileExistence() {
+            const status = document.getElementById('file-status');
+            status.innerHTML = '🔗 Testing file existence...';
+            status.className = 'status info';
+            
+            const gamePaths = Object.values(GAME_DETAILS).map(game => game.path);
+            let completedTests = 0;
+            let successfulTests = 0;
+            
+            gamePaths.forEach(path => {
+                fetch(path)
+                    .then(response => {
+                        completedTests++;
+                        if (response.ok) successfulTests++;
+                        
+                        if (completedTests === gamePaths.length) {
+                            status.innerHTML = `✅ File existence test complete! ${successfulTests}/${gamePaths.length} games accessible.`;
+                            status.className = successfulTests === gamePaths.length ? 'status success' : 'status error';
+                        }
+                    })
+                    .catch(error => {
+                        completedTests++;
+                        console.error(`Error checking ${path}:`, error);
+                        
+                        if (completedTests === gamePaths.length) {
+                            status.innerHTML = `⚠️ File existence test complete! ${successfulTests}/${gamePaths.length} games accessible.`;
+                            status.className = successfulTests === gamePaths.length ? 'status success' : 'status error';
+                        }
+                    });
+            });
+        }
+
+        // Auto-test configuration on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testGameConfig();
+                testFileExistence();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

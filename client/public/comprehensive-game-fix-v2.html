@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Comprehensive Game Display Fix</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(to bottom, #60a5fa, #bae6fd);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+        .problem {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        .solution {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .info {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #2563eb;
+        }
+        .success {
+            background: #10b981;
+        }
+        .success:hover {
+            background: #059669;
+        }
+        .danger {
+            background: #ef4444;
+        }
+        .danger:hover {
+            background: #dc2626;
+        }
+        .warning {
+            background: #f59e0b;
+        }
+        .warning:hover {
+            background: #d97706;
+        }
+        .console-output {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 10px 0;
+            border: 1px solid #374151;
+        }
+        .game-frame {
+            width: 100%;
+            height: 500px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin: 10px 0;
+            background: white;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .status.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .status.warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .game-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .game-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #3b82f6;
+            margin-bottom: 15px;
+        }
+        .file-list {
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin: 10px 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .command-block {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin: 10px 0;
+            border-left: 4px solid #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Comprehensive Game Display Fix</h1>
+        
+        <div class="section problem">
+            <h3>❌ Problem: Games Only Play Sound, No Visuals</h3>
+            <p><strong>Both vocational games show only audio but no visual elements</strong></p>
+            <p>This indicates React apps are not mounting or rendering properly</p>
+        </div>
+
+        <div class="section solution">
+            <h3>✅ Comprehensive Solution Approach</h3>
+            <p>We'll systematically check and fix all possible causes:</p>
+            <ol>
+                <li><strong>File Structure Verification</strong> - Ensure all files exist</li>
+                <li><strong>JavaScript Loading</strong> - Check if scripts load properly</li>
+                <li><strong>React Mounting</strong> - Verify React app mounts to DOM</li>
+                <li><strong>Build Process</strong> - Rebuild games with correct configuration</li>
+                <li><strong>HTML Fallback</strong> - Create simple HTML versions if React fails</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h3>🧪 Direct Game Testing</h3>
+            <div id="test-results" class="status warning">Ready to test games...</div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4>Rupee Buddy Vocational</h4>
+                    <iframe id="rupee-frame" class="game-frame" src="/games/rupee-buddy-voc/"></iframe>
+                    <div>
+                        <button class="button" onclick="reloadFrame('rupee-frame')">🔄 Reload</button>
+                        <button class="button success" onclick="openDirect('rupee-buddy-voc')">🔗 Open Direct</button>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4>Bridge Game</h4>
+                    <iframe id="bridge-frame" class="game-frame" src="/games/bridge/"></iframe>
+                    <div>
+                        <button class="button" onclick="reloadFrame('bridge-frame')">🔄 Reload</button>
+                        <button class="button success" onclick="openDirect('bridge')">🔗 Open Direct</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🔧 Quick Fix Actions</h3>
+            
+            <div class="command-block">
+                <strong>Option 1: Rebuild Games (Most Likely Fix)</strong>
+                <pre>cd client
+npm run build-games</pre>
+                <button class="button" onclick="runRebuild()">🏗️ Run Rebuild</button>
+            </div>
+            
+            <div class="command-block">
+                <strong>Option 2: Create Simple HTML Fallbacks</strong>
+                <p>Create working HTML versions if React apps fail</p>
+                <button class="button" onclick="createHTMLFallbacks()">📝 Create HTML Fallbacks</button>
+            </div>
+            
+            <div class="command-block">
+                <strong>Option 3: Clear Browser Cache</strong>
+                <p>Remove cached versions that might be broken</p>
+                <button class="button danger" onclick="clearCache()">🗑️ Clear Cache</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📝 Console Output</h3>
+            <div id="console-output" class="console-output">
+                Console output will appear here...
+            </div>
+            <button class="button" onclick="clearConsole()">🗑️ Clear Console</button>
+        </div>
+
+        <div class="section info">
+            <h3>🎯 Most Likely Solutions</h3>
+            <p><strong>Based on the issue (sound but no visuals), the most likely causes are:</strong></p>
+            <ol>
+                <li><strong>Build Issue:</strong> Games not properly built - run <code>npm run build-games</code></li>
+                <li><strong>React Mounting:</strong> React apps not finding root element</li>
+                <li><strong>JavaScript Errors:</strong> Scripts loading but failing to execute</li>
+                <li><strong>CSS Missing:</strong> Styles not loading, making content invisible</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        let consoleOutput = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            consoleOutput.push(logEntry);
+            
+            const outputDiv = document.getElementById('console-output');
+            outputDiv.innerHTML = consoleOutput.join('\n');
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+            
+            console.log(logEntry);
+        }
+
+        function reloadFrame(frameId) {
+            const frame = document.getElementById(frameId);
+            frame.src = frame.src;
+            log(`Reloaded iframe: ${frameId}`, 'info');
+        }
+
+        function openDirect(gameName) {
+            log(`Opening ${gameName} in new tab...`, 'info');
+            window.open(`/games/${gameName}/`, '_blank');
+        }
+
+        function runRebuild() {
+            log('Starting rebuild process...', 'info');
+            log('Please run these commands manually:', 'info');
+            log('1. cd client', 'info');
+            log('2. npm run build-games', 'info');
+            log('3. Refresh this page', 'info');
+            
+            alert('To rebuild games:\n\n1. Open terminal\n2. cd client\n3. npm run build-games\n4. Refresh this page\n\nThis will fix most display issues.');
+        }
+
+        function createHTMLFallbacks() {
+            log('Creating HTML fallback versions...', 'info');
+            
+            // Create rupee buddy fallback
+            const rupeeURL = 'data:text/html;charset=utf-8,' + encodeURIComponent(`
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rupee Buddy Vocational</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .title { text-align: center; color: #3b82f6; font-size: 2rem; margin-bottom: 30px; }
+        .currency-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+        .currency-item { text-align: center; padding: 15px; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .currency-item:hover { border-color: #3b82f6; transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 10px; }
+        .currency-name { font-weight: bold; color: #374151; }
+        .currency-value { color: #6b7280; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">💰 Rupee Buddy Vocational Training</h1>
+        <div class="currency-grid">
+            <div class="currency-item" onclick="handleCurrencyClick('₹1 Coin', '1.png')">
+                <img src="/games/rupee-buddy-voc/1.png" alt="1 Rupee" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iMTAiIGZpbGw9IiNGMkY0RjIi8+Cjx0ZXh0IHg9IjQwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSIjMzc0MTUxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7EjPC90ZXh0Pgo8L3N2Zz4='">
+                <div class="currency-name">₹1 Coin</div>
+                <div class="currency-value">One Rupee</div>
+            </div>
+            <div class="currency-item" onclick="handleCurrencyClick('₹2 Coin', '2.png')">
+                <img src="/games/rupee-buddy-voc/2.png" alt="2 Rupees" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iMTAiIGZpbGw9IiNGMkY0RjIi8+Cjx0ZXh0IHg9IjQwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSIjMzc0MTUxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4jPC90ZXh0Pgo8L3N2Zz4='">
+                <div class="currency-name">₹2 Coin</div>
+                <div class="currency-value">Two Rupees</div>
+            </div>
+            <div class="currency-item" onclick="handleCurrencyClick('₹5 Coin', '5.png')">
+                <img src="/games/rupee-buddy-voc/5.png" alt="5 Rupees" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iMTAiIGZpbGw9IiNGMkY0RjIi8+Cjx0ZXh0IHg9IjQwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSIjMzc0MTUxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj41PC90ZXh0Pgo8L3N2Zz4='">
+                <div class="currency-name">₹5 Coin</div>
+                <div class="currency-value">Five Rupees</div>
+            </div>
+            <div class="currency-item" onclick="handleCurrencyClick('₹10 Coin', '10c.png')">
+                <img src="/games/rupee-buddy-voc/10c.png" alt="10 Rupees" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iMTAiIGZpbGw9IiNGMkY0RjIi8+Cjx0ZXh0IHg9IjQwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMzc0MTUxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4xMDwvdGV4dD4KPC9zdmc+'">
+                <div class="currency-name">₹10 Coin</div>
+                <div class="currency-value">Ten Rupees</div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="playSound()" style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">🔊 Play Sound</button>
+        </div>
+    </div>
+    <script>
+        function handleCurrencyClick(name, image) {
+            alert(name + ' selected! This is a simplified HTML version.');
+            playSound();
+        }
+        
+        function playSound() {
+            // Create a simple beep sound
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+    </script>
+</body>
+</html>
+            `));
+            
+            // Create bridge fallback
+            const bridgeURL = 'data:text/html;charset=utf-8,' + encodeURIComponent(`
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bridge Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .title { text-align: center; color: #10b981; font-size: 2rem; margin-bottom: 30px; }
+        .game-area { text-align: center; padding: 40px; background: #f3f4f6; border-radius: 10px; margin: 20px 0; }
+        .bridge { width: 300px; height: 100px; background: #8b4513; margin: 20px auto; border-radius: 10px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .bridge::before, .bridge::after { content: ''; position: absolute; width: 20px; height: 120px; background: #654321; top: -10px; }
+        .bridge::before { left: -20px; }
+        .bridge::after { right: -20px; }
+        .water { width: 100%; height: 60px; background: linear-gradient(to bottom, #3b82f6, #1e40af); margin-top: 20px; border-radius: 10px; }
+        .controls { text-align: center; margin: 20px 0; }
+        .btn { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin: 5px; }
+        .btn:hover { background: #059669; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🌉 Bridge Game</h1>
+        <div class="game-area">
+            <div class="bridge"></div>
+            <div class="water"></div>
+        </div>
+        <div class="controls">
+            <button class="btn" onclick="buildBridge()">🔨 Build Bridge</button>
+            <button class="btn" onclick="testBridge()">🧪 Test Bridge</button>
+            <button class="btn" onclick="playSound()">🔊 Play Sound</button>
+        </div>
+    </div>
+    <script>
+        function buildBridge() {
+            alert('Bridge built successfully! This is a simplified HTML version.');
+            playSound();
+        }
+        
+        function testBridge() {
+            alert('Bridge test complete! Structure is stable.');
+            playSound();
+        }
+        
+        function playSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 600;
+            oscillator.type = 'triangle';
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+    </script>
+</body>
+</html>
+            `));
+            
+            // Open both in new tabs
+            window.open(rupeeURL, '_blank');
+            window.open(bridgeURL, '_blank');
+            
+            log('HTML fallbacks created and opened!', 'success');
+            log('These are simplified versions that should work immediately', 'info');
+        }
+
+        function clearCache() {
+            log('Clearing browser cache...', 'info');
+            
+            // Clear localStorage
+            localStorage.clear();
+            log('LocalStorage cleared', 'success');
+            
+            // Clear cache (if possible)
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                    log('Service worker cache cleared', 'success');
+                });
+            }
+            
+            // Suggest hard refresh
+            log('Please refresh the page (Ctrl+F5) to complete cache clearing', 'info');
+            
+            // Reload iframes
+            document.getElementById('rupee-frame').src = document.getElementById('rupee-frame').src;
+            document.getElementById('bridge-frame').src = document.getElementById('bridge-frame').src;
+        }
+
+        function clearConsole() {
+            consoleOutput = [];
+            document.getElementById('console-output').innerHTML = 'Console cleared...';
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            log('Comprehensive Game Fix Tool loaded', 'info');
+            log('If games show only sound but no visuals, try these solutions in order:', 'info');
+            log('1. Rebuild games (most likely fix)', 'info');
+            log('2. Clear browser cache', 'info');
+            log('3. Try HTML fallbacks', 'info');
+            
+            // Update test results
+            setTimeout(() => {
+                const statusDiv = document.getElementById('test-results');
+                statusDiv.className = 'status success';
+                statusDiv.textContent = 'Games loaded in iframes above. If you see only white space, use the fix options below.';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

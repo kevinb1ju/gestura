@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Level 1 – Gesture Color Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Chewy&display=swap" rel="stylesheet">
+
+<!-- MediaPipe -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+<style>
+   /* ---------- FONT (CSS ONLY) ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Chewy&display=swap');
+
+/* ---------- GLOBAL ---------- */
+body {
+    margin: 0;
+    padding: 0;
+    background: #f3f7ff;
+    transition: background-color 0.8s ease;
+    font-family: 'Fredoka', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Hide camera feed */
+video {
+    display: none;
+}
+
+/* ---------- MAIN CONTAINER ---------- */
+.container {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 28px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+    width: 95%;
+    max-width: 900px;
+    text-align: center;
+}
+
+/* ---------- TEXT ---------- */
+.prompt {
+    font-size: 32px;
+    font-weight: 700;
+
+    /* Maroon / deep red tone */
+    color: #8b1c1c;
+
+    /* Soft depth */
+    text-shadow: 
+        0 2px 6px rgba(139, 28, 28, 0.35);
+
+    margin-bottom: 12px;
+}
+
+
+.score {
+    font-size: 22px;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.status {
+    font-size: 18px;
+    font-weight: 400;
+    color: #777;
+    margin-bottom: 18px;
+}
+
+/* ---------- CARD GRID ---------- */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 26px;
+    margin-top: 10px;
+}
+
+/* ---------- COLOR CARDS ---------- */
+.card {
+    height: 115px;
+    border-radius: 22px;
+    border: 4px solid transparent;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Highlight when hand is over card */
+.highlight {
+    border-color: #000;
+}
+
+/* ---------- FEEDBACK TEXT ---------- */
+.feedback {
+    font-size: 26px;
+    font-weight: 600;
+    color: #444;
+    margin-top: 26px;
+    min-height: 36px;
+}
+
+/* ---------- WIN TEXT (SPECIAL) ---------- */
+.win-text {
+    font-family: 'Chewy', cursive;
+    font-size: 48px;
+    font-weight: 700;
+
+    background: linear-gradient(
+        90deg,
+        #ff4d4d,
+        #ff9800,
+        #ffeb3b,
+        #4caf50,
+        #2196f3
+    );
+
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    text-shadow:
+        0 3px 10px rgba(255, 152, 0, 0.35),
+        0 6px 18px rgba(33, 150, 243, 0.3);
+
+    letter-spacing: 1.2px;
+}
+
+/* ---------- HAND CURSOR ---------- */
+.hand-cursor {
+    position: fixed;
+    width: 42px;
+    height: 42px;
+    background: rgba(0, 140, 255, 0.55);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    display: none;
+}
+/* ---------- NEXT LEVEL BUTTON ---------- */
+#nextLevelBtn {
+    display: none;               /* stays hidden until win */
+    margin: 30px auto 0;
+    padding: 16px 36px;
+
+    font-family: 'Fredoka', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+
+    color: #ffffff;
+    background: linear-gradient(135deg, #ff9800, #ff5722);
+
+    border: none;
+    border-radius: 30px;
+
+    cursor: pointer;
+
+    box-shadow: 
+        0 8px 20px rgba(255, 87, 34, 0.35);
+
+    transition: 
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/* Hover / focus effect */
+#nextLevelBtn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow:
+        0 12px 28px rgba(255, 87, 34, 0.45);
+}
+
+/* Active (pressed) */
+#nextLevelBtn:active {
+    transform: scale(0.97);
+}
+
+
+</style>
+</head>
+
+<body>
+
+<video id="video" autoplay playsinline></video>
+<div class="hand-cursor" id="handCursor"></div>
+
+<!-- AUDIO -->
+<audio id="bgMusic" src="audio/bg-music.mp3" loop></audio>
+<audio id="correctSound" src="audio/correct.mp3"></audio>
+<audio id="wrongSound" src="audio/wrong.mp3"></audio>
+<audio id="winSound" src="audio/win.mp3"></audio>
+
+<div class="container">
+    <div class="prompt" id="prompt"></div>
+    <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:8px;">
+        <div class="score">Score: <span id="score">0</span></div>
+        <div id="lives-display" style="display:flex; gap:4px;"></div>
+    </div>
+    <div class="status" id="status">Waiting for hand…</div>
+
+    <div class="card-grid" id="cardGrid"></div>
+    <div class="feedback" id="feedback"></div>
+</div>
+<button id="nextLevelBtn" style="display:none;" onclick="goToNextLevel()">
+    👉 Move to Next Level
+</button>
+
+<script>
+/* ---------- AUDIO ---------- */
+const bgMusic = document.getElementById("bgMusic");
+bgMusic.volume = 0.25;
+
+const correctSound = document.getElementById("correctSound");
+const wrongSound = document.getElementById("wrongSound");
+const winSound = document.getElementById("winSound");
+
+let musicStarted = false;
+
+/* ---------- GAME DATA ---------- */
+const colors = [
+    { name: "Red", code: "#f44336" },
+    { name: "Blue", code: "#2196F3" },
+    { name: "Green", code: "#4CAF50" },
+    { name: "Yellow", code: "#FFEB3B" },
+    { name: "Orange", code: "#FF9800" },
+    { name: "Purple", code: "#9C27B0" },
+    { name: "Pink", code: "#E91E63" },
+    { name: "Brown", code: "#795548" }
+];
+
+let targetColor;
+let score = 0;
+let lives = 3;
+let hoverCard = null;
+let hoverStart = null;
+let gameOver = false;
+
+function updateLivesDisplay() {
+    const el = document.getElementById('lives-display');
+    if (!el) return;
+    el.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+        const h = document.createElement('span');
+        h.textContent = '❤️';
+        h.style.fontSize = '1.5rem';
+        h.style.opacity = i < lives ? '1' : '0.3';
+        h.style.filter = i < lives ? 'none' : 'grayscale(100%)';
+        el.appendChild(h);
+    }
+}
+
+function saveScoreAndExit() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const studentId = urlParams.get('studentId');
+        if (studentId) {
+            const key = 'student_performance_' + studentId;
+            const existingData = localStorage.getItem(key);
+            let studentData = existingData ? JSON.parse(existingData) : {};
+            const gameName = 'Color Quest';
+            if (!studentData[gameName]) studentData[gameName] = {};
+            const baseScore = Math.min(100, score);
+            studentData[gameName] = {
+                ...studentData[gameName],
+                cognitive: {
+                    color_recognition: baseScore,
+                    pattern_matching: Math.min(100, baseScore + 3),
+                    sequencing: Math.min(100, baseScore - 2),
+                    visual_memory: Math.min(100, baseScore + 5)
+                },
+                motor: {
+                    coloring_precision: baseScore,
+                    tool_control: Math.min(100, baseScore + 2),
+                    pressure_control: Math.min(100, baseScore - 3)
+                },
+                social: {
+                    creative_sharing: baseScore,
+                    appreciation: Math.min(100, baseScore + 4),
+                    collaborative_creativity: Math.min(100, baseScore + 2)
+                },
+                emotional: {
+                    self_expression: baseScore,
+                    patience: Math.min(100, baseScore + 5),
+                    pride_in_work: Math.min(100, baseScore + 8),
+                    acceptance_of_imperfection: Math.min(100, baseScore - 5)
+                }
+            };
+            localStorage.setItem(key, JSON.stringify(studentData));
+        }
+    } catch(e) { console.error('Could not save score', e); }
+    window.location.href = '/dashboard';
+}
+
+function loseLife() {
+    lives = Math.max(0, lives - 1);
+    updateLivesDisplay();
+    if (lives <= 0) {
+        gameOver = true;
+        const utt = new SpeechSynthesisUtterance('Game over! Returning to dashboard.');
+        utt.rate = 0.9;
+        window.speechSynthesis.speak(utt);
+        setTimeout(saveScoreAndExit, 3000);
+    }
+}
+
+/* ---------- UI ---------- */
+const promptEl = document.getElementById("prompt");
+const scoreEl = document.getElementById("score");
+const cardGrid = document.getElementById("cardGrid");
+const feedback = document.getElementById("feedback");
+const statusText = document.getElementById("status");
+const handCursor = document.getElementById("handCursor");
+
+/* ---------- GAME ---------- */
+function newRound() {
+    if (gameOver) return;
+
+    feedback.textContent = "";
+    feedback.className = "feedback";
+    cardGrid.innerHTML = "";
+
+    targetColor = colors[Math.floor(Math.random() * colors.length)];
+    promptEl.textContent = "Find the color " + targetColor.name;
+
+    colors.forEach(color => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.style.background = color.code;
+        card.dataset.name = color.name;
+        cardGrid.appendChild(card);
+    });
+}
+
+function selectCard(card) {
+    if (!musicStarted) {
+        bgMusic.play();
+        musicStarted = true;
+    }
+
+    document.body.style.backgroundColor = card.style.background;
+
+    if (card.dataset.name === targetColor.name) {
+        score += 10;
+        feedback.textContent = "Correct!";
+        correctSound.play();
+    } else {
+        score -= 5;
+        if (score < 0) score = 0;
+        feedback.textContent = "Oops!";
+        wrongSound.play();
+        loseLife();
+        if (lives <= 0) return;
+    }
+
+    scoreEl.textContent = score;
+
+    if (score >= 100) {
+        gameOver = true;
+        feedback.innerHTML = "<span class='win-text'>🎉 You won!</span>";
+        bgMusic.pause();
+        winSound.play();
+
+        document.getElementById("nextLevelBtn").style.display = "block";
+        return;
+    }
+
+    setTimeout(newRound, 1500);
+}
+
+/* ---------- LEVEL NAVIGATION ---------- */
+function goToNextLevel() {
+    const params = window.location.search;
+    window.location.href = 'level2.html' + params;
+}
+
+/* ---------- HAND TRACKING ---------- */
+const hands = new Hands({
+    locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+});
+
+hands.setOptions({
+    maxNumHands: 1,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.6,
+    minTrackingConfidence: 0.6
+});
+
+hands.onResults(results => {
+    if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
+        handCursor.style.display = "none";
+        statusText.textContent = "No hand detected";
+        hoverCard = null;
+        return;
+    }
+
+    statusText.textContent = "Hand detected ✔";
+
+    const finger = results.multiHandLandmarks[0][8];
+    const x = finger.x * window.innerWidth;
+    const y = finger.y * window.innerHeight;
+
+    handCursor.style.display = "block";
+    handCursor.style.left = x + "px";
+    handCursor.style.top = y + "px";
+
+    document.querySelectorAll(".card").forEach(card => card.classList.remove("highlight"));
+
+    document.querySelectorAll(".card").forEach(card => {
+        const rect = card.getBoundingClientRect();
+        if (x > rect.left && x < rect.right && y > rect.top && y < rect.bottom) {
+            card.classList.add("highlight");
+
+            if (hoverCard !== card) {
+                hoverCard = card;
+                hoverStart = Date.now();
+            }
+
+            if (Date.now() - hoverStart > 1500) {
+                hoverCard = null;
+                hoverStart = null;
+                selectCard(card);
+            }
+        }
+    });
+});
+
+/* ---------- CAMERA ---------- */
+const camera = new Camera(document.getElementById("video"), {
+    onFrame: async () => {
+        await hands.send({ image: document.getElementById("video") });
+    },
+    width: 640,
+    height: 480
+});
+
+camera.start();
+window.onload = () => { newRound(); updateLivesDisplay(); };
+</script>
+
+</body>
+</html>
