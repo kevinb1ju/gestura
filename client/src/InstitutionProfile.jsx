@@ -9,9 +9,14 @@ import {
   GraduationCap, 
   Calendar, 
   MapPin, 
-  ShieldCheck, 
+  MoreVertical, 
   Edit3, 
-  Trash2
+  Trash2, 
+  ShieldCheck,
+  Clock,
+  Mail,
+  ChevronRight,
+  TrendingUp
 } from "lucide-react";
 
 // ---------------- Styled Components ----------------
@@ -91,6 +96,46 @@ const InstitutionName = styled.h2`
   font-weight: bold;
   color: #111827;
   margin: 0 0 0.5rem 0;
+`;
+
+const Section = styled.div`
+  margin-top: 2rem;
+`;
+
+const SectionTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 1rem;
+`;
+
+const MemberList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const MemberItem = styled.div`
+  padding: 1.25rem;
+  background: #f8fafc;
+  border-radius: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  transition: all 0.2s;
+
+  &:hover {
+    background: white;
+    border-color: #0da6f2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+`;
+
+const MemberInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 `;
 
 const StatusBadge = styled.span`

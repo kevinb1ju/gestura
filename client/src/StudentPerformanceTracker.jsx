@@ -144,6 +144,87 @@ const GameCard = styled.div`
   }
 `;
 
+const GameIcon = styled.div`
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+`;
+
+const GameName = styled.div`
+  font-weight: bold;
+  color: #374151;
+  margin-bottom: 0.5rem;
+`;
+
+const GameScore = styled.div`
+  font-size: 0.9rem;
+  color: ${props => props.color || '#6b7280'};
+`;
+
+const RecommendationsSection = styled.div`
+  background: #fef3c7;
+  border: 2px solid #f59e0b;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+`;
+
+const RecommendationsTitle = styled.h3`
+  color: #92400e;
+  margin: 0 0 1rem 0;
+`;
+
+const RecommendationList = styled.ul`
+  margin: 0;
+  padding-left: 1.5rem;
+`;
+
+const RecommendationItem = styled.li`
+  margin-bottom: 0.5rem;
+  color: #78350f;
+  
+  &::marker {
+    color: #f59e0b;
+  }
+`;
+
+const PriorityBadge = styled.span`
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-left: 0.5rem;
+  background: ${props =>
+    props.priority === 'high' ? '#ef4444' :
+      props.priority === 'medium' ? '#f59e0b' : '#10b981'
+  };
+  color: white;
+`;
+
+const LevelProgressionSection = styled.div`
+  background: #dbeafe;
+  border: 2px solid #3b82f6;
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+`;
+
+const LevelProgressionTitle = styled.h3`
+  color: #1e40af;
+  margin: 0 0 1rem 0;
+`;
+
+const LevelProgressionContent = styled.div`
+  color: #1e3a8a;
+  font-size: 1.1rem;
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+`;
+
 const ActionButton = styled.button`
   padding: 0.75rem 1.5rem;
   border: none;
@@ -167,6 +248,95 @@ const ActionButton = styled.button`
       background: #d1d5db;
     }
   `}
+`;
+
+const Modal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+`;
+
+const ModalTitle = styled.h3`
+  color: #1f2937;
+  margin: 0;
+`;
+
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+  
+  &:hover {
+    color: #374151;
+  }
+`;
+
+const MetricDetails = styled.div`
+  margin-bottom: 1rem;
+`;
+
+const MetricName = styled.div`
+  font-weight: bold;
+  color: #374151;
+  margin-bottom: 0.25rem;
+`;
+
+const MetricDescription = styled.div`
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+`;
+
+const MetricScore = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const MetricBar = styled.div`
+  flex: 1;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+`;
+
+const MetricFill = styled.div`
+  height: 100%;
+  background: ${props => props.color || '#3b82f6'};
+  border-radius: 3px;
+`;
+
+const MetricValue = styled.span`
+  font-weight: bold;
+  color: ${props => props.color || '#3b82f6'};
+  min-width: 50px;
+  text-align: right;
 `;
 
 export default function StudentPerformanceTracker({ student, onBack }) {
