@@ -12,24 +12,17 @@ connectDB();
 const app = express();
 
 // Middleware
+app.use(cors({
+  origin: true, // Allow all origins temporarily to debug
+  credentials: true,
+}));
 app.use(express.json());
 
 const allowedOrigins = [
   'http://localhost:3000',
+  'https://gestura-indol.vercel.app',
   process.env.CLIENT_URL,
 ].filter(Boolean);
-
-app.use(cors({
-  origin: (origin, callback) => {
-    const isVercel = origin && origin.endsWith('.vercel.app');
-    if (!origin || allowedOrigins.includes(origin) || isVercel) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-}));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
