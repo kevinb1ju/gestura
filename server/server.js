@@ -55,8 +55,10 @@ app.get('/api/health', (req, res) => {
 // Root route
 app.get('/', (req, res) => {
   res.json({
-    message: '🎮 Gestura API',
-    version: '1.0.0',
+    message: '🎮 Gestura API (LIVE SYNC V5)',
+    version: '1.0.5',
+    timestamp: new Date().toISOString(),
+    allowed_origin_test: "https://gestura-indol.vercel.app"
   });
 });
 
