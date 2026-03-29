@@ -17,7 +17,9 @@ import {
   Send, 
   Loader2,
   ChevronRight,
-  ArrowRight
+  ArrowRight,
+  Menu,
+  X
 } from "lucide-react";
 
 // ---------------- Styled Components ----------------
@@ -26,6 +28,7 @@ const Container = styled.div`
   min-height: 100vh;
   font-family: 'Plus Jakarta Sans', sans-serif;
   background-color: #f0f8ff;
+  position: relative;
 `;
 
 const Sidebar = styled.aside`
@@ -38,7 +41,53 @@ const Sidebar = styled.aside`
   display: flex;
   flex-direction: column;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
-  z-index: 100;
+  z-index: 1000;
+  transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    position: fixed;
+    left: ${props => props.open ? '0' : '-18rem'};
+    top: 0;
+    bottom: 0;
+    width: 16rem;
+  }
+`;
+
+const MobileHeader = styled.div`
+  display: none;
+  @media (max-width: 1024px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 500;
+  }
+`;
+
+const MenuButton = styled.button`
+  background: none;
+  border: none;
+  color: #1e293b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Overlay = styled.div`
+  display: none;
+  @media (max-width: 1024px) {
+    display: ${props => props.show ? 'block' : 'none'};
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+  }
 `;
 
 const Logo = styled.h1`
@@ -107,6 +156,12 @@ const Main = styled.main`
   background: #f8fafc;
   height: 100vh;
   overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
 `;
 
 const FadeInDiv = styled.div`
@@ -118,6 +173,12 @@ const Header = styled.header`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2.5rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 `;
 
 const StatsGrid = styled.div`
@@ -270,6 +331,11 @@ const AIDrawer = styled.div`
   z-index: 1000;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 480px) {
+    width: 100%;
+    right: ${(props) => (props.isOpen ? "0" : "-100%")};
+  }
 `;
 
 const AIHeader = styled.div`
@@ -501,6 +567,7 @@ export default function AdminDashboard() {
   ]);
   const [userInput, setUserInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   // Institution form state
   const [institutionName, setInstitutionName] = useState("");
@@ -698,24 +765,29 @@ export default function AdminDashboard() {
 
   return (
     <Container>
-      <Sidebar>
-        <Logo>
-          <span style={{ color: "#FF6B6B" }}>G</span>
-          <span style={{ color: "#FFD166" }}>e</span>
-          <span style={{ color: "#06D6A0" }}>s</span>
-          <span style={{ color: "#118AB2" }}>t</span>
-          <span style={{ color: "#8338EC" }}>u</span>
-          <span style={{ color: "#EF476F" }}>r</span>
-          <span style={{ color: "#FF9F1C" }}>a</span>
-        </Logo>
+      <Overlay show={isSidebarOpen} onClick={() => setIsSidebarOpen(false)} />
+      <Sidebar open={isSidebarOpen}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 2rem' }}>
+          <Logo style={{ padding: 0, marginBottom: 0 }}>
+            <span style={{ color: "#FF6B6B" }}>G</span>
+            <span style={{ color: "#FFD166" }}>e</span>
+            <span style={{ color: "#06D6A0" }}>s</span>
+            <span style={{ color: "#118AB2" }}>t</span>
+            <span style={{ color: "#8338EC" }}>u</span>
+            <span style={{ color: "#EF476F" }}>r</span>
+          </Logo>
+          <MenuButton onClick={() => setIsSidebarOpen(false)} style={{ display: window.innerWidth <= 1024 ? 'flex' : 'none' }}>
+            <X size={24} />
+          </MenuButton>
+        </div>
         <Nav>
-          <NavItem active={activeView === "dashboard"} onClick={() => setActiveView("dashboard")}>
+          <NavItem active={activeView === "dashboard"} onClick={() => { setActiveView("dashboard"); setIsSidebarOpen(false); }}>
             <LayoutDashboard size={20} /> Dashboard
           </NavItem>
-          <NavItem active={activeView === "institutions"} onClick={() => setActiveView("institutions")}>
+          <NavItem active={activeView === "institutions"} onClick={() => { setActiveView("institutions"); setIsSidebarOpen(false); }}>
             <Building2 size={20} /> Institutions
           </NavItem>
-          <NavItem active={activeView === "reports"} onClick={() => setActiveView("reports")}>
+          <NavItem active={activeView === "reports"} onClick={() => { setActiveView("reports"); setIsSidebarOpen(false); }}>
             <FileText size={20} /> Analytics
           </NavItem>
         </Nav>
@@ -724,7 +796,15 @@ export default function AdminDashboard() {
         </div>
       </Sidebar>
 
-      <Main>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+        <MobileHeader>
+          <Logo style={{ padding: 0, marginBottom: 0, fontSize: '1.75rem' }}>Gestura</Logo>
+          <MenuButton onClick={() => setIsSidebarOpen(true)}>
+            <Menu size={28} />
+          </MenuButton>
+        </MobileHeader>
+
+        <Main>
         <Header>
           <div>
             <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#1e293b' }}>
@@ -971,6 +1051,7 @@ export default function AdminDashboard() {
           </button>
         </AIInputArea>
       </AIDrawer>
+      </div>
     </Container>
   );
 }

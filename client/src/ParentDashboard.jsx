@@ -82,6 +82,12 @@ const Main = styled.main`
   padding: 48px 24px;
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+  }
 `;
 
 const Section = styled.section`
@@ -101,6 +107,21 @@ const ProgressJourney = styled.div`
   position: relative;
   margin: 3rem 0;
   padding: 0 1rem;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 3rem;
+    align-items: flex-start;
+    padding-left: 2rem;
+    
+    &::before {
+      width: 4px;
+      height: 100%;
+      left: 2.4rem;
+      top: 0;
+      transform: none;
+    }
+  }
 
   &::before {
     content: '';
@@ -138,6 +159,12 @@ const JourneyNode = styled.div`
     font-weight: 700;
     white-space: nowrap;
     color: ${props => props.active ? '#2563eb' : '#94a3b8'};
+
+    @media (max-width: 640px) {
+      top: 50%;
+      left: 120%;
+      transform: translateY(-50%);
+    }
   }
 `;
 
@@ -146,6 +173,10 @@ const Title = styled.h2`
   font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.02em;
+
+  @media (max-width: 640px) {
+    font-size: 24px;
+  }
 `;
 
 const Subtext = styled.p`
@@ -277,6 +308,7 @@ const AIDrawer = styled.div`
   top: 1rem;
   right: ${props => props.open ? '1rem' : '-450px'};
   width: 400px;
+  max-width: calc(100vw - 2rem);
   height: calc(100vh - 2rem);
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);

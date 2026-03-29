@@ -85,11 +85,11 @@ const TitleLetter = styled.span`
 `;
 
 const Subtitle = styled.p`
-  margin-top: rem
+  margin-top: 1rem;
   font-size: clamp(1rem, 2vw, 1.5rem);
   color: white;
   font-family: 'Roboto', sans-serif;
-  font-weight: 00;
+  font-weight: 500;
   opacity: 0;
   animation: ${fadeIn} 2s ease-out 1s forwards;
   letter-spacing: 0.05em;

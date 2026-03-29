@@ -84,14 +84,19 @@ const Card = styled.div`
   position: relative;
   z-index: 10;
   max-width: 28rem;
-  width: 100%;
+  width: 90%;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1rem;
+  border-radius: 1.5rem;
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.07);
-  padding: 2rem;
+  padding: 2.5rem 2rem;
   animation: ${fadeIn} 1s ease-out;
+
+  @media (max-width: 480px) {
+    padding: 2rem 1.5rem;
+    width: 85%;
+  }
 `;
 
 const LogoText = styled.h1`
@@ -156,13 +161,14 @@ const RoleButton = styled.button`
 
 const Input = styled.input`
   display: block;
-  width: 90%;
+  width: 100%;
   padding: 0.9rem 1.25rem;
   border-radius: 9999px;
   border: 1px solid #e2e8f0;
   background: rgba(255, 255, 255, 0.9);
   margin-bottom: 1rem;
   font-size: 1rem;
+  box-sizing: border-box;
   &:focus {
     outline: none;
     border-color: #fbbf24;

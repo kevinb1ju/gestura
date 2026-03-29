@@ -14,11 +14,10 @@ import {
   Send, 
   Bot, 
   X, 
-  ChevronRight,
-  Activity,
   Sparkles,
   Camera,
-  User
+  User,
+  Menu
 } from "lucide-react";
 import { LEVEL_CONFIG, getLevelName } from "./levelConfig";
 
@@ -28,6 +27,7 @@ const Container = styled.div`
   min-height: 100vh;
   font-family: 'Quicksand', sans-serif;
   background-color: #f8fafc;
+  position: relative;
 `;
 
 const Sidebar = styled.aside`
@@ -36,6 +36,53 @@ const Sidebar = styled.aside`
   border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    position: fixed;
+    left: ${props => props.open ? '0' : '-16rem'};
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+    box-shadow: ${props => props.open ? '10px 0 30px rgba(0,0,0,0.1)' : 'none'};
+  }
+`;
+
+const MobileHeader = styled.div`
+  display: none;
+  @media (max-width: 1024px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 500;
+  }
+`;
+
+const MenuButton = styled.button`
+  background: none;
+  border: none;
+  color: #374151;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Overlay = styled.div`
+  display: none;
+  @media (max-width: 1024px) {
+    display: ${props => props.show ? 'block' : 'none'};
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+  }
 `;
 
 const Logo = styled.h1`
@@ -98,6 +145,13 @@ const WelcomeHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
 `;
 
 const WelcomeText = styled.div`
@@ -119,6 +173,14 @@ const StatsGrid = styled.div`
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   margin-bottom: 2rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const StatCard = styled.div`
@@ -163,6 +225,12 @@ const DashboardActions = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
 `;
 
 const ViewOptions = styled.div`
@@ -459,6 +527,14 @@ const AIDrawer = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  @media (max-width: 480px) {
+    width: 100%;
+    right: ${props => props.open ? '0' : '-100%'};
+    border-radius: 0;
+    top: 0;
+    height: 100vh;
+  }
 `;
 
 const AIHeader = styled.div`
@@ -522,6 +598,12 @@ const Message = styled.div`
     box-shadow: 0 4px 15px -3px rgba(37, 99, 235, 0.2);
   `}
   white-space: pre-wrap;
+
+  @media (max-width: 480px) {
+    max-width: 95%;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
 `;
 
 const TypingIndicator = styled.div`
@@ -622,6 +704,7 @@ export default function TeacherDashboard() {
   ]);
   const [aiInput, setAiInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [newStudent, setNewStudent] = useState({
     name: "", age: "", mentalAge: "", parent: "", emergencyContact: "",
@@ -713,20 +796,37 @@ export default function TeacherDashboard() {
 
   return (
     <Container>
-      <Sidebar>
-        <Logo>Gestura</Logo>
+      <Overlay show={isSidebarOpen} onClick={() => setIsSidebarOpen(false)} />
+      <Sidebar open={isSidebarOpen}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Logo>Gestura</Logo>
+          <MenuButton 
+            onClick={() => setIsSidebarOpen(false)}
+            style={{ display: window.innerWidth <= 1024 ? 'flex' : 'none', paddingRight: '1.5rem' }}
+          >
+            <X size={24} />
+          </MenuButton>
+        </div>
         <Role>Teacher Dashboard</Role>
         <Nav>
-          <NavLink active={activeSidebar === "students"} onClick={() => setActiveSidebar("students")}>
+          <NavLink active={activeSidebar === "students"} onClick={() => { setActiveSidebar("students"); setIsSidebarOpen(false); }}>
             <Users size={18} /> Students
           </NavLink>
-          <NavLink active={activeSidebar === "reports"} onClick={() => setActiveSidebar("reports")}>
+          <NavLink active={activeSidebar === "reports"} onClick={() => { setActiveSidebar("reports"); setIsSidebarOpen(false); }}>
             <TrendingUp size={18} /> Reports
           </NavLink>
         </Nav>
       </Sidebar>
 
-      <Main>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
+        <MobileHeader>
+          <Logo style={{ padding: 0, fontSize: '1.75rem' }}>Gestura</Logo>
+          <MenuButton onClick={() => setIsSidebarOpen(true)}>
+            <Menu size={28} />
+          </MenuButton>
+        </MobileHeader>
+
+        <Main>
         {activeSidebar === "students" ? (
           <>
             <WelcomeHeader>
@@ -999,6 +1099,7 @@ export default function TeacherDashboard() {
           </SendButton>
         </ChatFooter>
       </AIDrawer>
+      </div>
     </Container>
   );
 }

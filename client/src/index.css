@@ -5,6 +5,17 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+html {
+  font-size: 16px; /* Base font size */
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px; /* Slightly smaller base font-size for mobile devices */
+  }
 }
 
 code {

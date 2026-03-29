@@ -107,6 +107,10 @@ const Logo = styled.div`
   text-shadow: -1px -1px 0 rgba(255, 255, 255, 0.6),
     1px -1px 0 rgba(255, 255, 255, 0.6), -1px 1px 0 rgba(255, 255, 255, 0.6),
     1px 1px 0 rgba(255, 255, 255, 0.6), 2px 4px 6px rgba(0, 0, 0, 0.3);
+
+  @media (max-width: 480px) {
+    font-size: 1.75rem;
+  }
 `;
 
 const MainContainer = styled.main`
@@ -161,9 +165,14 @@ const GameGrid = styled.div`
   gap: 1.5rem;
   justify-content: center;
   
-  @media (max-width: 480px) {
+  @media (max-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    gap: 1rem;
+  }
+
+  @media (max-width: 400px) {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
 `;
 
@@ -182,6 +191,10 @@ const GlassCard = styled.div`
   cursor: pointer;
   position: relative;
   overflow: hidden;
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+  }
 
   &::before {
     content: "";
@@ -241,6 +254,10 @@ const MascotWrapper = styled.div`
   display: inline-block;
   margin-top: -1rem;
   animation: ${float} 4s ease-in-out infinite;
+
+  @media (max-width: 480px) {
+    transform: scale(0.8);
+  }
 `;
 
 const SpeechBubble = styled.div`
