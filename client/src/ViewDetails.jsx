@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams, useLocation } from "react-router-dom";
 
-// ---------------- Styled Components ----------------
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -277,7 +277,7 @@ const OverallProgress = styled.div`
   padding-top: 1rem;
 `;
 
-// ---------------- Main Component ----------------
+
 export default function ViewDetails() {
   const { studentId } = useParams();
   const location = useLocation();

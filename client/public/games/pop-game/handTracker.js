@@ -1,8 +1,8 @@
-// ============================================================
+
 //  handTracker.js  –  MediaPipe Hands integration
 //  Reads from the #webcam video element.
 //  Publishes results to window.HandTracker so App.jsx can poll.
-// ============================================================
+
 
 const HandTracker = (() => {
 

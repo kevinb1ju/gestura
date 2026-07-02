@@ -19,7 +19,7 @@ import {
   TrendingUp
 } from "lucide-react";
 
-// ---------------- Styled Components ----------------
+
 const Container = styled.div`
   min-height: 100vh;
   background-color: #f8fafc;
@@ -232,7 +232,7 @@ const EmptyState = styled.div`
   color: #6b7280;
 `;
 
-// ---------------- Component ----------------
+
 export default function InstitutionProfile() {
   const navigate = useNavigate();
   const { institutionName } = useParams();

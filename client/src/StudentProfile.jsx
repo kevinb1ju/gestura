@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 
-// ---------------- Styled Components ----------------
+
 const Container = styled.div`
   min-height: 100vh;
   background-color: #f0f8ff;
@@ -282,7 +282,7 @@ const SuccessMessage = styled.div`
   font-size: 0.9rem;
 `;
 
-// ---------------- Component ----------------
+
 export default function StudentProfile() {
   const navigate = useNavigate();
   const { studentId } = useParams();

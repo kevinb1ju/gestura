@@ -17,11 +17,13 @@ import {
   Sparkles,
   Camera,
   User,
-  Menu
+  Menu,
+  Activity,
+  ChevronRight
 } from "lucide-react";
 import { LEVEL_CONFIG, getLevelName } from "./levelConfig";
 
-// ---------------- Styled Components ----------------
+
 const Container = styled.div`
   display: flex;
   min-height: 100vh;

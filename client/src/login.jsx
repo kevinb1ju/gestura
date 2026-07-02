@@ -3,7 +3,7 @@ import API_URL from "./config";
 import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-// ---------- Animations ----------
+
 const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -14,7 +14,7 @@ const fadeIn = keyframes`
   to { opacity: 1; }
 `;
 
-// ---------- Styled Components ----------
+
 const Wrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -112,7 +112,7 @@ const ColoredSpan = styled.span`
   color: ${(p) => p.color};
 `;
 
-// ---------- Role Selector ----------
+
 const RoleSwitch = styled.div`
   position: relative;
   display: flex;
@@ -211,7 +211,7 @@ const ErrorMessage = styled.div`
   animation: ${fadeIn} 0.3s ease-out;
 `;
 
-// ---------- Component ----------
+
 const Login = ({ isAdminMode = false }) => {
   const [role, setRole] = useState(isAdminMode ? "admin" : "student");
   const [email, setEmail] = useState("");

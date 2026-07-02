@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { getGamesForLevel, getLevelName, launchGame } from "./levelConfig";
 
-// ---------- Animations ----------
+
 const float = keyframes`
   0% { transform: translateY(0px) rotate(0deg); }
   50% { transform: translateY(-15px) rotate(5deg); }
@@ -30,7 +30,7 @@ const starShine = keyframes`
   50% { transform: scale(1.3); opacity:0.7; }
 `;
 
-// ---------- Styled Components ----------
+
 const AppWrapper = styled.div`
   font-family: 'Comic Neue', cursive;
   color: #333;
@@ -304,7 +304,7 @@ const SpeechBubble = styled.div`
   }
 `; */
 
-// ---------- React Component ----------
+
 export default function StudentDashboard() {
   const [studentData, setStudentData] = useState(null);
   const [levelUpdateNotification, setLevelUpdateNotification] = useState(null);

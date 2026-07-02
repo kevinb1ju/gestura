@@ -22,7 +22,7 @@ import {
   X
 } from "lucide-react";
 
-// ---------------- Styled Components ----------------
+
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
@@ -547,7 +547,7 @@ const ViewButton = styled(Link)`
   }
 `;
 
-// ---------------- React Component ----------------
+
 export default function AdminDashboard() {
   const [activeView, setActiveView] = useState("dashboard");
   const [adminUser] = useState(() => {

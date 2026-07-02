@@ -1,7 +1,7 @@
-// ============================================================
+
 //  App.jsx  –  React game components
 //  Uses window.SoundManager and window.HandTracker
-// ============================================================
+
 
 const { useState, useEffect, useRef, useCallback } = React;
 

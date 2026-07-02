@@ -1,8 +1,8 @@
-// ============================================================
+
 //  sound.js  –  All game sounds using Web Audio API
 //  AudioContext is unlocked on first user gesture to avoid
 //  browser autoplay restrictions.
-// ============================================================
+
 
 const SoundManager = (() => {
   let ctx = null;
